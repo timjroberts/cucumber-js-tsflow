@@ -1,0 +1,20 @@
+{
+    "workspace": true,
+    "name": "cucumber-tsflow",
+    "description": "Workspace for cucumber-tsflow",
+    "license": "BSD",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/timjroberts/cucumber-js-tsflow.git"
+    },
+    "scripts": {
+        "postinstall": "gulp install"
+    },
+    "devDependencies": {
+        "gulp": "~3.9.0",
+        "gulp-npmworkspace": "~1.0.12",
+        "rimraf": "^2.5.1",
+        "typings": "~0.6.2",
+        "typescript": "~1.7.5"
+    }
+}

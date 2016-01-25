@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "declaration": true,
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "outDir": "./dist",
+        "rootDir": "."
+    },
+    "exclude": [
+        "lib",
+        "node_modules"
+    ]
+}
