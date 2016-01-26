@@ -1,5 +1,7 @@
 *.ts
-!dist
 tsconfig.json
 typings.json
 typings
+.npmignore
+gulpfile.js
+!dist/**/*.d.ts
