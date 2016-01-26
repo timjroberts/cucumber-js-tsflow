@@ -24,6 +24,7 @@
         "url": "https://github.com/timjroberts/cucumber-js-tsflow.git"
     },
     "dependencies": {
-        "disposable-cls": "^1.0.13"
+        "disposable-cls": "^1.0.13",
+        "underscore": "~1.8.3"
     }
 }
