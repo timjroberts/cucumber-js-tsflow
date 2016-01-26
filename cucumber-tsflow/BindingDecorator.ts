@@ -1,11 +1,15 @@
 "use strict";
 
 import * as _ from "underscore";
-import {using} from "disposable-cls";
 
 import {BindingRegistry, StepPatternMap, TagMap} from "./BindingRegistry";
 import {StepBindingDescriptor, StepBindingFlags} from "./StepBindingDescriptor";
 import {BindingError} from "./Errors/BindingError";
+import {ScenarioContext, ScenarioInformation} from "./ScenarioContext";
+
+
+export type ContextType = new () => any;
+
 
 /**
  * A class decorator that marks the associated class as a CucumberJS binding.
@@ -15,24 +19,30 @@ import {BindingError} from "./Errors/BindingError";
  *
  * An instance of the decorated class will be created for each scenario.
  */
-export function binding(requiredContextTypes?: Array<new () => any>): ClassDecorator {
+export function binding(requiredContextTypes?: ContextType[]): ClassDecorator {
     return function (target: Function): Function {
         let newConstructor = function () {
             let bindingRegistry = BindingRegistry.instance;
 
+            bindingRegistry.registerContextTypesForTarget(target.prototype, requiredContextTypes);
+
             bindingRegistry.ensureSystemBindings(() => {
-                return new Promise<void>((resolve) => {
-                    this.Before(function(scenario) {
-                        return new Promise((resolve) => {
-                            let tags = _.map(scenario.getTags(), (tag: any) => tag.getName());
+                // Create a Before scenario handler that sets up a ScenarioContext object and attaches it
+                // to the World object
+                this.Before(function(scenario, callback) {
+                    let scenarioInfo = new ScenarioInformation();
 
-                            console.log("TAGS: " + JSON.stringify(tags));
+                    (<any>scenarioInfo)._title = scenario.getName();
+                    (<any>scenarioInfo)._tags = _.map(scenario.getTags(), (tag: any) => tag.getName());
 
-                            resolve();
-                        });
-                    });
+                    let scenarioCtx = new ScenarioContext();
 
-                    resolve();
+                    (<any>scenarioCtx)._scenarioInfo = scenarioInfo;
+                    (<any>scenarioCtx)._activeCtxObjs = { };
+
+                    this["__SCENARIO_CONTEXT"] = scenarioCtx;
+
+                    callback();
                 });
             });
 
@@ -63,12 +73,16 @@ function bindStepDefinitions(cucumber: any, stepBindingType: StepBindingFlags, s
             continue;
         }
 
-        let bindingFunc = function(...args) {
-            return new Promise<any>((resolve, reject) => {
-                try {
-                    let activeStepBinding = BindingRegistry.instance.lookupStepBinding(stepBindingType, stepPattern, [ "*" ]);
+        let bindingFunc = function(...args: any[]) {
+            let scenarioCtx: ScenarioContext = this["__SCENARIO_CONTEXT"];
 
-                    let objectInstance = new (<any>activeStepBinding.targetPrototype.constructor);
+            return new Promise<any>((resolve, reject) => {
+                let bindingRegistry = BindingRegistry.instance;
+
+                try {
+                    let activeStepBinding = bindingRegistry.lookupStepBinding(stepBindingType, stepPattern, scenarioCtx.scenarioInfo.tags);
+                    let requiredContextTypes = bindingRegistry.getContextTypesForTarget(activeStepBinding.targetPrototype);
+                    let objectInstance = (<any>scenarioCtx).activateBindingObject(activeStepBinding.targetPrototype, requiredContextTypes);
 
                     objectInstance._worldObj = this;
 
@@ -101,7 +115,7 @@ function bindStepDefinitions(cucumber: any, stepBindingType: StepBindingFlags, s
 }
 
 
-function bindHooks(cucumber: any, stepBindingType: StepBindingFlags, stepPatterns: StepPatternMap): void {
+function bindHooks(cucumber: any, stepBindingType: StepBindingFlags, stepPatterns: StepPatternMap, requiredContextTypes?: ContextType[]): void {
     for (var stepPattern in stepPatterns) {
         let tags: TagMap = stepPatterns[stepPattern];
 
@@ -113,10 +127,15 @@ function bindHooks(cucumber: any, stepBindingType: StepBindingFlags, stepPattern
             let stepBindings: StepBindingDescriptor[] = tags[tag];
 
             stepBindings.forEach((stepBinding) => {
-                let bindingFunc = function(...args) {
+                let bindingFunc = function(...args: any[]) {
+                    let scenarioCtx: ScenarioContext = this["__SCENARIO_CONTEXT"];
+
                     return new Promise<any>((resolve, reject) => {
+                        let bindingRegistry = BindingRegistry.instance;
+
                         try {
-                            let objectInstance = new (<any>stepBinding.targetPrototype.constructor);
+                            let requiredContextTypes = bindingRegistry.getContextTypesForTarget(stepBinding.targetPrototype);
+                            let objectInstance = (<any>scenarioCtx).activateBindingObject(stepBinding.targetPrototype, requiredContextTypes);
 
                             objectInstance._worldObj = this;
 

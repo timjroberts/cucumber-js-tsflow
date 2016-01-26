@@ -32,6 +32,7 @@ const UNKNOWN_REGEX_PATTERN: RegExp = /.*/;
 export class BindingRegistry {
     private _globalStepBindings: StepBindingTypeMap = { };
     private _targetStepBindings: IDictionary<StepBindingTypeMap> = { };
+    private _targetContextTypes: IDictionary<Array<new () => any>> = { };
     private _hasSystemBindings: boolean = false;
 
     /**
@@ -79,6 +80,26 @@ export class BindingRegistry {
     }
 
     /**
+     * Updates the registry with the required types for a Binding implementation.
+     *
+     * @param targetPrototype The prototype of the Binding type that is being updated.
+     * @param requiredContextTypes The optional array of Types to be registered for the Binding type.
+     */
+    public registerContextTypesForTarget(targetPrototype: any, requiredContextTypes?: Array<new () => any>): void {
+        this._targetContextTypes[(<any>targetPrototype.constructor).name] = requiredContextTypes;
+    }
+
+    /**
+     * Retrieves the required types for a Binding implementation.
+     *
+     * @param targetPrototype The prototype of the Binding type for which the types are required.
+     * @returns An array of Types.
+     */
+    public getContextTypesForTarget(targetPrototype: any): Array<new () => any> {
+        return this._targetContextTypes[(<any>targetPrototype.constructor).name];
+    }
+
+    /**
      * Looks up a step binding.
      *
      * @param stepBindingType A [[StepBindingFlags]] value.
@@ -90,26 +111,15 @@ export class BindingRegistry {
      * [[AmbiguousBinding]] if more than one step binding was found.
      */
     public lookupStepBinding(stepBindingType: StepBindingFlags, stepPattern: RegExp, tagsInScope: string[]): StepBindingDescriptor {
-        let lookupFunc = (tag: string): StepBindingDescriptor[] => {
-            let stepPatterns: StepPatternMap = this._globalStepBindings[StepBindingFlags[stepBindingType]];
-
-            if (!stepPatterns) {
-                return undefined;
-            }
-
-            let tags: TagMap = stepPatterns[stepPattern.toString()];
-
-            if (!tags) {
-                return undefined;
-            }
-
-            return tags[tag];
-        };
-
-        let stepBindings = _.where(_.flatten(_.map(tagsInScope, lookupFunc)), (stepBinding) => stepBinding !== undefined);
+        let stepBindings = this.lookupStepBindingInternal(stepBindingType, stepPattern, tagsInScope);
 
         if (stepBindings.length === 0) {
-            throw new MissingBinding(stepPattern, tagsInScope);
+            // See if we can match an 'any' step binding ("*")
+            stepBindings = this.lookupStepBindingInternal(stepBindingType, stepPattern, [ "*" ]);
+
+            if (stepBindings.length === 0) {
+                throw new MissingBinding(stepPattern, tagsInScope);
+            }
         }
 
         if (stepBindings.length > 1) {
@@ -127,12 +137,11 @@ export class BindingRegistry {
      *
      * The supplied callback will only be executed once.
      */
-    public ensureSystemBindings(callback: () => Promise<void>): void {
+    public ensureSystemBindings(callback: Function): void {
         if (!this._hasSystemBindings) {
-            callback().then(() =>
-            {
-                this._hasSystemBindings = true;
-            });
+            callback();
+
+            this._hasSystemBindings = true;
         }
     }
 
@@ -175,7 +184,7 @@ export class BindingRegistry {
         stepBindings.push(stepBinding);
 
         // Target index
-        let targetStepBindings = this._targetStepBindings[stepBinding.targetPrototype];
+        let targetStepBindings = this._targetStepBindings[stepBinding.targetPrototype.constructor.name];
 
         if (!targetStepBindings) {
             targetStepBindings = { };
@@ -184,5 +193,25 @@ export class BindingRegistry {
         }
 
         targetStepBindings[stepBindingTypeString] = stepPatterns;
+    }
+
+    private lookupStepBindingInternal(stepBindingType: StepBindingFlags, stepPattern: RegExp, tagsInScope: string[]): StepBindingDescriptor[] {
+        let lookupFunc = (tag: string): StepBindingDescriptor[] => {
+            let stepPatterns: StepPatternMap = this._globalStepBindings[StepBindingFlags[stepBindingType]];
+
+            if (!stepPatterns) {
+                return undefined;
+            }
+
+            let tags: TagMap = stepPatterns[stepPattern.toString()];
+
+            if (!tags) {
+                return undefined;
+            }
+
+            return tags[tag];
+        };
+
+        return _.reject(_.flatten(_.map(tagsInScope, lookupFunc)), (stepBinding) => !stepBinding);
     }
 }

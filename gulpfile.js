@@ -27,3 +27,9 @@ gulp.task("compile", function() {
     return workspace.workspacePackages()
         .pipe(workspace.buildTypeScriptProject());
 });
+
+
+gulp.task("publish", function() {
+    return workspace.workspacePackages()
+        .pipe(workspace.npmPublish({ bump: "patch" }));
+});

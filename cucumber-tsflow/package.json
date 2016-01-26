@@ -16,7 +16,8 @@
         "cucumber",
         "gherkin",
         "tests",
-        "typescript"
+        "typescript",
+        "specflow"
     ],
     "repository": {
         "type": "git",
