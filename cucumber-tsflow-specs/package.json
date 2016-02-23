@@ -1,0 +1,16 @@
+{
+    "private": true,
+    "name": "cucumber-tsflow-specs",
+    "description": "Specification for 'cucumber-tsflow'.",
+    "version": "1.0.0",
+    "author": "Tim Roberts <tim@timjroberts.com>",
+    "license": "BSD",
+    "main": "./index.js",
+    "typings": "./dist/index.d.ts",
+    "dependencies": {
+        "babel-polyfill": "~6.5.0",
+        "tmp": "~0.0.28",
+        "cucumber-tsflow": "*",
+        "cucumber": "~0.9.5"
+    }
+}

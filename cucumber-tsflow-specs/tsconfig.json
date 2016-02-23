@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "module": "umd",
+        "target": "es6",
+        "declaration": true,
+        "sourceMap": true,
+        "removeComments": false,
+        "experimentalDecorators": true,
+        "outDir": "./dist",
+        "rootDir": "./src"
+    },
+    "exclude": [
+        "dist",
+        "dist-es5",
+        "node_modules"
+    ]
+}

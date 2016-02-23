@@ -1,0 +1,6 @@
+*.ts
+tsconfig.json
+typings.json
+typings
+.npmignore
+!dist/**/*.d.ts
