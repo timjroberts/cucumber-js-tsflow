@@ -5,7 +5,7 @@ import * as _ from "underscore";
 import { ContextType } from "./Types";
 import { StepBinding, StepBindingFlags } from "./StepBinding";
 import { BindingRegistry, DEFAULT_STEP_PATTERN, DEFAULT_TAG } from "./BindingRegistry";
-import { ManagedScenarioContext, ScenarioContext } from "./ScenarioContext";
+import { ManagedScenarioContext, ScenarioContext } from "./ManagedScenarioContext";
 
 /**
  * A class decorator that marks the associated class as a CucumberJS binding.
@@ -84,7 +84,7 @@ function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
             return
         }
         else if (matchingStepBindings.length > 1) {
-            // Ambigous step definitions
+            // Ambigous step definitions ??
             return;    
         }
         

@@ -20,7 +20,7 @@ export function given(stepPattern: RegExp, tag?: string): MethodDecorator {
         };
 
         if (tag) {
-            stepBinding.tag = tag;
+            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
         }
 
         BindingRegistry.instance.registerStepBinding(stepBinding)
@@ -47,7 +47,7 @@ export function when(stepPattern: RegExp, tag?: string): MethodDecorator {
         };
 
         if (tag) {
-            stepBinding.tag = tag;
+            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
         }
 
         BindingRegistry.instance.registerStepBinding(stepBinding);
@@ -74,7 +74,7 @@ export function then(stepPattern: RegExp, tag?: string): MethodDecorator {
         };
 
         if (tag) {
-            stepBinding.tag = tag;
+            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
         }
 
         BindingRegistry.instance.registerStepBinding(stepBinding);

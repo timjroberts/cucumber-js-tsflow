@@ -175,7 +175,7 @@ export class BindingRegistry {
         
         if (!tagMap) return [ ];
         
-        let matchingStepBindings: StepBinding[] = _.flatten(_.map(tags, (tag) => tagMap.get(tag)));
+        let matchingStepBindings: StepBinding[] = _.flatten(_.map(_.union(tags, [ "*" ]), (tag) => tagMap.get(tag)));
         
         return _.reject(matchingStepBindings, (stepBinding) => stepBinding === undefined);
     }

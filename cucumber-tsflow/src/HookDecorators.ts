@@ -23,7 +23,7 @@ export function before(tag?: string): MethodDecorator {
         };
 
         if (tag) {
-            stepBinding.tag = tag;
+            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
         }
 
         BindingRegistry.instance.registerStepBinding(stepBinding)
@@ -52,7 +52,7 @@ export function after(tag?: string): MethodDecorator {
         };
 
         if (tag) {
-            stepBinding.tag = tag;
+            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
         }
 
         BindingRegistry.instance.registerStepBinding(stepBinding)
