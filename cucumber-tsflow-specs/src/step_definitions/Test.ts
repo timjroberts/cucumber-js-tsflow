@@ -6,7 +6,12 @@ import { binding, given } from "cucumber-tsflow";
 class TestSteps {
     @given(/^foo$/)
     public GivenFoo(): void {
-        console.log("Given fooaaa");
+        console.log("Given fooaaa 111");
+    }
+
+    @given(/^foo$/, "foo")
+    public GivenFoo2(): void {
+        console.log("Given fooaaa 222");
     }
 }
 

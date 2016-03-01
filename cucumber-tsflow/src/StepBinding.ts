@@ -1,6 +1,7 @@
 "use strict";
 
 import { StepBindingFlags } from "./StepBindingFlags";
+import { Callsite } from "./Callsite";
 
 /**
  * Encapsulates data about a step binding.
@@ -35,11 +36,11 @@ export interface StepBinding {
      * The optional tag that is associated with the current step binding.
      */
     tag?: string;
-    
+
     /**
-     * Additional metadata that can be attached to the step binding.
+     * The callsite of the step binding.
      */
-    meta?: any;
+    callsite: Callsite;
 }
 
 export * from "./StepBindingFlags";

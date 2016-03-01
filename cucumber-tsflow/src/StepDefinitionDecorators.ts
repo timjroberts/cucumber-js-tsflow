@@ -2,6 +2,7 @@
 
 import { BindingRegistry } from "./BindingRegistry";
 import { StepBinding, StepBindingFlags } from "./StepBinding";
+import { Callsite } from "./Callsite";
 
 /**
  * A method decorator that marks the associated function as a 'Given' step.
@@ -10,13 +11,16 @@ import { StepBinding, StepBindingFlags } from "./StepBinding";
  * @param tag An optional tag.
  */
 export function given(stepPattern: RegExp, tag?: string): MethodDecorator {
+    let callsite = Callsite.capture();
+
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
         let stepBinding: StepBinding = {
             stepPattern: stepPattern,
             bindingType: StepBindingFlags.given,
             targetPrototype: target,
             targetPropertyKey: propertyKey,
-            argsLength: target[propertyKey]["length"]
+            argsLength: target[propertyKey]["length"],
+            callsite: callsite
         };
 
         if (tag) {
@@ -37,13 +41,16 @@ export function given(stepPattern: RegExp, tag?: string): MethodDecorator {
  * @param tag An optional tag.
  */
 export function when(stepPattern: RegExp, tag?: string): MethodDecorator {
+    let callsite = Callsite.capture();
+
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
         let stepBinding: StepBinding = {
             stepPattern: stepPattern,
             bindingType: StepBindingFlags.when,
             targetPrototype: target,
             targetPropertyKey: propertyKey,
-            argsLength: target[propertyKey]["length"]
+            argsLength: target[propertyKey]["length"],
+            callsite: callsite
         };
 
         if (tag) {
@@ -64,13 +71,16 @@ export function when(stepPattern: RegExp, tag?: string): MethodDecorator {
  * @param tag An optional tag.
  */
 export function then(stepPattern: RegExp, tag?: string): MethodDecorator {
+    let callsite = Callsite.capture();
+
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
         let stepBinding: StepBinding = {
             stepPattern: stepPattern,
             bindingType: StepBindingFlags.then,
             targetPrototype: target,
             targetPropertyKey: propertyKey,
-            argsLength: target[propertyKey]["length"]
+            argsLength: target[propertyKey]["length"],
+            callsite: callsite
         };
 
         if (tag) {
