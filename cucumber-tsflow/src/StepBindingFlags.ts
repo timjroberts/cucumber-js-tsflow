@@ -5,6 +5,11 @@
  */
 export enum StepBindingFlags {
     /**
+     * No bindings.
+     */
+    none = 0,
+
+    /**
      * A 'Given' step definition binding.
      */
     given = 1 << 0,

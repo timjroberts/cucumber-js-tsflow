@@ -7,6 +7,8 @@ import { StepBinding, StepBindingFlags } from "./StepBinding";
 import { BindingRegistry, DEFAULT_STEP_PATTERN, DEFAULT_TAG } from "./BindingRegistry";
 import { ManagedScenarioContext, ScenarioContext } from "./ManagedScenarioContext";
 
+var cucumberSys = require("cucumber");
+
 /**
  * The property name of the current scenario context that will be attached to the Cucumber
  * world object.
@@ -47,7 +49,7 @@ export function binding(requiredContextTypes?: ContextType[]): ClassDecorator {
                     let stepBindingFlags = stepPatternRegistrations.get(stepBinding.stepPattern.toString());
 
                     if (stepBindingFlags === undefined) {
-                        stepBindingFlags = 0;
+                        stepBindingFlags = StepBindingFlags.none;
                     }
 
                     if (stepBindingFlags & stepBinding.bindingType) return;
@@ -89,6 +91,24 @@ var ensureSystemBindings = _.once(function (cucumber: any): void {
             scenarioContext.dispose();
         }
     });
+
+    // Decorate the Cucumber step definition snippet builder so that it uses our syntax
+
+    let currentSnippetBuilder = cucumberSys.SupportCode.StepDefinitionSnippetBuilder;
+
+    cucumberSys.SupportCode.StepDefinitionSnippetBuilder = function (step, syntax) {
+        return currentSnippetBuilder(step, {
+            build: function (functionName: string, pattern, parameters, comment) {
+                let callbackName = parameters[parameters.length - 1];
+
+                return `@${functionName.toLowerCase()}(${pattern})\n` +
+                       `public ${functionName}XXX (${parameters.join(", ")}): void {\n` +
+                       `  // ${comment}\n` +
+                       `  ${callbackName}.pending();\n` +
+                       `}\n`;
+            }
+        });
+    }
 });
 
 
@@ -107,11 +127,14 @@ function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
         let matchingStepBindings = bindingRegistry.getStepBindings(stepBinding.stepPattern.toString(),
                                                                    scenarioContext.scenarioInfo.tags);
 
-        if (matchingStepBindings.length === 0) {
-            throw new Error(`Missing step definition for '${stepBinding.stepPattern.toString()}'.`);
-        }
-        else if (matchingStepBindings.length > 1) {
-            throw generateAmbiguousStepBindingsError(matchingStepBindings);
+        if (matchingStepBindings.length > 1) {
+            let message = `Ambiguous step definitions for '${matchingStepBindings[0].stepPattern}':\n`;
+
+            matchingStepBindings.forEach((matchingStepBinding) => {
+                message = message + `\t\t${matchingStepBinding.targetPropertyKey} (${matchingStepBinding.callsite.toString()})\n`;
+            });
+
+            return new Error(message);
         }
 
         let contextTypes = bindingRegistry.getContextTypesForTarget(matchingStepBindings[0].targetPrototype);
@@ -171,22 +194,4 @@ function bindHook(cucumber: any, stepBinding: StepBinding): void {
             cucumber.After(stepBinding.tag, bindingFunc);
         }
     }
-}
-
-
-/**
- * Generates an ambiguous step binding error from an array of matching step bindings.
- *
- * @param matchingStepBindings The array of [[StepBinding]] objects.
- *
- * @returns An [[Error]] with a message that has been created from the supplied step bindings.
- */
-function generateAmbiguousStepBindingsError(matchingStepBindings: StepBinding[]): Error {
-    let message = `Ambiguous step definitions for '${matchingStepBindings[0].stepPattern}':\n`;
-
-    matchingStepBindings.forEach((matchingStepBinding) => {
-        message = message + `\t\t${matchingStepBinding.targetPropertyKey} (${matchingStepBinding.callsite.toString()})\n`;
-    });
-
-    return new Error(message);
 }
