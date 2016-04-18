@@ -27,7 +27,7 @@ Step definitions can be bound to automation code in a 'binding' class by impleme
 bound with a 'given', 'when' or 'then' binding decorator:
 
 ```javascript
-import { binding, given, when then } from "cucumber-tsflow";
+import { binding, given, when, then } from "cucumber-tsflow";
 
 @binding()
 class MySteps {
