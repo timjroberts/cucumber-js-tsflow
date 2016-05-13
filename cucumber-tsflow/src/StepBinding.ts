@@ -38,6 +38,11 @@ export interface StepBinding {
     tag?: string;
 
     /**
+     * The optiomal timeout that is associated with the current step binding.
+     */
+    timeout?: number;
+
+    /**
      * The callsite of the step binding.
      */
     callsite: Callsite;

@@ -9,8 +9,9 @@ import { Callsite } from "./Callsite";
  *
  * @param stepPattern The regular expression that will be used to match steps.
  * @param tag An optional tag.
+ * @param timeout An optional timeout.
  */
-export function given(stepPattern: RegExp, tag?: string): MethodDecorator {
+export function given(stepPattern: RegExp, tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
@@ -27,6 +28,10 @@ export function given(stepPattern: RegExp, tag?: string): MethodDecorator {
             stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
         }
 
+        if (timeout) {
+            stepBinding.timeout = timeout;
+        }
+
         BindingRegistry.instance.registerStepBinding(stepBinding)
 
         return descriptor;
@@ -39,8 +44,9 @@ export function given(stepPattern: RegExp, tag?: string): MethodDecorator {
  *
  * @param stepPattern The regular expression that will be used to match steps.
  * @param tag An optional tag.
+ * @param timeout An optional timeout.
  */
-export function when(stepPattern: RegExp, tag?: string): MethodDecorator {
+export function when(stepPattern: RegExp, tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
@@ -57,6 +63,10 @@ export function when(stepPattern: RegExp, tag?: string): MethodDecorator {
             stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
         }
 
+        if (timeout) {
+            stepBinding.timeout = timeout;
+        }
+
         BindingRegistry.instance.registerStepBinding(stepBinding);
 
         return descriptor;
@@ -69,8 +79,9 @@ export function when(stepPattern: RegExp, tag?: string): MethodDecorator {
  *
  * @param stepPattern The regular expression that will be used to match steps.
  * @param tag An optional tag.
+ * @param timeout An optional timeout.
  */
-export function then(stepPattern: RegExp, tag?: string): MethodDecorator {
+export function then(stepPattern: RegExp, tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
@@ -85,6 +96,10 @@ export function then(stepPattern: RegExp, tag?: string): MethodDecorator {
 
         if (tag) {
             stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
+        }
+
+        if (timeout) {
+            stepBinding.timeout = timeout;
         }
 
         BindingRegistry.instance.registerStepBinding(stepBinding);

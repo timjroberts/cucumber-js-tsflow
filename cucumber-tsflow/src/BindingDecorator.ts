@@ -148,13 +148,28 @@ function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
     Object.defineProperty(bindingFunc, "length", { value: stepBinding.argsLength });
 
     if (stepBinding.bindingType & StepBindingFlags.given) {
-        cucumber.Given(stepBinding.stepPattern, bindingFunc);
+        if (stepBinding.timeout) {
+            cucumber.Given(stepBinding.stepPattern, {timeout: stepBinding.timeout}, bindingFunc);
+        }
+        else {
+            cucumber.Given(stepBinding.stepPattern, bindingFunc);
+        }
     }
     else if (stepBinding.bindingType & StepBindingFlags.when) {
-        cucumber.When(stepBinding.stepPattern, bindingFunc);
+        if (stepBinding.timeout) {
+            cucumber.When(stepBinding.stepPattern, {timeout: stepBinding.timeout}, bindingFunc);
+        }
+        else {
+            cucumber.When(stepBinding.stepPattern, bindingFunc);
+        }
     }
     else if (stepBinding.bindingType & StepBindingFlags.then) {
-        cucumber.Then(stepBinding.stepPattern, bindingFunc);
+        if (stepBinding.timeout) {
+            cucumber.Then(stepBinding.stepPattern, {timeout: stepBinding.timeout}, bindingFunc);
+        }
+        else {
+            cucumber.Then(stepBinding.stepPattern, bindingFunc);
+        }
     }
 }
 
