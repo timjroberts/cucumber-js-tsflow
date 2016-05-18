@@ -2,6 +2,68 @@
 
 Provides 'specflow' like bindings for CucumberJS in TypeScript 1.7+.
 
+### Quick Start
+
+cucumber-tsflow uses TypeScript Decorators to create SpecFlow like bindings for TypeScript classes and methods that allow those classes and methods to be used in your CucumberJS support files. As such, cucumber-tsflow has a peer dependency on CucumberJS, and you still run your specifications using the cucumber command line tool.
+
+##### Install cucumber and cucumber-tsflow
+
+```bash
+npm install cucumber cucumber-tsflow
+```
+###### Create .feature files to describe your specifications
+
+By default, CucumberJS looks for .feature files in a folder called 'features', so create that folder and then create a new file called 'my_feature.feature':
+
+```gherkin
+# features/my_feature.feature
+
+Feature: Example Feature
+   This is an example feature
+   
+   Scenario: Adding two numbers
+      Given I enter '2' and '8'
+      Then I receive the result '10'
+```
+###### Create the Support Files to support the Feature
+
+By default, CucumberJS looks for support files beneath the 'features' folder. You can override this on the cucumber command line by specifying the '-r' option. However, let's work with the default and create our code in the default location. We need to write step definitions to support the two steps that we created above.
+
+Create a new 'ArithmeticSteps.ts' file:
+
+```javascript
+// features/ArithmeticSteps.ts
+
+import { binding, given, then } from "cucumber-tsflow";
+
+@binding()
+class ArithmeticSteps {
+    private computedResult: number;
+
+    @given(/I enter '(\d*)' and '(\d*)'"/)
+    public givenTwoNumbers(num1: string, num2: string): void {
+        this.computedResult = parseInt(num1) + parseInt(num2);
+    }
+    
+    @then(/I receive the result '(\d*)'/)
+    public thenResultReceived(expectedResult: string): void {
+        if (parseInt(expectedResult) !== this.computedResult) {
+            throw new Error("Arithmetic Error");
+        }
+    }
+}
+
+export = MySteps;
+```
+Note how the cucumber-tsflow Decorators are being used to bind the methods in the class. During runtime, these Decorators simply call the Cucumber code on your behalf in order to register callbacks with Given(), When(), Then(), etc. The callbacks that are being registered with Cucumber are wrappers around your bound class.
+
+###### Compiling your TypeScript Support Code
+
+You'll also need a `tsconfig.json` file to compile your code. You'll also need to ensure that the `"moduleResolution": "node"` compiler option is set in order to bring in the typings that are shipped with cucumber-tsflow.
+
+Once compiled, running the cucumber command line should execute your features along with the support code that you've created in the class.
+
+In this quick example test state is encapsulated directly in the class. As your test suite grows larger and step definitions get shared between multiple classes, you can begin using 'Context Injection' to share state between running step definitions (see below).
 
 ### Bindings
 
