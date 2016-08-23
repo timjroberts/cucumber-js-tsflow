@@ -147,29 +147,20 @@ function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
 
     Object.defineProperty(bindingFunc, "length", { value: stepBinding.argsLength });
 
+    let bindingOptions: { timeout?: number } = { };
+
+    if (stepBinding.timeout) {
+        bindingOptions.timeout = stepBinding.timeout;
+    }
+
     if (stepBinding.bindingType & StepBindingFlags.given) {
-        if (stepBinding.timeout) {
-            cucumber.Given(stepBinding.stepPattern, {timeout: stepBinding.timeout}, bindingFunc);
-        }
-        else {
-            cucumber.Given(stepBinding.stepPattern, bindingFunc);
-        }
+        cucumber.Given(stepBinding.stepPattern, bindingOptions, bindingFunc);
     }
     else if (stepBinding.bindingType & StepBindingFlags.when) {
-        if (stepBinding.timeout) {
-            cucumber.When(stepBinding.stepPattern, {timeout: stepBinding.timeout}, bindingFunc);
-        }
-        else {
-            cucumber.When(stepBinding.stepPattern, bindingFunc);
-        }
+        cucumber.When(stepBinding.stepPattern, bindingOptions, bindingFunc);
     }
     else if (stepBinding.bindingType & StepBindingFlags.then) {
-        if (stepBinding.timeout) {
-            cucumber.Then(stepBinding.stepPattern, {timeout: stepBinding.timeout}, bindingFunc);
-        }
-        else {
-            cucumber.Then(stepBinding.stepPattern, bindingFunc);
-        }
+        cucumber.Then(stepBinding.stepPattern, bindingOptions, bindingFunc);
     }
 }
 
@@ -193,20 +184,20 @@ function bindHook(cucumber: any, stepBinding: StepBinding): void {
 
     Object.defineProperty(bindingFunc, "length", { value: stepBinding.argsLength });
 
+    let bindingOptions: { timeout?: number, tags?: string[] } = { };
+
+    if (stepBinding.tag !== DEFAULT_TAG) {
+        bindingOptions.tags = [stepBinding.tag];
+    }
+
+    if (stepBinding.timeout) {
+        bindingOptions.timeout = stepBinding.timeout;
+    }
+
     if (stepBinding.bindingType & StepBindingFlags.before) {
-        if (stepBinding.tag === DEFAULT_TAG) {
-            cucumber.Before(bindingFunc);
-        }
-        else {
-            cucumber.Before(stepBinding.tag, bindingFunc);
-        }
+        cucumber.Before(bindingOptions, bindingFunc);
     }
     else if (stepBinding.bindingType & StepBindingFlags.after) {
-        if (stepBinding.tag === DEFAULT_TAG) {
-            cucumber.After(bindingFunc);
-        }
-        else {
-            cucumber.After(stepBinding.tag, bindingFunc);
-        }
+        cucumber.After(bindingOptions, bindingFunc);
     }
 }

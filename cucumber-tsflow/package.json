@@ -23,5 +23,8 @@
         "babel-polyfill": "~6.5.0",
         "underscore": "~1.8.3",
         "callsite": "~1.0.0"
+    },
+    "peerDependencies": {
+        "cucumber": "^1.0"
     }
 }

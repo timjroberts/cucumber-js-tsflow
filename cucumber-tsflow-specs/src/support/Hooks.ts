@@ -9,16 +9,16 @@ import { TypeScriptWorkspace, WorkspaceInfo } from "./TypeScriptWorkspace";
 class Hooks {
     constructor(protected workspace: TypeScriptWorkspace) {
     }
-    
-    @before()
+
+    @before("foo")
     public async beforeScenario(): Promise<void> {
         let tempDirInfo = await this.createTemporaryDirectoryAsync();
-        
+
         console.log(`Created temporary workspace '${tempDirInfo.path}'`);
-        
+
         this.workspace.setWorkspace(tempDirInfo);
     }
-    
+
     /**
      * An asynchronous wrapper around tmp.dir().
      */
@@ -30,7 +30,7 @@ class Hooks {
                 resolve({ path: path, disposeFunc: cleanupAction });
             });
         });
-    }   
+    }
 }
 
 export = Hooks;

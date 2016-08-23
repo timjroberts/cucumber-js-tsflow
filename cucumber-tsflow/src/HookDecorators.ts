@@ -10,7 +10,7 @@ import { Callsite } from "./Callsite";
  *
  * @param tag An optional tag.
  */
-export function before(tag?: string): MethodDecorator {
+export function before(tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
@@ -27,6 +27,10 @@ export function before(tag?: string): MethodDecorator {
             stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
         }
 
+        if (timeout) {
+            stepBinding.timeout = timeout;
+        }
+
         BindingRegistry.instance.registerStepBinding(stepBinding)
 
         return descriptor;
@@ -40,7 +44,7 @@ export function before(tag?: string): MethodDecorator {
  *
  * @param tag An optional tag.
  */
-export function after(tag?: string): MethodDecorator {
+export function after(tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
@@ -55,6 +59,10 @@ export function after(tag?: string): MethodDecorator {
 
         if (tag) {
             stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
+        }
+
+        if (timeout) {
+            stepBinding.timeout = timeout;
         }
 
         BindingRegistry.instance.registerStepBinding(stepBinding)
