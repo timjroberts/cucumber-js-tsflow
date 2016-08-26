@@ -50,7 +50,7 @@ export function after(tag?: string, timeout?: number): MethodDecorator {
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
         let stepBinding: StepBinding = {
             stepPattern: undefined,
-            bindingType: StepBindingFlags.before,
+            bindingType: StepBindingFlags.after,
             targetPrototype: target,
             targetPropertyKey: propertyKey,
             argsLength: target[propertyKey]["length"],
