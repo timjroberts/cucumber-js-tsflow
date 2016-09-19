@@ -59,7 +59,18 @@ Note how the cucumber-tsflow Decorators are being used to bind the methods in th
 
 ###### Compiling your TypeScript Support Code
 
-You'll also need a `tsconfig.json` file to compile your code. You'll also need to ensure that the `"moduleResolution": "node"` compiler option is set in order to bring in the typings that are shipped with cucumber-tsflow.
+You'll also need a `tsconfig.json` file to compile your code. The minimum requirements are:
+
+```json
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "module": "umd",
+        "moduleResolution": "node",
+        "target": "es6"
+    }
+}
+```
 
 Once compiled, running the cucumber command line should execute your features along with the support code that you've created in the class.
 
