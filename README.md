@@ -53,7 +53,7 @@ class ArithmeticSteps {
     }
 }
 
-export = MySteps;
+export = ArithmeticSteps;
 ```
 Note how the cucumber-tsflow Decorators are being used to bind the methods in the class. During runtime, these Decorators simply call the Cucumber code on your behalf in order to register callbacks with Given(), When(), Then(), etc. The callbacks that are being registered with Cucumber are wrappers around your bound class.
 
