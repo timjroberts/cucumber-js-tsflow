@@ -33,6 +33,34 @@ export function before(tag?: string): MethodDecorator {
     }
 }
 
+/**
+ * A method decorator that marks the associated function as a 'Before Feature' step. The function is
+ * executed before each feature.
+ *
+ * @param tag An optional tag.
+ */
+export function beforeFeature(tag?: string): MethodDecorator {
+    let callsite = Callsite.capture();
+
+    return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
+        let stepBinding: StepBinding = {
+            stepPattern: undefined,
+            bindingType: StepBindingFlags.beforeFeature,
+            targetPrototype: target,
+            targetPropertyKey: propertyKey,
+            argsLength: target[propertyKey]["length"],
+            callsite: callsite
+        };
+
+        if (tag) {
+            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
+        }
+
+        BindingRegistry.instance.registerStepBinding(stepBinding)
+
+        return descriptor;
+    }
+}
 
 /**
  * A method decorator that marks the associated function as an 'After Scenario' step. The function is
@@ -47,6 +75,35 @@ export function after(tag?: string): MethodDecorator {
         let stepBinding: StepBinding = {
             stepPattern: undefined,
             bindingType: StepBindingFlags.after,
+            targetPrototype: target,
+            targetPropertyKey: propertyKey,
+            argsLength: target[propertyKey]["length"],
+            callsite: callsite
+        };
+
+        if (tag) {
+            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
+        }
+
+        BindingRegistry.instance.registerStepBinding(stepBinding)
+
+        return descriptor;
+    }
+}
+
+/**
+ * A method decorator that marks the associated function as an 'After Feature' step. The function is
+ * executed after each feature.
+ *
+ * @param tag An optional tag.
+ */
+export function afterFeature(tag?: string): MethodDecorator {
+    let callsite = Callsite.capture();
+
+    return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
+        let stepBinding: StepBinding = {
+            stepPattern: undefined,
+            bindingType: StepBindingFlags.afterFeature,
             targetPrototype: target,
             targetPropertyKey: propertyKey,
             argsLength: target[propertyKey]["length"],

@@ -35,12 +35,35 @@ export enum StepBindingFlags {
     after = 1 << 4,
 
     /**
+     * A 'BeforeFeature' hook binding.
+     */
+    beforeFeature = 1 << 5,
+
+    /**
+     * An 'AfterFeature' hook binding.
+     */
+    afterFeature = 1 << 6,
+
+
+    /**
      * All step definition bindings.
      */
     StepDefinitions = StepBindingFlags.given | StepBindingFlags.when | StepBindingFlags.then,
 
     /**
+     * All scenario hook bindings.
+     */
+    ScenarioHooks = StepBindingFlags.before | StepBindingFlags.after,
+
+     /**
+     * All feature hook bindings.
+     */
+    FeatureHooks = StepBindingFlags.beforeFeature | StepBindingFlags.afterFeature,
+
+    /**
      * All hook bindings.
      */
-    Hooks = StepBindingFlags.before | StepBindingFlags.after
+    Hooks = ScenarioHooks | FeatureHooks
+
+
 }

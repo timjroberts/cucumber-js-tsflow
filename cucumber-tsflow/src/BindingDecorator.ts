@@ -6,6 +6,7 @@ import { ContextType, StepPattern } from "./Types";
 import { StepBinding, StepBindingFlags } from "./StepBinding";
 import { BindingRegistry, DEFAULT_STEP_PATTERN, DEFAULT_TAG } from "./BindingRegistry";
 import { ManagedScenarioContext, ScenarioContext } from "./ManagedScenarioContext";
+import { ManagedFeatureContext, FeatureContext } from './ManagedFeatureContext';
 
 var cucumberSys = require("cucumber");
 
@@ -14,6 +15,7 @@ var cucumberSys = require("cucumber");
  * world object.
  */
 const SCENARIO_CONTEXT_SLOTNAME: string = "__SCENARIO_CONTEXT";
+const FEATURE_CONTEXT_SLOTNAME: string = "__FEATURE_CONTEXT";
 
 
 /**
@@ -80,6 +82,11 @@ export function binding(requiredContextTypes?: ContextType[]): ClassDecorator {
  * function.
  */
 var ensureSystemBindings = _.once(function (cucumber: any): void {
+
+    cucumber.BeforeFeature(function(feature: any) {
+        cucumber[FEATURE_CONTEXT_SLOTNAME] = new ManagedFeatureContext(feature.getName(), _.map(feature.getTags(), (tag: any) => tag.getName()));;
+    });
+
     cucumber.Before(function (scenario: any) {
         this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(scenario.getName(), _.map(scenario.getTags(), (tag: any) => tag.getName()));;
     });
@@ -90,6 +97,16 @@ var ensureSystemBindings = _.once(function (cucumber: any): void {
         if (scenarioContext) {
             scenarioContext.dispose();
         }
+    });
+
+    cucumber.AfterFeature(function () {
+
+        let featureContext = <ManagedFeatureContext>cucumber[FEATURE_CONTEXT_SLOTNAME];
+
+        if (featureContext) {
+            featureContext.dispose();
+        }
+
     });
 
     // Decorate the Cucumber step definition snippet builder so that it uses our syntax
@@ -181,15 +198,10 @@ function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
  * @param stepBinding The [[StepBinding]] that represents a 'before', or 'after', step definition.
  */
 function bindHook(cucumber: any, stepBinding: StepBinding): void {
-    let bindingFunc = function(): any {
-        let scenarioContext = <ManagedScenarioContext>this[SCENARIO_CONTEXT_SLOTNAME];
-        let contextTypes = BindingRegistry.instance.getContextTypesForTarget(stepBinding.targetPrototype);
-        let bindingObject = scenarioContext.getOrActivateBindingClass(stepBinding.targetPrototype, contextTypes);
 
-        bindingObject._worldObj = this;
-
-        return (<Function>bindingObject[stepBinding.targetPropertyKey]).apply(bindingObject, arguments);
-    };
+    let bindingFunc = (stepBinding.bindingType & StepBindingFlags.ScenarioHooks) 
+        ? getScenarioHook(cucumber, stepBinding)
+        : getFeatureHook(cucumber, stepBinding);
 
     Object.defineProperty(bindingFunc, "length", { value: stepBinding.argsLength });
 
@@ -209,4 +221,44 @@ function bindHook(cucumber: any, stepBinding: StepBinding): void {
             cucumber.After(stepBinding.tag, bindingFunc);
         }
     }
+    else if (stepBinding.bindingType & StepBindingFlags.beforeFeature)
+    {
+        cucumber.BeforeFeature(bindingFunc);    
+    }
+    else if (stepBinding.bindingType & StepBindingFlags.afterFeature)
+    {
+        cucumber.AfterFeature(bindingFunc);
+    }
+}
+
+function getScenarioHook(cucumber:any, stepBinding: StepBinding): Function
+{
+    let bindingFunc = function(): any {
+        let scenarioContext = <ManagedScenarioContext>this[SCENARIO_CONTEXT_SLOTNAME];
+        let contextTypes = BindingRegistry.instance.getContextTypesForTarget(stepBinding.targetPrototype);
+        let bindingObject = scenarioContext.getOrActivateBindingClass(stepBinding.targetPrototype, contextTypes);
+
+        bindingObject._worldObj = this;
+        bindingObject.scenarioInfo = scenarioContext.scenarioInfo;
+
+        return (<Function>bindingObject[stepBinding.targetPropertyKey]).apply(bindingObject, arguments);
+    };
+
+    return bindingFunc;
+}
+
+function getFeatureHook(cucumber:any, stepBinding: StepBinding): Function
+{
+    let bindingFunc = function(): any {
+        let featureContext = <ManagedFeatureContext>cucumber[FEATURE_CONTEXT_SLOTNAME];
+        let contextTypes = BindingRegistry.instance.getContextTypesForTarget(stepBinding.targetPrototype);
+        let bindingObject = featureContext.getOrActivateBindingClass(stepBinding.targetPrototype, contextTypes);
+
+        bindingObject._worldObj = cucumber;
+        bindingObject.featureInfo = featureContext.FeatureInfo;
+
+        return (<Function>bindingObject[stepBinding.targetPropertyKey]).apply(bindingObject, arguments); 
+    }
+
+    return bindingFunc;
 }

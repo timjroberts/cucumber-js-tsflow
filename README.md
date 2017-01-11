@@ -111,7 +111,7 @@ Step definitions may also be scoped at a tag level by supplying an optional tag 
 decorators:
 
 ```javascript
-@given(/I perform a search using the value "([^"]*)"/)
+@given(/I perform a search using the value "([^"]*)/)
 public givenAValueBasedSearch(searchValue: string): void {
     ...
     // The default step definition
@@ -150,16 +150,30 @@ class MySteps {
 
         ...
     }
+        
+    ...
+    @beforeFeature()
+    public beforeAllFeatures(): void {
+        ...
+    }
+    ...
 
     @after()
     public afterAllScenarios(): void {
         ...
     }
-
+    
     @after("requireTmpDir")
     public afterAllScenarios(): void {
         ...
     }
+
+    ...
+    @afterFeature()
+    public afterAllFeatures(): void {
+        ...
+    }
+    ...
 }
 
 export = MySteps;
