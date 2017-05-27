@@ -37,8 +37,8 @@ var stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
  */
 export function binding(requiredContextTypes?: ContextType[]): ClassDecorator {
     return function(target: Function): Function {
-        let newConstructor = function() {
-            ensureSystemBindings(this);
+        cucumberSys.defineSupportCode(function (sc: any) {
+            ensureSystemBindings(sc);
 
             let bindingRegistry = BindingRegistry.instance;
 
@@ -54,19 +54,17 @@ export function binding(requiredContextTypes?: ContextType[]): ClassDecorator {
 
                     if (stepBindingFlags & stepBinding.bindingType) return;
 
-                    bindStepDefinition(this, stepBinding);
+                    bindStepDefinition(sc, stepBinding);
 
                     stepPatternRegistrations.set(stepBinding.stepPattern.toString(), stepBindingFlags | stepBinding.bindingType);
                 }
                 else if (stepBinding.bindingType & StepBindingFlags.Hooks) {
-                    bindHook(this, stepBinding);
+                    bindHook(sc, stepBinding);
                 }
             });
-        }
+        });
 
-        newConstructor.prototype = target.prototype;
-
-        return newConstructor;
+        return target;
     }
 }
 
@@ -81,7 +79,7 @@ export function binding(requiredContextTypes?: ContextType[]): ClassDecorator {
  */
 var ensureSystemBindings = _.once(function (cucumber: any): void {
     cucumber.Before(function (scenario: any) {
-        this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(scenario.getName(), _.map(scenario.getTags(), (tag: any) => tag.getName()));;
+        this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(scenario.name, _.map(scenario.tags, (tag: any) => tag.name));;
     });
 
     cucumber.After(function () {
@@ -94,21 +92,21 @@ var ensureSystemBindings = _.once(function (cucumber: any): void {
 
     // Decorate the Cucumber step definition snippet builder so that it uses our syntax
 
-    let currentSnippetBuilder = cucumberSys.SupportCode.StepDefinitionSnippetBuilder;
+    // let currentSnippetBuilder = cucumberSys.SupportCode.StepDefinitionSnippetBuilder;
 
-    cucumberSys.SupportCode.StepDefinitionSnippetBuilder = function (step, syntax) {
-        return currentSnippetBuilder(step, {
-            build: function (functionName: string, pattern, parameters, comment) {
-                let callbackName = parameters[parameters.length - 1];
+    // cucumberSys.SupportCode.StepDefinitionSnippetBuilder = function (step, syntax) {
+    //     return currentSnippetBuilder(step, {
+    //         build: function (functionName: string, pattern, parameters, comment) {
+    //             let callbackName = parameters[parameters.length - 1];
 
-                return `@${functionName.toLowerCase()}(${pattern})\n` +
-                       `public ${functionName}XXX (${parameters.join(", ")}): void {\n` +
-                       `  // ${comment}\n` +
-                       `  ${callbackName}.pending();\n` +
-                       `}\n`;
-            }
-        });
-    }
+    //             return `@${functionName.toLowerCase()}(${pattern})\n` +
+    //                    `public ${functionName}XXX (${parameters.join(", ")}): void {\n` +
+    //                    `  // ${comment}\n` +
+    //                    `  ${callbackName}.pending();\n` +
+    //                    `}\n`;
+    //         }
+    //     });
+    // }
 });
 
 
@@ -147,7 +145,7 @@ function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
 
     Object.defineProperty(bindingFunc, "length", { value: stepBinding.argsLength });
 
-    let bindingOptions: { timeout?: number } = { };
+    let bindingOptions: { timeout?: number, tags?: string } = { };
 
     if (stepBinding.timeout) {
         bindingOptions.timeout = stepBinding.timeout;
@@ -184,10 +182,10 @@ function bindHook(cucumber: any, stepBinding: StepBinding): void {
 
     Object.defineProperty(bindingFunc, "length", { value: stepBinding.argsLength });
 
-    let bindingOptions: { timeout?: number, tags?: string[] } = { };
+    let bindingOptions: { timeout?: number, tags?: string } = { };
 
     if (stepBinding.tag !== DEFAULT_TAG) {
-        bindingOptions.tags = [stepBinding.tag];
+        bindingOptions.tags = stepBinding.tag;
     }
 
     if (stepBinding.timeout) {

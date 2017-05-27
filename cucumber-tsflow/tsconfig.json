@@ -6,6 +6,7 @@
         "sourceMap": true,
         "removeComments": false,
         "experimentalDecorators": true,
+        "skipLibCheck": true,
         "outDir": "./dist",
         "rootDir": "./src"
     },

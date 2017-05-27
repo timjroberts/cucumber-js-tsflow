@@ -11,6 +11,11 @@
         "babel-polyfill": "~6.5.0",
         "tmp": "~0.0.28",
         "cucumber-tsflow": "*",
-        "cucumber": "~1.2"
+        "cucumber": "~2.2"
+    },
+    "devDependencies": {
+        "@types/node": "*",
+        "@types/underscore": "*",
+        "@types/tmp": "*"
     }
 }

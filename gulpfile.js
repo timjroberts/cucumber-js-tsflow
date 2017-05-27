@@ -73,5 +73,5 @@ gulp.task("publish", function () {
         .pipe(workspace.filter(function (packageDescriptor, packagePath) {
             return !packageDescriptor.private
         }))
-        .pipe(workspace.npmPublish({ shrinkWrap: false, bump: "patch" }));
+        .pipe(workspace.npmPublish({ shrinkWrap: false, bump: "prerelease" }));
 });
