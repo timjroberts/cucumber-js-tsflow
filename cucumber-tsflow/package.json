@@ -1,7 +1,7 @@
 {
     "name": "cucumber-tsflow",
     "description": "Provides 'specflow' like bindings for CucumberJS in TypeScript 1.7+.",
-    "version": "2.2.0-alpha",
+    "version": "2.2.0",
     "author": "Tim Roberts <tim@timjroberts.com>",
     "license": "BSD",
     "main": "./index.js",
