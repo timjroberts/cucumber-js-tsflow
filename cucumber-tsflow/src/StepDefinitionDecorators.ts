@@ -11,7 +11,7 @@ import { Callsite } from "./Callsite";
  * @param tag An optional tag.
  * @param timeout An optional timeout.
  */
-export function given(stepPattern: RegExp, tag?: string, timeout?: number): MethodDecorator {
+export function given(stepPattern: RegExp|string, tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
@@ -46,7 +46,7 @@ export function given(stepPattern: RegExp, tag?: string, timeout?: number): Meth
  * @param tag An optional tag.
  * @param timeout An optional timeout.
  */
-export function when(stepPattern: RegExp, tag?: string, timeout?: number): MethodDecorator {
+export function when(stepPattern: RegExp|string, tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
@@ -81,7 +81,7 @@ export function when(stepPattern: RegExp, tag?: string, timeout?: number): Metho
  * @param tag An optional tag.
  * @param timeout An optional timeout.
  */
-export function then(stepPattern: RegExp, tag?: string, timeout?: number): MethodDecorator {
+export function then(stepPattern: RegExp|string, tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
     return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
