@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "composite": true,
         "module": "umd",
         "target": "es6",
         "declaration": true,

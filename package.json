@@ -10,7 +10,8 @@
     },
     "scripts": {
         "postinstall": "lerna bootstrap",
-        "build": "lerna run build"
+        "build": "tsc --build",
+        "build:watch": "tsc --build --watch"
     },
     "devDependencies": {
         "@types/node": "10.7.1",

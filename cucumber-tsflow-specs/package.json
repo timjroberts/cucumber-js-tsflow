@@ -10,8 +10,5 @@
     "dependencies": {
         "cucumber": "^0.9.5",
         "cucumber-tsflow": "*"
-    },
-    "scripts": {
-        "build": "tsc"
     }
 }

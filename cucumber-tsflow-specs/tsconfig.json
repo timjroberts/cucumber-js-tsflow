@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "composite": true,
         "moduleResolution": "node",
         "module": "umd",
         "target": "es6",
@@ -10,5 +11,10 @@
         "outDir": "./dist",
         "rootDir": "./src",
     },
-    "include": ["./src/**/*.ts"]
+    "include": ["./src/**/*.ts"],
+    "references": [
+        {
+            "path": "../cucumber-tsflow"
+        }
+    ]
 }

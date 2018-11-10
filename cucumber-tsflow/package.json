@@ -18,9 +18,6 @@
         "type": "git",
         "url": "https://github.com/timjroberts/cucumber-js-tsflow.git"
     },
-    "scripts": {
-        "build": "tsc"
-    },
     "dependencies": {
         "callsite": "^1.0.0",
         "underscore": "^1.8.3"
