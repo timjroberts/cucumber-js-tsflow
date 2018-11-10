@@ -1,5 +1,3 @@
-"use strict";
-
 import { BindingRegistry } from "./BindingRegistry";
 import { StepBinding, StepBindingFlags } from "./StepBinding";
 import { Callsite } from "./Callsite";

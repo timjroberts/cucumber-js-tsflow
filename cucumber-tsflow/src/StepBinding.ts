@@ -1,5 +1,3 @@
-"use strict";
-
 import { StepBindingFlags } from "./StepBindingFlags";
 import { Callsite } from "./Callsite";
 

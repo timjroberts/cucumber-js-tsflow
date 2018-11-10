@@ -1,5 +1,3 @@
-"use strict";
-
 import * as _ from "underscore";
 
 import { StepPattern, TagName, ContextType } from "Types";

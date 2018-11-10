@@ -1,12 +1,10 @@
-"use strict";
-
 import * as tmp from "tmp";
 import { binding, before } from "cucumber-tsflow";
 
 import { TypeScriptWorkspace, WorkspaceInfo } from "./TypeScriptWorkspace";
 
 @binding([TypeScriptWorkspace])
-class Hooks {
+export default class Hooks {
     constructor(protected workspace: TypeScriptWorkspace) {
     }
     
@@ -32,5 +30,3 @@ class Hooks {
         });
     }   
 }
-
-export = Hooks;
