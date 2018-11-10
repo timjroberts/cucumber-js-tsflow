@@ -4,6 +4,7 @@
         "module": "umd",
         "target": "es6",
         "declaration": true,
+        "declarationMap": true,
         "sourceMap": true,
         "removeComments": false,
         "experimentalDecorators": true,
