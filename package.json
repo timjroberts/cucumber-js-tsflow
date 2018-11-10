@@ -1,26 +1,21 @@
 {
-    "workspace": true,
+    "private": true,
     "name": "cucumber-tsflow-workspace",
     "description": "Workspace for cucumber-tsflow",
-    "version": "1.0.0",
-    "license": "BSD",
+    "version": "2.0.0",
+    "license": "MIT",
     "repository": {
         "type": "git",
         "url": "https://github.com/timjroberts/cucumber-js-tsflow.git"
     },
     "scripts": {
-        "postinstall": "gulp install"
+        "postinstall": "lerna bootstrap",
+        "build": "lerna run build"
     },
     "devDependencies": {
         "@types/node": "10.7.1",
         "@types/underscore": "1.8.8",
-        "babel-preset-es2015": "~6.5.0",
-        "gulp": "~3.9.0",
-        "gulp-babel": "~6.1.2",
-        "gulp-npmworkspace": "~1.1.12",
-        "gulp-sequence": "~0.4.5",
-        "rimraf": "^2.5.1",
-        "typescript": "^3.1.6",
-        "typings": "~0.6.2"
+        "lerna": "^3.4.3",
+        "typescript": "^3.1.6"
     }
 }

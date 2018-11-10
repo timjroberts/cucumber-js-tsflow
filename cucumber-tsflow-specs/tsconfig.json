@@ -8,11 +8,7 @@
         "removeComments": false,
         "experimentalDecorators": true,
         "outDir": "./dist",
-        "rootDir": "./src"
+        "rootDir": "./src",
     },
-    "exclude": [
-        "dist",
-        "dist-es5",
-        "node_modules"
-    ]
+    "include": ["./src/**/*.ts"]
 }
