@@ -7,19 +7,8 @@ var rimraf = require("rimraf");
 var babel = require("gulp-babel");
 
 gulp.task("install", function () {
-    var postInstallActions = [
-        workspace.postInstallActions.installTypings(),
-        {
-            action: function (packageDescriptor, packagePath, callback) {
-                rimraf.sync(path.join(packagePath, "./typings/**/browser*"));
-
-                callback();
-            }
-        }
-    ];
-
     return workspace.workspacePackages()
-        .pipe(workspace.npmInstall({ postInstallActions: postInstallActions, verboseLogging: true }));
+        .pipe(workspace.npmInstall({ verboseLogging: true }));
 });
 
 

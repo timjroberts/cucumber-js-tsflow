@@ -13,7 +13,7 @@ import { Callsite } from "./Callsite";
 export function before(tag?: string): MethodDecorator {
     let callsite = Callsite.capture();
 
-    return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
+    return <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
         let stepBinding: StepBinding = {
             stepPattern: undefined,
             bindingType: StepBindingFlags.before,
@@ -33,7 +33,6 @@ export function before(tag?: string): MethodDecorator {
     }
 }
 
-
 /**
  * A method decorator that marks the associated function as an 'After Scenario' step. The function is
  * executed after each scenario.
@@ -43,7 +42,7 @@ export function before(tag?: string): MethodDecorator {
 export function after(tag?: string): MethodDecorator {
     let callsite = Callsite.capture();
 
-    return function(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: any[]) => any | Promise<any>>) {
+    return <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
         let stepBinding: StepBinding = {
             stepPattern: undefined,
             bindingType: StepBindingFlags.after,

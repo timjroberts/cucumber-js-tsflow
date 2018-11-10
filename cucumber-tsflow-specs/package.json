@@ -8,9 +8,9 @@
     "main": "./index.js",
     "typings": "./dist/index.d.ts",
     "dependencies": {
-        "babel-polyfill": "~6.5.0",
-        "tmp": "~0.0.28",
+        "babel-polyfill": "^6.5.0",
+        "cucumber": "^0.9.5",
         "cucumber-tsflow": "*",
-        "cucumber": "~0.9.5"
+        "tmp": "0.0.33"
     }
 }

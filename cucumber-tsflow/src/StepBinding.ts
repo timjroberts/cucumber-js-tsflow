@@ -10,7 +10,7 @@ export interface StepBinding {
     /**
      * The step pattern.
      */
-    stepPattern: RegExp;
+    stepPattern: RegExp | string;
 
     /**
      * The step binding type.

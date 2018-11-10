@@ -20,8 +20,8 @@
         "url": "https://github.com/timjroberts/cucumber-js-tsflow.git"
     },
     "dependencies": {
-        "babel-polyfill": "~6.5.0",
-        "underscore": "~1.8.3",
-        "callsite": "~1.0.0"
+        "babel-polyfill": "^6.5.0",
+        "callsite": "^1.0.0",
+        "underscore": "^1.8.3"
     }
 }

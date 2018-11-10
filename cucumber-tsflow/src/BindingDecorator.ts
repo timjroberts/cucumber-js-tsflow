@@ -2,6 +2,7 @@
 
 import * as _ from "underscore";
 
+
 import { ContextType, StepPattern } from "./Types";
 import { StepBinding, StepBindingFlags } from "./StepBinding";
 import { BindingRegistry, DEFAULT_STEP_PATTERN, DEFAULT_TAG } from "./BindingRegistry";
@@ -35,16 +36,16 @@ var stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
  *
  * An instance of the decorated class will be created for each scenario.
  */
-export function binding(requiredContextTypes?: ContextType[]): ClassDecorator {
-    return function(target: Function): Function {
+export function binding(requiredContextTypes?: ContextType[]) {
+    return function<T extends {new(...args:any[]):{}}>(constructor: T): T {
         let newConstructor = function() {
             ensureSystemBindings(this);
 
             let bindingRegistry = BindingRegistry.instance;
 
-            bindingRegistry.registerContextTypesForTarget(target.prototype, requiredContextTypes);
+            bindingRegistry.registerContextTypesForTarget(constructor.prototype, requiredContextTypes);
 
-            bindingRegistry.getStepBindingsForTarget(target.prototype).forEach((stepBinding: StepBinding) => {
+            bindingRegistry.getStepBindingsForTarget(constructor.prototype).forEach((stepBinding: StepBinding) => {
                 if (stepBinding.bindingType & StepBindingFlags.StepDefinitions) {
                     let stepBindingFlags = stepPatternRegistrations.get(stepBinding.stepPattern.toString());
 
@@ -64,12 +65,11 @@ export function binding(requiredContextTypes?: ContextType[]): ClassDecorator {
             });
         }
 
-        newConstructor.prototype = target.prototype;
+        newConstructor.prototype = constructor.prototype;
 
-        return newConstructor;
+        return newConstructor as unknown as T;
     }
 }
-
 
 /**
  * Ensures that the 'cucumber-tsflow' hooks are bound to Cucumber.
@@ -131,7 +131,7 @@ function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
             let message = `Ambiguous step definitions for '${matchingStepBindings[0].stepPattern}':\n`;
 
             matchingStepBindings.forEach((matchingStepBinding) => {
-                message = message + `\t\t${matchingStepBinding.targetPropertyKey} (${matchingStepBinding.callsite.toString()})\n`;
+                message = message + `\t\t${String(matchingStepBinding.targetPropertyKey)} (${matchingStepBinding.callsite.toString()})\n`;
             });
 
             return new Error(message);
