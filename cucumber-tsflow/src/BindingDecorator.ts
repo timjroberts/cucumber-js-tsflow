@@ -1,13 +1,11 @@
-"use strict";
-
 import * as _ from "underscore";
+import { defineSupportCode, Scenario, Tag } from "cucumber";
 
 import { ContextType, StepPattern } from "./Types";
 import { StepBinding, StepBindingFlags } from "./StepBinding";
-import { BindingRegistry, DEFAULT_STEP_PATTERN, DEFAULT_TAG } from "./BindingRegistry";
-import { ManagedScenarioContext, ScenarioContext } from "./ManagedScenarioContext";
+import { BindingRegistry, DEFAULT_TAG } from "./BindingRegistry";
+import { ManagedScenarioContext } from "./ManagedScenarioContext";
 
-var cucumberSys = require("cucumber");
 
 /**
  * The property name of the current scenario context that will be attached to the Cucumber
@@ -35,41 +33,31 @@ var stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
  *
  * An instance of the decorated class will be created for each scenario.
  */
-export function binding(requiredContextTypes?: ContextType[]): ClassDecorator {
-    return function(target: Function): Function {
-        let newConstructor = function() {
-            ensureSystemBindings(this);
-
+export function binding(requiredContextTypes?: ContextType[]) {
+    return function (target) {
+        defineSupportCode(function (sc) {
+            ensureSystemBindings(sc);
             let bindingRegistry = BindingRegistry.instance;
-
             bindingRegistry.registerContextTypesForTarget(target.prototype, requiredContextTypes);
-
-            bindingRegistry.getStepBindingsForTarget(target.prototype).forEach((stepBinding: StepBinding) => {
+            bindingRegistry.getStepBindingsForTarget(target.prototype).forEach((stepBinding) => {
                 if (stepBinding.bindingType & StepBindingFlags.StepDefinitions) {
                     let stepBindingFlags = stepPatternRegistrations.get(stepBinding.stepPattern.toString());
-
                     if (stepBindingFlags === undefined) {
                         stepBindingFlags = StepBindingFlags.none;
                     }
-
-                    if (stepBindingFlags & stepBinding.bindingType) return;
-
-                    bindStepDefinition(this, stepBinding);
-
+                    if (stepBindingFlags & stepBinding.bindingType)
+                        return;
+                    bindStepDefinition(sc, stepBinding);
                     stepPatternRegistrations.set(stepBinding.stepPattern.toString(), stepBindingFlags | stepBinding.bindingType);
                 }
                 else if (stepBinding.bindingType & StepBindingFlags.Hooks) {
-                    bindHook(this, stepBinding);
+                    bindHook(sc, stepBinding);
                 }
             });
-        }
-
-        newConstructor.prototype = target.prototype;
-
-        return newConstructor;
-    }
+        });
+        return target;
+    };
 }
-
 
 /**
  * Ensures that the 'cucumber-tsflow' hooks are bound to Cucumber.
@@ -80,8 +68,8 @@ export function binding(requiredContextTypes?: ContextType[]): ClassDecorator {
  * function.
  */
 var ensureSystemBindings = _.once(function (cucumber: any): void {
-    cucumber.Before(function (scenario: any) {
-        this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(scenario.getName(), _.map(scenario.getTags(), (tag: any) => tag.getName()));;
+    cucumber.Before(function (scenario: Scenario) {
+        this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(scenario.name, _.map(scenario.tags, (tag: Tag) => tag.name));
     });
 
     cucumber.After(function () {
@@ -94,21 +82,21 @@ var ensureSystemBindings = _.once(function (cucumber: any): void {
 
     // Decorate the Cucumber step definition snippet builder so that it uses our syntax
 
-    let currentSnippetBuilder = cucumberSys.SupportCode.StepDefinitionSnippetBuilder;
+    // let currentSnippetBuilder = cucumberSys.SupportCode.StepDefinitionSnippetBuilder;
 
-    cucumberSys.SupportCode.StepDefinitionSnippetBuilder = function (step, syntax) {
-        return currentSnippetBuilder(step, {
-            build: function (functionName: string, pattern, parameters, comment) {
-                let callbackName = parameters[parameters.length - 1];
+    // cucumberSys.SupportCode.StepDefinitionSnippetBuilder = function (step, syntax) {
+    //     return currentSnippetBuilder(step, {
+    //         build: function (functionName: string, pattern, parameters, comment) {
+    //             let callbackName = parameters[parameters.length - 1];
 
-                return `@${functionName.toLowerCase()}(${pattern})\n` +
-                       `public ${functionName}XXX (${parameters.join(", ")}): void {\n` +
-                       `  // ${comment}\n` +
-                       `  ${callbackName}.pending();\n` +
-                       `}\n`;
-            }
-        });
-    }
+    //             return `@${functionName.toLowerCase()}(${pattern})\n` +
+    //                    `public ${functionName}XXX (${parameters.join(", ")}): void {\n` +
+    //                    `  // ${comment}\n` +
+    //                    `  ${callbackName}.pending();\n` +
+    //                    `}\n`;
+    //         }
+    //     });
+    // }
 });
 
 
@@ -131,7 +119,7 @@ function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
             let message = `Ambiguous step definitions for '${matchingStepBindings[0].stepPattern}':\n`;
 
             matchingStepBindings.forEach((matchingStepBinding) => {
-                message = message + `\t\t${matchingStepBinding.targetPropertyKey} (${matchingStepBinding.callsite.toString()})\n`;
+                message = message + `\t\t${String(matchingStepBinding.targetPropertyKey)} (${matchingStepBinding.callsite.toString()})\n`;
             });
 
             return new Error(message);

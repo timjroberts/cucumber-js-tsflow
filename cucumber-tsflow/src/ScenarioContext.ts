@@ -1,5 +1,3 @@
-"use strict";
-
 import * as _ from "underscore";
 
 import { ScenarioInfo } from "./ScenarioInfo";

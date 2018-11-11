@@ -5,10 +5,10 @@
 			"name": "Specs",
 			"type": "node",
 			"request": "launch",
-			"program": "${workspaceRoot}/cucumber-tsflow-specs/node_modules/cucumber/bin/cucumber.js",
+			"program": "${workspaceRoot}/node_modules/cucumber/bin/cucumber-js",
 			"stopOnEntry": true,
-			"args": [ "-r", "./dist/support" ],
-			"cwd": "${workspaceRoot}/cucumber-tsflow-specs",
+			"args": [ "--require", "./cucumber-tsflow-specs/dist" ],
+			"cwd": "${workspaceRoot}",
 			"runtimeExecutable": null,
 			"runtimeArgs": [
 				"--nolazy"

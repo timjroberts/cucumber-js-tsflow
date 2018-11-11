@@ -1,5 +1,3 @@
-"use strict";
-
 import { StepBindingFlags } from "./StepBindingFlags";
 import { Callsite } from "./Callsite";
 
@@ -10,7 +8,7 @@ export interface StepBinding {
     /**
      * The step pattern.
      */
-    stepPattern: RegExp;
+    stepPattern: RegExp | string;
 
     /**
      * The step binding type.

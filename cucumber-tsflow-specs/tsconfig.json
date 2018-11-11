@@ -1,18 +1,21 @@
 {
     "compilerOptions": {
+        "composite": true,
         "moduleResolution": "node",
         "module": "umd",
         "target": "es6",
         "declaration": true,
+        "declarationMap": true,
         "sourceMap": true,
         "removeComments": false,
         "experimentalDecorators": true,
         "outDir": "./dist",
-        "rootDir": "./src"
+        "rootDir": "./src",
     },
-    "exclude": [
-        "dist",
-        "dist-es5",
-        "node_modules"
+    "include": ["./src/**/*.ts"],
+    "references": [
+        {
+            "path": "../cucumber-tsflow"
+        }
     ]
 }

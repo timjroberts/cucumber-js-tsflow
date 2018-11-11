@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * The CucumberJS step binding types.
  */
