@@ -12,7 +12,7 @@ import { Callsite } from "./Callsite";
 export function given(stepPattern: RegExp|string, tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
-    return <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
+    return <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
         let stepBinding: StepBinding = {
             stepPattern: stepPattern,
             bindingType: StepBindingFlags.given,
@@ -47,7 +47,7 @@ export function given(stepPattern: RegExp|string, tag?: string, timeout?: number
 export function when(stepPattern: RegExp|string, tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
-    return <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
+    return <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
         let stepBinding: StepBinding = {
             stepPattern: stepPattern,
             bindingType: StepBindingFlags.when,
@@ -82,7 +82,7 @@ export function when(stepPattern: RegExp|string, tag?: string, timeout?: number)
 export function then(stepPattern: RegExp|string, tag?: string, timeout?: number): MethodDecorator {
     let callsite = Callsite.capture();
 
-    return <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
+    return <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
         let stepBinding: StepBinding = {
             stepPattern: stepPattern,
             bindingType: StepBindingFlags.then,

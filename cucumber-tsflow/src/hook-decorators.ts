@@ -11,9 +11,9 @@ import { Callsite } from "./Callsite";
 export function before(tag?: string): MethodDecorator {
     let callsite = Callsite.capture();
 
-    return <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
+    return <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
         let stepBinding: StepBinding = {
-            stepPattern: undefined,
+            stepPattern: "",
             bindingType: StepBindingFlags.before,
             targetPrototype: target,
             targetPropertyKey: propertyKey,
@@ -40,9 +40,9 @@ export function before(tag?: string): MethodDecorator {
 export function after(tag?: string): MethodDecorator {
     let callsite = Callsite.capture();
 
-    return <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
+    return <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
         let stepBinding: StepBinding = {
-            stepPattern: undefined,
+            stepPattern: "",
             bindingType: StepBindingFlags.after,
             targetPrototype: target,
             targetPropertyKey: propertyKey,

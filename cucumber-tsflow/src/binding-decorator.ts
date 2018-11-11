@@ -34,7 +34,7 @@ var stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
  * An instance of the decorated class will be created for each scenario.
  */
 export function binding(requiredContextTypes?: ContextType[]) {
-    return function (target) {
+    return function <T>(target: { new(): T }) {
         ensureSystemBindings();
         let bindingRegistry = BindingRegistry.instance;
         bindingRegistry.registerContextTypesForTarget(target.prototype, requiredContextTypes);
@@ -105,7 +105,7 @@ var ensureSystemBindings = _.once(() => {
  * @param stepBinding The [[StepBinding]] that represents a 'given', 'when', or 'then' step definition.
  */
 function bindStepDefinition(stepBinding: StepBinding): void {
-    let bindingFunc = function (): any {
+    let bindingFunc = function (this: any): any {
         let bindingRegistry = BindingRegistry.instance;
 
         let scenarioContext = <ManagedScenarioContext>this[SCENARIO_CONTEXT_SLOTNAME];
@@ -167,7 +167,7 @@ function bindStepDefinition(stepBinding: StepBinding): void {
  * @param stepBinding The [[StepBinding]] that represents a 'before', or 'after', step definition.
  */
 function bindHook(stepBinding: StepBinding): void {
-    let bindingFunc = function (): any {
+    let bindingFunc = function (this: any): any {
         let scenarioContext = <ManagedScenarioContext>this[SCENARIO_CONTEXT_SLOTNAME];
         let contextTypes = BindingRegistry.instance.getContextTypesForTarget(stepBinding.targetPrototype);
         let bindingObject = scenarioContext.getOrActivateBindingClass(stepBinding.targetPrototype, contextTypes);
@@ -184,7 +184,7 @@ function bindHook(stepBinding: StepBinding): void {
             Before(bindingFunc);
         }
         else {
-            Before(stepBinding.tag, bindingFunc);
+            Before(String(stepBinding.tag), bindingFunc);
         }
     }
     else if (stepBinding.bindingType & StepBindingFlags.after) {
@@ -192,7 +192,7 @@ function bindHook(stepBinding: StepBinding): void {
             After(bindingFunc);
         }
         else {
-            After(stepBinding.tag, bindingFunc);
+            After(String(stepBinding.tag), bindingFunc);
         }
     }
 }

@@ -1,7 +1,7 @@
 import * as _ from "underscore";
 
 import { StepPattern, TagName, ContextType } from "Types";
-import { StepBinding, StepBindingFlags } from "./step-binding";
+import { StepBinding } from "./step-binding";
 
 /**
  * Describes the binding metadata that is associated with a binding class.
@@ -46,13 +46,13 @@ export class BindingRegistry {
     public static get instance(): BindingRegistry {
         const BINDING_REGISTRY_SLOTNAME: string = "__CUCUMBER_TSFLOW_BINDINGREGISTRY";
 
-        let registry = global[BINDING_REGISTRY_SLOTNAME];
+        let registry = (global as any)[BINDING_REGISTRY_SLOTNAME];
 
         if (!registry) {
-            global[BINDING_REGISTRY_SLOTNAME] = new BindingRegistry();
+            (global as any)[BINDING_REGISTRY_SLOTNAME] = new BindingRegistry();
         }
 
-        return registry || global[BINDING_REGISTRY_SLOTNAME];
+        return registry || (global as any)[BINDING_REGISTRY_SLOTNAME];
     }
 
     /**
