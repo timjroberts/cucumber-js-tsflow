@@ -1,9 +1,10 @@
 import { binding, given } from "cucumber-tsflow";
+import { equal } from "assert";
 
 @binding()
 export default class TestSteps {
-    @given(/^foo$/)
+    @given('foo')
     public GivenFoo(): void {
-        console.log("Given fooaaa 111");
+        return equal(true, true);
     }
 }
