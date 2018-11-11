@@ -1,7 +1,7 @@
 import * as _ from "underscore";
 
 import { ContextType } from "./Types";
-import { ScenarioInfo, ScenarioContext } from "./ScenarioContext";
+import { ScenarioInfo, ScenarioContext } from "./scenario-context";
 
 /**
  * Represents a [[ScenarioContext]] implementation that manages a collection of context objects that
@@ -74,4 +74,4 @@ export class ManagedScenarioContext implements ScenarioContext {
     }
 }
 
-export * from "./ScenarioContext";
+export * from "./scenario-context";

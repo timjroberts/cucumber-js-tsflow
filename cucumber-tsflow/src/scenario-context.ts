@@ -1,6 +1,6 @@
 import * as _ from "underscore";
 
-import { ScenarioInfo } from "./ScenarioInfo";
+import { ScenarioInfo } from "./scenario-info";
 
 /**
  * Provides context for the currently running Cucumber scenario.
@@ -18,4 +18,4 @@ export interface ScenarioContext {
     [key: string]: any;
 }
 
-export * from "./ScenarioInfo";
+export * from "./scenario-info";

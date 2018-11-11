@@ -1,5 +1,5 @@
-import { BindingRegistry } from "./BindingRegistry";
-import { StepBinding, StepBindingFlags } from "./StepBinding";
+import { BindingRegistry } from "./binding-registry";
+import { StepBinding, StepBindingFlags } from "./step-binding";
 import { Callsite } from "./Callsite";
 
 /**

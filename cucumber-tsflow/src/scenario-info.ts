@@ -1,6 +1,6 @@
 import * as _ from "underscore";
 
-import { TagName } from "./Types";
+import { TagName } from "./types";
 
 /**
  * Provides information about a running Cucumber scenario.

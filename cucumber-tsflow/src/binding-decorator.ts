@@ -2,9 +2,9 @@ import * as _ from "underscore";
 import { defineSupportCode, Scenario, Tag } from "cucumber";
 
 import { ContextType, StepPattern } from "./Types";
-import { StepBinding, StepBindingFlags } from "./StepBinding";
-import { BindingRegistry, DEFAULT_TAG } from "./BindingRegistry";
-import { ManagedScenarioContext } from "./ManagedScenarioContext";
+import { StepBinding, StepBindingFlags } from "./step-binding";
+import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
+import { ManagedScenarioContext } from "./managed-scenario-context";
 
 
 /**

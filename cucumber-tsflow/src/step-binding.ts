@@ -1,4 +1,4 @@
-import { StepBindingFlags } from "./StepBindingFlags";
+import { StepBindingFlags } from "./step-binding-flags";
 import { Callsite } from "./Callsite";
 
 /**
@@ -46,4 +46,4 @@ export interface StepBinding {
     callsite: Callsite;
 }
 
-export * from "./StepBindingFlags";
+export * from "./step-binding-flags";
