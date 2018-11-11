@@ -1,20 +1,18 @@
 {
-    "compilerOptions": {
-        "composite": true,
-        "module": "umd",
-        "target": "es6",
-        "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true,
-        "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "removeComments": false,
-        "experimentalDecorators": true,
-        "outDir": "./dist",
-        "rootDir": "./src"
-    },
-    "include": [
-        "./src/**/*.ts"
-    ]
+  "compilerOptions": {
+    "composite": true,
+    "module": "umd",
+    "target": "es6",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": false,
+    "experimentalDecorators": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["./src/**/*.ts"]
 }

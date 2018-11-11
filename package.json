@@ -1,24 +1,34 @@
 {
-    "private": true,
-    "name": "cucumber-tsflow-workspace",
-    "description": "Workspace for cucumber-tsflow",
-    "version": "2.0.0",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/timjroberts/cucumber-js-tsflow.git"
-    },
-    "scripts": {
-        "postinstall": "lerna bootstrap",
-        "build": "tsc --build",
-        "build:watch": "tsc --build --watch"
-    },
-    "devDependencies": {
-        "@types/cucumber": "^4.0.4",
-        "@types/node": "10.7.1",
-        "@types/underscore": "1.8.8",
-        "cucumber": "^5.0.2",
-        "lerna": "^3.4.3",
-        "typescript": "^3.1.6"
-    }
+  "private": true,
+  "name": "cucumber-tsflow-workspace",
+  "description": "Workspace for cucumber-tsflow",
+  "version": "2.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timjroberts/cucumber-js-tsflow.git"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "build:watch": "tsc --build --watch",
+    "postinstall": "lerna bootstrap",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,json}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "devDependencies": {
+    "@types/cucumber": "^4.0.4",
+    "@types/node": "10.7.1",
+    "@types/underscore": "1.8.8",
+    "cucumber": "^5.0.2",
+    "husky": "^1.1.3",
+    "lerna": "^3.4.3",
+    "lint-staged": "^8.0.4",
+    "prettier": "^1.15.2",
+    "typescript": "^3.1.6"
+  }
 }

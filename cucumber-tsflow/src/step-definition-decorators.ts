@@ -9,33 +9,40 @@ import { Callsite } from "./callsite";
  * @param tag An optional tag.
  * @param timeout An optional timeout.
  */
-export function given(stepPattern: RegExp|string, tag?: string, timeout?: number): MethodDecorator {
-    let callsite = Callsite.capture();
+export function given(
+  stepPattern: RegExp | string,
+  tag?: string,
+  timeout?: number
+): MethodDecorator {
+  let callsite = Callsite.capture();
 
-    return <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
-        let stepBinding: StepBinding = {
-            stepPattern: stepPattern,
-            bindingType: StepBindingFlags.given,
-            targetPrototype: target,
-            targetPropertyKey: propertyKey,
-            argsLength: target[propertyKey]["length"],
-            callsite: callsite
-        };
+  return <T>(
+    target: any,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<T>
+  ) => {
+    let stepBinding: StepBinding = {
+      stepPattern: stepPattern,
+      bindingType: StepBindingFlags.given,
+      targetPrototype: target,
+      targetPropertyKey: propertyKey,
+      argsLength: target[propertyKey]["length"],
+      callsite: callsite
+    };
 
-        if (tag) {
-            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-        }
-
-        if (timeout) {
-            stepBinding.timeout = timeout;
-        }
-
-        BindingRegistry.instance.registerStepBinding(stepBinding)
-
-        return descriptor;
+    if (tag) {
+      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
     }
-}
 
+    if (timeout) {
+      stepBinding.timeout = timeout;
+    }
+
+    BindingRegistry.instance.registerStepBinding(stepBinding);
+
+    return descriptor;
+  };
+}
 
 /**
  * A method decorator that marks the associated function as a 'When' step.
@@ -44,33 +51,40 @@ export function given(stepPattern: RegExp|string, tag?: string, timeout?: number
  * @param tag An optional tag.
  * @param timeout An optional timeout.
  */
-export function when(stepPattern: RegExp|string, tag?: string, timeout?: number): MethodDecorator {
-    let callsite = Callsite.capture();
+export function when(
+  stepPattern: RegExp | string,
+  tag?: string,
+  timeout?: number
+): MethodDecorator {
+  let callsite = Callsite.capture();
 
-    return <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
-        let stepBinding: StepBinding = {
-            stepPattern: stepPattern,
-            bindingType: StepBindingFlags.when,
-            targetPrototype: target,
-            targetPropertyKey: propertyKey,
-            argsLength: target[propertyKey]["length"],
-            callsite: callsite
-        };
+  return <T>(
+    target: any,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<T>
+  ) => {
+    let stepBinding: StepBinding = {
+      stepPattern: stepPattern,
+      bindingType: StepBindingFlags.when,
+      targetPrototype: target,
+      targetPropertyKey: propertyKey,
+      argsLength: target[propertyKey]["length"],
+      callsite: callsite
+    };
 
-        if (tag) {
-            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-        }
-
-        if (timeout) {
-            stepBinding.timeout = timeout;
-        }
-
-        BindingRegistry.instance.registerStepBinding(stepBinding);
-
-        return descriptor;
+    if (tag) {
+      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
     }
-}
 
+    if (timeout) {
+      stepBinding.timeout = timeout;
+    }
+
+    BindingRegistry.instance.registerStepBinding(stepBinding);
+
+    return descriptor;
+  };
+}
 
 /**
  * A method decorator that marks the associated function as a 'Then' step.
@@ -79,29 +93,37 @@ export function when(stepPattern: RegExp|string, tag?: string, timeout?: number)
  * @param tag An optional tag.
  * @param timeout An optional timeout.
  */
-export function then(stepPattern: RegExp|string, tag?: string, timeout?: number): MethodDecorator {
-    let callsite = Callsite.capture();
+export function then(
+  stepPattern: RegExp | string,
+  tag?: string,
+  timeout?: number
+): MethodDecorator {
+  let callsite = Callsite.capture();
 
-    return <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
-        let stepBinding: StepBinding = {
-            stepPattern: stepPattern,
-            bindingType: StepBindingFlags.then,
-            targetPrototype: target,
-            targetPropertyKey: propertyKey,
-            argsLength: target[propertyKey]["length"],
-            callsite: callsite
-        };
+  return <T>(
+    target: any,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<T>
+  ) => {
+    let stepBinding: StepBinding = {
+      stepPattern: stepPattern,
+      bindingType: StepBindingFlags.then,
+      targetPrototype: target,
+      targetPropertyKey: propertyKey,
+      argsLength: target[propertyKey]["length"],
+      callsite: callsite
+    };
 
-        if (tag) {
-            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-        }
-
-        if (timeout) {
-            stepBinding.timeout = timeout;
-        }
-
-        BindingRegistry.instance.registerStepBinding(stepBinding);
-
-        return descriptor;
+    if (tag) {
+      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
     }
+
+    if (timeout) {
+      stepBinding.timeout = timeout;
+    }
+
+    BindingRegistry.instance.registerStepBinding(stepBinding);
+
+    return descriptor;
+  };
 }

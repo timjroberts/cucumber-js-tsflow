@@ -9,26 +9,30 @@ import { Callsite } from "./callsite";
  * @param tag An optional tag.
  */
 export function before(tag?: string): MethodDecorator {
-    let callsite = Callsite.capture();
+  let callsite = Callsite.capture();
 
-    return <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
-        let stepBinding: StepBinding = {
-            stepPattern: "",
-            bindingType: StepBindingFlags.before,
-            targetPrototype: target,
-            targetPropertyKey: propertyKey,
-            argsLength: target[propertyKey]["length"],
-            callsite: callsite
-        };
+  return <T>(
+    target: any,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<T>
+  ) => {
+    let stepBinding: StepBinding = {
+      stepPattern: "",
+      bindingType: StepBindingFlags.before,
+      targetPrototype: target,
+      targetPropertyKey: propertyKey,
+      argsLength: target[propertyKey]["length"],
+      callsite: callsite
+    };
 
-        if (tag) {
-            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-        }
-
-        BindingRegistry.instance.registerStepBinding(stepBinding)
-
-        return descriptor;
+    if (tag) {
+      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
     }
+
+    BindingRegistry.instance.registerStepBinding(stepBinding);
+
+    return descriptor;
+  };
 }
 
 /**
@@ -38,24 +42,28 @@ export function before(tag?: string): MethodDecorator {
  * @param tag An optional tag.
  */
 export function after(tag?: string): MethodDecorator {
-    let callsite = Callsite.capture();
+  let callsite = Callsite.capture();
 
-    return <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
-        let stepBinding: StepBinding = {
-            stepPattern: "",
-            bindingType: StepBindingFlags.after,
-            targetPrototype: target,
-            targetPropertyKey: propertyKey,
-            argsLength: target[propertyKey]["length"],
-            callsite: callsite
-        };
+  return <T>(
+    target: any,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<T>
+  ) => {
+    let stepBinding: StepBinding = {
+      stepPattern: "",
+      bindingType: StepBindingFlags.after,
+      targetPrototype: target,
+      targetPropertyKey: propertyKey,
+      argsLength: target[propertyKey]["length"],
+      callsite: callsite
+    };
 
-        if (tag) {
-            stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-        }
-
-        BindingRegistry.instance.registerStepBinding(stepBinding)
-
-        return descriptor;
+    if (tag) {
+      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
     }
+
+    BindingRegistry.instance.registerStepBinding(stepBinding);
+
+    return descriptor;
+  };
 }

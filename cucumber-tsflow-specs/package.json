@@ -1,13 +1,13 @@
 {
-    "private": true,
-    "name": "cucumber-tsflow-specs",
-    "description": "Specification for 'cucumber-tsflow'.",
-    "version": "2.0.0",
-    "author": "Tim Roberts <tim@timjroberts.com>",
-    "license": "MIT",
-    "main": "./index.js",
-    "typings": "./dist/index.d.ts",
-    "dependencies": {
-        "cucumber-tsflow": "*"
-    }
+  "private": true,
+  "name": "cucumber-tsflow-specs",
+  "description": "Specification for 'cucumber-tsflow'.",
+  "version": "2.0.0",
+  "author": "Tim Roberts <tim@timjroberts.com>",
+  "license": "MIT",
+  "main": "./index.js",
+  "typings": "./dist/index.d.ts",
+  "dependencies": {
+    "cucumber-tsflow": "*"
+  }
 }

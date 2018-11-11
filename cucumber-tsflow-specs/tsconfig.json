@@ -1,24 +1,24 @@
 {
-    "compilerOptions": {
-        "composite": true,
-        "moduleResolution": "node",
-        "module": "umd",
-        "target": "es6",
-        "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true,
-        "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "removeComments": false,
-        "experimentalDecorators": true,
-        "outDir": "./dist",
-        "rootDir": "./src",
-    },
-    "include": ["./src/**/*.ts"],
-    "references": [
-        {
-            "path": "../cucumber-tsflow"
-        }
-    ]
+  "compilerOptions": {
+    "composite": true,
+    "moduleResolution": "node",
+    "module": "umd",
+    "target": "es6",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": false,
+    "experimentalDecorators": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["./src/**/*.ts"],
+  "references": [
+    {
+      "path": "../cucumber-tsflow"
+    }
+  ]
 }

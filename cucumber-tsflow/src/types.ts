@@ -9,12 +9,12 @@ export type StepPattern = string;
 export type TagName = string;
 
 /**
- * Represents a class that will be injected into a binding class to provide context 
+ * Represents a class that will be injected into a binding class to provide context
  * during the execution of a Cucumber scenario.
  */
 export interface ContextType {
-    /**
-     * A default constructor.
-     */
-    new(): any;
+  /**
+   * A default constructor.
+   */
+  new (): any;
 }
