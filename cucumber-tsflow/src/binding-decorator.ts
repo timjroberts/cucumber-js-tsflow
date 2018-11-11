@@ -1,5 +1,5 @@
 import * as _ from "underscore";
-import { defineSupportCode, Scenario, Tag } from "cucumber";
+import { Tag, Given, When, Then, Before, After } from "cucumber";
 
 import { ContextType, StepPattern } from "./Types";
 import { StepBinding, StepBindingFlags } from "./step-binding";
@@ -35,25 +35,23 @@ var stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
  */
 export function binding(requiredContextTypes?: ContextType[]) {
     return function (target) {
-        defineSupportCode(function (sc) {
-            ensureSystemBindings(sc);
-            let bindingRegistry = BindingRegistry.instance;
-            bindingRegistry.registerContextTypesForTarget(target.prototype, requiredContextTypes);
-            bindingRegistry.getStepBindingsForTarget(target.prototype).forEach((stepBinding) => {
-                if (stepBinding.bindingType & StepBindingFlags.StepDefinitions) {
-                    let stepBindingFlags = stepPatternRegistrations.get(stepBinding.stepPattern.toString());
-                    if (stepBindingFlags === undefined) {
-                        stepBindingFlags = StepBindingFlags.none;
-                    }
-                    if (stepBindingFlags & stepBinding.bindingType)
-                        return;
-                    bindStepDefinition(sc, stepBinding);
-                    stepPatternRegistrations.set(stepBinding.stepPattern.toString(), stepBindingFlags | stepBinding.bindingType);
+        ensureSystemBindings();
+        let bindingRegistry = BindingRegistry.instance;
+        bindingRegistry.registerContextTypesForTarget(target.prototype, requiredContextTypes);
+        bindingRegistry.getStepBindingsForTarget(target.prototype).forEach((stepBinding) => {
+            if (stepBinding.bindingType & StepBindingFlags.StepDefinitions) {
+                let stepBindingFlags = stepPatternRegistrations.get(stepBinding.stepPattern.toString());
+                if (stepBindingFlags === undefined) {
+                    stepBindingFlags = StepBindingFlags.none;
                 }
-                else if (stepBinding.bindingType & StepBindingFlags.Hooks) {
-                    bindHook(sc, stepBinding);
-                }
-            });
+                if (stepBindingFlags & stepBinding.bindingType)
+                    return;
+                bindStepDefinition(stepBinding);
+                stepPatternRegistrations.set(stepBinding.stepPattern.toString(), stepBindingFlags | stepBinding.bindingType);
+            }
+            else if (stepBinding.bindingType & StepBindingFlags.Hooks) {
+                bindHook(stepBinding);
+            }
         });
         return target;
     };
@@ -67,12 +65,12 @@ export function binding(requiredContextTypes?: ContextType[]) {
  * The hooks will only be registered with Cucumber once regardless of which binding invokes the
  * function.
  */
-var ensureSystemBindings = _.once(function (cucumber: any): void {
-    cucumber.Before(function (scenario: Scenario) {
+var ensureSystemBindings = _.once(() => {
+    Before(function (scenario: any) {
         this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(scenario.name, _.map(scenario.tags, (tag: Tag) => tag.name));
     });
 
-    cucumber.After(function () {
+    After(function () {
         let scenarioContext = <ManagedScenarioContext>this[SCENARIO_CONTEXT_SLOTNAME];
 
         if (scenarioContext) {
@@ -106,14 +104,14 @@ var ensureSystemBindings = _.once(function (cucumber: any): void {
  * @param cucumber The cucumber object.
  * @param stepBinding The [[StepBinding]] that represents a 'given', 'when', or 'then' step definition.
  */
-function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
-    let bindingFunc = function(): any {
+function bindStepDefinition(stepBinding: StepBinding): void {
+    let bindingFunc = function (): any {
         let bindingRegistry = BindingRegistry.instance;
 
         let scenarioContext = <ManagedScenarioContext>this[SCENARIO_CONTEXT_SLOTNAME];
 
         let matchingStepBindings = bindingRegistry.getStepBindings(stepBinding.stepPattern.toString(),
-                                                                   scenarioContext.scenarioInfo.tags);
+            scenarioContext.scenarioInfo.tags);
 
         if (matchingStepBindings.length > 1) {
             let message = `Ambiguous step definitions for '${matchingStepBindings[0].stepPattern}':\n`;
@@ -137,26 +135,26 @@ function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
 
     if (stepBinding.bindingType & StepBindingFlags.given) {
         if (stepBinding.timeout) {
-            cucumber.Given(stepBinding.stepPattern, {timeout: stepBinding.timeout}, bindingFunc);
+            Given(stepBinding.stepPattern, { timeout: stepBinding.timeout }, bindingFunc);
         }
         else {
-            cucumber.Given(stepBinding.stepPattern, bindingFunc);
+            Given(stepBinding.stepPattern, bindingFunc);
         }
     }
     else if (stepBinding.bindingType & StepBindingFlags.when) {
         if (stepBinding.timeout) {
-            cucumber.When(stepBinding.stepPattern, {timeout: stepBinding.timeout}, bindingFunc);
+            When(stepBinding.stepPattern, { timeout: stepBinding.timeout }, bindingFunc);
         }
         else {
-            cucumber.When(stepBinding.stepPattern, bindingFunc);
+            When(stepBinding.stepPattern, bindingFunc);
         }
     }
     else if (stepBinding.bindingType & StepBindingFlags.then) {
         if (stepBinding.timeout) {
-            cucumber.Then(stepBinding.stepPattern, {timeout: stepBinding.timeout}, bindingFunc);
+            Then(stepBinding.stepPattern, { timeout: stepBinding.timeout }, bindingFunc);
         }
         else {
-            cucumber.Then(stepBinding.stepPattern, bindingFunc);
+            Then(stepBinding.stepPattern, bindingFunc);
         }
     }
 }
@@ -168,8 +166,8 @@ function bindStepDefinition(cucumber: any, stepBinding: StepBinding): void {
  * @param cucumber The cucumber object.
  * @param stepBinding The [[StepBinding]] that represents a 'before', or 'after', step definition.
  */
-function bindHook(cucumber: any, stepBinding: StepBinding): void {
-    let bindingFunc = function(): any {
+function bindHook(stepBinding: StepBinding): void {
+    let bindingFunc = function (): any {
         let scenarioContext = <ManagedScenarioContext>this[SCENARIO_CONTEXT_SLOTNAME];
         let contextTypes = BindingRegistry.instance.getContextTypesForTarget(stepBinding.targetPrototype);
         let bindingObject = scenarioContext.getOrActivateBindingClass(stepBinding.targetPrototype, contextTypes);
@@ -183,18 +181,18 @@ function bindHook(cucumber: any, stepBinding: StepBinding): void {
 
     if (stepBinding.bindingType & StepBindingFlags.before) {
         if (stepBinding.tag === DEFAULT_TAG) {
-            cucumber.Before(bindingFunc);
+            Before(bindingFunc);
         }
         else {
-            cucumber.Before(stepBinding.tag, bindingFunc);
+            Before(stepBinding.tag, bindingFunc);
         }
     }
     else if (stepBinding.bindingType & StepBindingFlags.after) {
         if (stepBinding.tag === DEFAULT_TAG) {
-            cucumber.After(bindingFunc);
+            After(bindingFunc);
         }
         else {
-            cucumber.After(stepBinding.tag, bindingFunc);
+            After(stepBinding.tag, bindingFunc);
         }
     }
 }
