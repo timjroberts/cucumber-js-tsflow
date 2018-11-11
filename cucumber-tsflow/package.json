@@ -14,9 +14,6 @@
     "typescript",
     "specflow"
   ],
-  "publishConfig": {
-    "registry": "https://registry.npmjs.com/"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/timjroberts/cucumber-js-tsflow.git"
