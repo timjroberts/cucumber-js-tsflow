@@ -1,10 +1,10 @@
+import { After, Before, Given, Tag, Then, When } from "cucumber";
 import * as _ from "underscore";
-import { Tag, Given, When, Then, Before, After } from "cucumber";
 
-import { ContextType, StepPattern } from "./types";
-import { StepBinding, StepBindingFlags } from "./step-binding";
 import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import { ManagedScenarioContext } from "./managed-scenario-context";
+import { StepBinding, StepBindingFlags } from "./step-binding";
+import { ContextType, StepPattern } from "./types";
 //
 
 /**
@@ -21,7 +21,9 @@ const SCENARIO_CONTEXT_SLOTNAME: string = "__SCENARIO_CONTEXT";
  * responsible for looking up and execuing the step binding based on the context that is in scope at
  * the point of invocation.
  */
-var stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
+const stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
+
+// tslint:disable:no-bitwise
 
 /**
  * A class decorator that marks the associated class as a CucumberJS binding.
@@ -32,9 +34,9 @@ var stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
  * An instance of the decorated class will be created for each scenario.
  */
 export function binding(requiredContextTypes?: ContextType[]) {
-  return function<T>(target: { new (): T }) {
+  return <T>(target: { new (): T }) => {
     ensureSystemBindings();
-    let bindingRegistry = BindingRegistry.instance;
+    const bindingRegistry = BindingRegistry.instance;
     bindingRegistry.registerContextTypesForTarget(
       target.prototype,
       requiredContextTypes
@@ -49,7 +51,9 @@ export function binding(requiredContextTypes?: ContextType[]) {
           if (stepBindingFlags === undefined) {
             stepBindingFlags = StepBindingFlags.none;
           }
-          if (stepBindingFlags & stepBinding.bindingType) return;
+          if (stepBindingFlags & stepBinding.bindingType) {
+            return;
+          }
           bindStepDefinition(stepBinding);
           stepPatternRegistrations.set(
             stepBinding.stepPattern.toString(),
@@ -71,7 +75,7 @@ export function binding(requiredContextTypes?: ContextType[]) {
  * The hooks will only be registered with Cucumber once regardless of which binding invokes the
  * function.
  */
-var ensureSystemBindings = _.once(() => {
+const ensureSystemBindings = _.once(() => {
   Before(function(scenario: any) {
     this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(
       scenario.name,
@@ -80,9 +84,9 @@ var ensureSystemBindings = _.once(() => {
   });
 
   After(function() {
-    let scenarioContext = <ManagedScenarioContext>(
-      this[SCENARIO_CONTEXT_SLOTNAME]
-    );
+    const scenarioContext = this[
+      SCENARIO_CONTEXT_SLOTNAME
+    ] as ManagedScenarioContext;
 
     if (scenarioContext) {
       scenarioContext.dispose();
@@ -115,14 +119,14 @@ var ensureSystemBindings = _.once(() => {
  * @param stepBinding The [[StepBinding]] that represents a 'given', 'when', or 'then' step definition.
  */
 function bindStepDefinition(stepBinding: StepBinding): void {
-  let bindingFunc = function(this: any): any {
-    let bindingRegistry = BindingRegistry.instance;
+  const bindingFunc = function(this: any): any {
+    const bindingRegistry = BindingRegistry.instance;
 
-    let scenarioContext = <ManagedScenarioContext>(
-      this[SCENARIO_CONTEXT_SLOTNAME]
-    );
+    const scenarioContext = this[
+      SCENARIO_CONTEXT_SLOTNAME
+    ] as ManagedScenarioContext;
 
-    let matchingStepBindings = bindingRegistry.getStepBindings(
+    const matchingStepBindings = bindingRegistry.getStepBindings(
       stepBinding.stepPattern.toString(),
       scenarioContext.scenarioInfo.tags
     );
@@ -143,19 +147,19 @@ function bindStepDefinition(stepBinding: StepBinding): void {
       return new Error(message);
     }
 
-    let contextTypes = bindingRegistry.getContextTypesForTarget(
+    const contextTypes = bindingRegistry.getContextTypesForTarget(
       matchingStepBindings[0].targetPrototype
     );
-    let bindingObject = scenarioContext.getOrActivateBindingClass(
+    const bindingObject = scenarioContext.getOrActivateBindingClass(
       matchingStepBindings[0].targetPrototype,
       contextTypes
     );
 
     bindingObject._worldObj = this;
 
-    return (<Function>(
-      bindingObject[matchingStepBindings[0].targetPropertyKey]
-    )).apply(bindingObject, arguments);
+    return (bindingObject[
+      matchingStepBindings[0].targetPropertyKey
+    ] as () => void).apply(bindingObject, arguments);
   };
 
   Object.defineProperty(bindingFunc, "length", {
@@ -202,21 +206,21 @@ function bindStepDefinition(stepBinding: StepBinding): void {
  * @param stepBinding The [[StepBinding]] that represents a 'before', or 'after', step definition.
  */
 function bindHook(stepBinding: StepBinding): void {
-  let bindingFunc = function(this: any): any {
-    let scenarioContext = <ManagedScenarioContext>(
-      this[SCENARIO_CONTEXT_SLOTNAME]
-    );
-    let contextTypes = BindingRegistry.instance.getContextTypesForTarget(
+  const bindingFunc = function(this: any): any {
+    const scenarioContext = this[
+      SCENARIO_CONTEXT_SLOTNAME
+    ] as ManagedScenarioContext;
+    const contextTypes = BindingRegistry.instance.getContextTypesForTarget(
       stepBinding.targetPrototype
     );
-    let bindingObject = scenarioContext.getOrActivateBindingClass(
+    const bindingObject = scenarioContext.getOrActivateBindingClass(
       stepBinding.targetPrototype,
       contextTypes
     );
 
     bindingObject._worldObj = this;
 
-    return (<Function>bindingObject[stepBinding.targetPropertyKey]).apply(
+    return (bindingObject[stepBinding.targetPropertyKey] as () => void).apply(
       bindingObject,
       arguments
     );

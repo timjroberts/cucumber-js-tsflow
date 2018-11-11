@@ -1,5 +1,5 @@
+import { Callsite } from "./our-callsite";
 import { StepBindingFlags } from "./step-binding-flags";
-import { Callsite } from "./callsite";
 
 /**
  * Encapsulates data about a step binding.

@@ -1,4 +1,4 @@
-var stack = require("callsite");
+import * as stack from "callsite";
 
 /**
  * Represents a callsite of where a step binding is being applied.
@@ -26,7 +26,7 @@ export class Callsite {
    * Captures the current [[Callsite]] object.
    */
   public static capture(): Callsite {
-    let stackFrame = stack()[2];
+    const stackFrame = stack()[2];
 
     return new Callsite(stackFrame.getFileName(), stackFrame.getLineNumber());
   }

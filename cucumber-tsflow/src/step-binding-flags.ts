@@ -1,3 +1,4 @@
+// tslint:disable:no-bitwise
 /**
  * The CucumberJS step binding types.
  */

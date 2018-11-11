@@ -1,7 +1,7 @@
 import * as _ from "underscore";
 
+import { ScenarioContext, ScenarioInfo } from "./scenario-context";
 import { ContextType } from "./types";
-import { ScenarioInfo, ScenarioContext } from "./scenario-context";
 
 /**
  * Represents a [[ScenarioContext]] implementation that manages a collection of context objects that
@@ -34,8 +34,8 @@ export class ManagedScenarioContext implements ScenarioContext {
 
   public dispose(): void {
     this._activeObjects.forEach((value: any) => {
-      if (typeof value["dispose"] === "function") {
-        value["dispose"]();
+      if (typeof value.dispose === "function") {
+        value.dispose();
       }
     });
   }
@@ -44,29 +44,29 @@ export class ManagedScenarioContext implements ScenarioContext {
     targetPrototype: any,
     contextTypes: ContextType[]
   ): any {
-    let invokeBindingConstructor = (args: any[]): any => {
+    const invokeBindingConstructor = (args: any[]): any => {
       switch (contextTypes.length) {
         case 0:
-          return new (<any>targetPrototype.constructor)();
+          return new (targetPrototype.constructor as any)();
         case 1:
-          return new (<any>targetPrototype.constructor)(args[0]);
+          return new (targetPrototype.constructor as any)(args[0]);
         case 2:
-          return new (<any>targetPrototype.constructor)(args[0], args[1]);
+          return new (targetPrototype.constructor as any)(args[0], args[1]);
         case 3:
-          return new (<any>targetPrototype.constructor)(
+          return new (targetPrototype.constructor as any)(
             args[0],
             args[1],
             args[2]
           );
         case 4:
-          return new (<any>targetPrototype.constructor)(
+          return new (targetPrototype.constructor as any)(
             args[0],
             args[1],
             args[2],
             args[3]
           );
         case 5:
-          return new (<any>targetPrototype.constructor)(
+          return new (targetPrototype.constructor as any)(
             args[0],
             args[1],
             args[2],
@@ -74,7 +74,7 @@ export class ManagedScenarioContext implements ScenarioContext {
             args[4]
           );
         case 6:
-          return new (<any>targetPrototype.constructor)(
+          return new (targetPrototype.constructor as any)(
             args[0],
             args[1],
             args[2],
@@ -83,7 +83,7 @@ export class ManagedScenarioContext implements ScenarioContext {
             args[5]
           );
         case 7:
-          return new (<any>targetPrototype.constructor)(
+          return new (targetPrototype.constructor as any)(
             args[0],
             args[1],
             args[2],
@@ -93,7 +93,7 @@ export class ManagedScenarioContext implements ScenarioContext {
             args[6]
           );
         case 8:
-          return new (<any>targetPrototype.constructor)(
+          return new (targetPrototype.constructor as any)(
             args[0],
             args[1],
             args[2],
@@ -104,7 +104,7 @@ export class ManagedScenarioContext implements ScenarioContext {
             args[7]
           );
         case 9:
-          return new (<any>targetPrototype.constructor)(
+          return new (targetPrototype.constructor as any)(
             args[0],
             args[1],
             args[2],
@@ -116,7 +116,7 @@ export class ManagedScenarioContext implements ScenarioContext {
             args[8]
           );
         case 10:
-          return new (<any>targetPrototype.constructor)(
+          return new (targetPrototype.constructor as any)(
             args[0],
             args[1],
             args[2],
@@ -131,7 +131,7 @@ export class ManagedScenarioContext implements ScenarioContext {
       }
     };
 
-    let contextObjects = _.map(contextTypes, contextType =>
+    const contextObjects = _.map(contextTypes, contextType =>
       this.getOrActivateObject(contextType.prototype, () => {
         return new contextType();
       })
@@ -146,7 +146,9 @@ export class ManagedScenarioContext implements ScenarioContext {
   ): any {
     let activeObject = this._activeObjects.get(targetPrototype);
 
-    if (activeObject) return activeObject;
+    if (activeObject) {
+      return activeObject;
+    }
 
     activeObject = activatorFunc();
 

@@ -11,8 +11,7 @@
     "noUnusedParameters": true,
     "removeComments": false,
     "experimentalDecorators": true,
-    "outDir": "./dist",
-    "rootDir": "./src"
+    "outDir": "./dist"
   },
   "include": ["./src/**/*.ts"]
 }

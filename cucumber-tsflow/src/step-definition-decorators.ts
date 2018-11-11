@@ -1,6 +1,6 @@
 import { BindingRegistry } from "./binding-registry";
+import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
-import { Callsite } from "./callsite";
 
 /**
  * A method decorator that marks the associated function as a 'Given' step.
@@ -14,19 +14,19 @@ export function given(
   tag?: string,
   timeout?: number
 ): MethodDecorator {
-  let callsite = Callsite.capture();
+  const callsite = Callsite.capture();
 
   return <T>(
     target: any,
     propertyKey: string | symbol,
     descriptor: TypedPropertyDescriptor<T>
   ) => {
-    let stepBinding: StepBinding = {
+    const stepBinding: StepBinding = {
       stepPattern: stepPattern,
       bindingType: StepBindingFlags.given,
       targetPrototype: target,
       targetPropertyKey: propertyKey,
-      argsLength: target[propertyKey]["length"],
+      argsLength: target[propertyKey].length,
       callsite: callsite
     };
 
@@ -56,19 +56,19 @@ export function when(
   tag?: string,
   timeout?: number
 ): MethodDecorator {
-  let callsite = Callsite.capture();
+  const callsite = Callsite.capture();
 
   return <T>(
     target: any,
     propertyKey: string | symbol,
     descriptor: TypedPropertyDescriptor<T>
   ) => {
-    let stepBinding: StepBinding = {
+    const stepBinding: StepBinding = {
       stepPattern: stepPattern,
       bindingType: StepBindingFlags.when,
       targetPrototype: target,
       targetPropertyKey: propertyKey,
-      argsLength: target[propertyKey]["length"],
+      argsLength: target[propertyKey].length,
       callsite: callsite
     };
 
@@ -98,19 +98,19 @@ export function then(
   tag?: string,
   timeout?: number
 ): MethodDecorator {
-  let callsite = Callsite.capture();
+  const callsite = Callsite.capture();
 
   return <T>(
     target: any,
     propertyKey: string | symbol,
     descriptor: TypedPropertyDescriptor<T>
   ) => {
-    let stepBinding: StepBinding = {
+    const stepBinding: StepBinding = {
       stepPattern: stepPattern,
       bindingType: StepBindingFlags.then,
       targetPrototype: target,
       targetPropertyKey: propertyKey,
-      argsLength: target[propertyKey]["length"],
+      argsLength: target[propertyKey].length,
       callsite: callsite
     };
 

@@ -1,12 +1,12 @@
 import * as _ from "underscore";
 
-import { StepPattern, TagName, ContextType } from "./types";
 import { StepBinding } from "./step-binding";
+import { ContextType, StepPattern, TagName } from "./types";
 
 /**
  * Describes the binding metadata that is associated with a binding class.
  */
-type TargetBinding = {
+interface TargetBinding {
   /**
    * A reference to the step bindings that are associated with the binding class.
    */
@@ -16,7 +16,7 @@ type TargetBinding = {
    * The context types that are to be injected into the binding class during execution.
    */
   contextTypes: ContextType[];
-};
+}
 
 /**
  * Represents the default step pattern.
@@ -44,7 +44,7 @@ export class BindingRegistry {
     const BINDING_REGISTRY_SLOTNAME: string =
       "__CUCUMBER_TSFLOW_BINDINGREGISTRY";
 
-    let registry = (global as any)[BINDING_REGISTRY_SLOTNAME];
+    const registry = (global as any)[BINDING_REGISTRY_SLOTNAME];
 
     if (!registry) {
       (global as any)[BINDING_REGISTRY_SLOTNAME] = new BindingRegistry();
@@ -65,7 +65,9 @@ export class BindingRegistry {
     targetPrototype: any,
     contextTypes?: ContextType[]
   ): void {
-    if (!contextTypes) return;
+    if (!contextTypes) {
+      return;
+    }
 
     let targetDecorations = this._targetBindings.get(targetPrototype);
 
@@ -90,9 +92,11 @@ export class BindingRegistry {
    * binding class.
    */
   public getContextTypesForTarget(targetPrototype: any): ContextType[] {
-    let targetBinding = this._targetBindings.get(targetPrototype);
+    const targetBinding = this._targetBindings.get(targetPrototype);
 
-    if (!targetBinding) return [];
+    if (!targetBinding) {
+      return [];
+    }
 
     return targetBinding.contextTypes;
   }
@@ -107,7 +111,7 @@ export class BindingRegistry {
       stepBinding.tag = DEFAULT_TAG;
     }
 
-    let stepPattern: StepPattern = stepBinding.stepPattern
+    const stepPattern: StepPattern = stepBinding.stepPattern
       ? stepBinding.stepPattern.toString()
       : DEFAULT_STEP_PATTERN;
 
@@ -154,9 +158,11 @@ export class BindingRegistry {
    * binding class.
    */
   public getStepBindingsForTarget(targetPrototype: any): StepBinding[] {
-    let targetBinding = this._targetBindings.get(targetPrototype);
+    const targetBinding = this._targetBindings.get(targetPrototype);
 
-    if (!targetBinding) return [];
+    if (!targetBinding) {
+      return [];
+    }
 
     return targetBinding.stepBindings;
   }
@@ -173,13 +179,17 @@ export class BindingRegistry {
     stepPattern: StepPattern,
     tags: TagName[]
   ): StepBinding[] {
-    let tagMap = this._bindings.get(stepPattern);
+    const tagMap = this._bindings.get(stepPattern);
 
-    if (!tagMap) return [];
+    if (!tagMap) {
+      return [];
+    }
 
-    let matchingStepBindings = this.mapTagNamesToStepBindings(tags, tagMap);
+    const matchingStepBindings = this.mapTagNamesToStepBindings(tags, tagMap);
 
-    if (matchingStepBindings.length > 0) return matchingStepBindings;
+    if (matchingStepBindings.length > 0) {
+      return matchingStepBindings;
+    }
 
     return this.mapTagNamesToStepBindings(["*"], tagMap);
   }
@@ -196,7 +206,7 @@ export class BindingRegistry {
     tags: TagName[],
     tagMap: Map<TagName, StepBinding[]>
   ): StepBinding[] {
-    let matchingStepBindings: StepBinding[] = _.flatten(
+    const matchingStepBindings: StepBinding[] = _.flatten(
       _.map(tags, tag => tagMap.get(tag))
     );
 

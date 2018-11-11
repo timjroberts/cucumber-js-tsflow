@@ -1,6 +1,6 @@
 import { BindingRegistry } from "./binding-registry";
+import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
-import { Callsite } from "./callsite";
 
 /**
  * A method decorator that marks the associated function as a 'Before Scenario' step. The function is
@@ -9,19 +9,19 @@ import { Callsite } from "./callsite";
  * @param tag An optional tag.
  */
 export function before(tag?: string): MethodDecorator {
-  let callsite = Callsite.capture();
+  const callsite = Callsite.capture();
 
   return <T>(
     target: any,
     propertyKey: string | symbol,
     descriptor: TypedPropertyDescriptor<T>
   ) => {
-    let stepBinding: StepBinding = {
+    const stepBinding: StepBinding = {
       stepPattern: "",
       bindingType: StepBindingFlags.before,
       targetPrototype: target,
       targetPropertyKey: propertyKey,
-      argsLength: target[propertyKey]["length"],
+      argsLength: target[propertyKey].length,
       callsite: callsite
     };
 
@@ -42,19 +42,19 @@ export function before(tag?: string): MethodDecorator {
  * @param tag An optional tag.
  */
 export function after(tag?: string): MethodDecorator {
-  let callsite = Callsite.capture();
+  const callsite = Callsite.capture();
 
   return <T>(
     target: any,
     propertyKey: string | symbol,
     descriptor: TypedPropertyDescriptor<T>
   ) => {
-    let stepBinding: StepBinding = {
+    const stepBinding: StepBinding = {
       stepPattern: "",
       bindingType: StepBindingFlags.after,
       targetPrototype: target,
       targetPropertyKey: propertyKey,
-      argsLength: target[propertyKey]["length"],
+      argsLength: target[propertyKey].length,
       callsite: callsite
     };
 

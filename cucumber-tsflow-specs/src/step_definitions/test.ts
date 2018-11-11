@@ -1,5 +1,5 @@
-import { binding, given, before } from "cucumber-tsflow";
 import { equal } from "assert";
+import { before, binding, given } from "cucumber-tsflow";
 
 @binding()
 export default class TestSteps {

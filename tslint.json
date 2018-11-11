@@ -1,0 +1,18 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "jsRules": {},
+  "rules": {
+    "variable-name": [
+      true,
+      "allow-leading-underscore",
+      "allow-trailing-underscore",
+      "allow-pascal-case"
+    ],
+    "interface-name": [false],
+    "object-literal-sort-keys": false,
+    "member-ordering": [false],
+    "object-literal-shorthand": false,
+    "trailing-comma": ["multiline"]
+  }
+}
