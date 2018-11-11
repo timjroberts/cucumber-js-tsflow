@@ -1,6 +1,6 @@
 import * as _ from "underscore";
 
-import { ContextType } from "./Types";
+import { ContextType } from "./types";
 import { ScenarioInfo, ScenarioContext } from "./scenario-context";
 
 /**

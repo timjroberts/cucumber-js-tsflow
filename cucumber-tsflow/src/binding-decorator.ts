@@ -1,7 +1,7 @@
 import * as _ from "underscore";
 import { Tag, Given, When, Then, Before, After } from "cucumber";
 
-import { ContextType, StepPattern } from "./Types";
+import { ContextType, StepPattern } from "./types";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import { ManagedScenarioContext } from "./managed-scenario-context";

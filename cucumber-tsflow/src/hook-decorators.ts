@@ -1,6 +1,6 @@
 import { BindingRegistry } from "./binding-registry";
 import { StepBinding, StepBindingFlags } from "./step-binding";
-import { Callsite } from "./Callsite";
+import { Callsite } from "./callsite";
 
 /**
  * A method decorator that marks the associated function as a 'Before Scenario' step. The function is
