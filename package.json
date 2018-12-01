@@ -12,7 +12,9 @@
     "build": "tsc --build",
     "build:watch": "tsc --build --watch",
     "postinstall": "lerna bootstrap",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged && npm test",
+    "pretest": "npm run build",
+    "test": "cucumber-js --require cucumber-tsflow-specs/dist cucumber-tsflow-specs"
   },
   "lint-staged": {
     "*.ts": [
