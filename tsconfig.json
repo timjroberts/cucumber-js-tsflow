@@ -1,6 +1,6 @@
 {
+  "extends": "./tsconfig.settings.json",
   "files": [],
-  "include": [],
   "references": [
     {
       "path": "./cucumber-tsflow"
