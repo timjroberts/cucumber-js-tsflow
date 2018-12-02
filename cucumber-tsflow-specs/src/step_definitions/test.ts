@@ -1,8 +1,15 @@
 import { equal } from "assert";
 import { before, binding, given } from "cucumber-tsflow";
 
-@binding()
+class Foo {
+  public readonly actual = true;
+}
+
+// tslint:disable-next-line:max-classes-per-file
+@binding([Foo])
 export default class TestSteps {
+  constructor(private foo: Foo) {}
+
   private actual = false;
 
   @before()
@@ -11,7 +18,8 @@ export default class TestSteps {
   }
 
   @given("foo")
-  public GivenFoo(): void {
-    return equal(this.actual, true);
+  public async GivenFoo(): Promise<void> {
+    await equal(this.actual, true);
+    await equal(this.foo.actual, true);
   }
 }
