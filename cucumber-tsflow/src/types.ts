@@ -18,3 +18,5 @@ export interface ContextType {
    */
   new (): any;
 }
+
+export type TypeDecorator = <T>(target: { new (...args: any[]): T }) => void;

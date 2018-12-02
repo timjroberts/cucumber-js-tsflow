@@ -4,7 +4,7 @@ import * as _ from "underscore";
 import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import { ManagedScenarioContext } from "./managed-scenario-context";
 import { StepBinding, StepBindingFlags } from "./step-binding";
-import { ContextType, StepPattern } from "./types";
+import { ContextType, StepPattern, TypeDecorator } from "./types";
 //
 
 /**
@@ -33,8 +33,8 @@ const stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
  *
  * An instance of the decorated class will be created for each scenario.
  */
-export function binding(requiredContextTypes?: ContextType[]) {
-  return <T>(target: { new (): T }) => {
+export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
+  return <T>(target: { new (...args: any[]): T }) => {
     ensureSystemBindings();
     const bindingRegistry = BindingRegistry.instance;
     bindingRegistry.registerContextTypesForTarget(
@@ -63,7 +63,6 @@ export function binding(requiredContextTypes?: ContextType[]) {
           bindHook(stepBinding);
         }
       });
-    return target;
   };
 }
 
