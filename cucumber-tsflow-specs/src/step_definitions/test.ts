@@ -1,5 +1,5 @@
 import { equal } from "assert";
-import { before, binding, given } from "cucumber-tsflow";
+import { after, afterAll, before, beforeAll, binding, given, when } from "cucumber-tsflow";
 
 class Foo {
   public readonly actual = true;
@@ -12,6 +12,11 @@ export default class TestSteps {
 
   private actual = false;
 
+  @beforeAll()
+  public beforeAll() {
+    console.log("I should only run once, but I don't run at all");
+  }
+
   @before()
   public before() {
     this.actual = true;
@@ -21,5 +26,20 @@ export default class TestSteps {
   public async GivenFoo(): Promise<void> {
     await equal(this.actual, true);
     await equal(this.foo.actual, true);
+  }
+
+  @when("bar")
+  public WhenBar(): void {
+    equal(1+1, 2, "This is true");
+  }
+
+  @after()
+  public after() {
+    equal(true, true, "It's true, I ran");
+  }
+
+  @afterAll()
+  public afterAll() {
+    console.log("I should only run once, but I don't run at all");
   }
 }

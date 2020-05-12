@@ -26,7 +26,7 @@ export function before(tag?: string): MethodDecorator {
     };
 
     if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
+      stepBinding.tag = tag;
     }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
@@ -59,7 +59,73 @@ export function after(tag?: string): MethodDecorator {
     };
 
     if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
+      stepBinding.tag = tag;
+    }
+
+    BindingRegistry.instance.registerStepBinding(stepBinding);
+
+    return descriptor;
+  };
+}
+
+/**
+ * A method decorator that marks the associated function as an 'Before All Scenario' step. The function is
+ * executed after each feature.
+ *
+ * @param tag An optional tag.
+ */
+export function beforeAll(tag?: string): MethodDecorator {
+  const callsite = Callsite.capture();
+
+  return <T>(
+    target: any,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<T>
+  ) => {
+    const stepBinding: StepBinding = {
+      stepPattern: "",
+      bindingType: StepBindingFlags.beforeAll,
+      targetPrototype: target,
+      targetPropertyKey: propertyKey,
+      argsLength: target[propertyKey].length,
+      callsite: callsite
+    };
+
+    if (tag) {
+      stepBinding.tag = tag;
+    }
+
+    BindingRegistry.instance.registerStepBinding(stepBinding);
+
+    return descriptor;
+  };
+}
+
+/**
+ * A method decorator that marks the associated function as an 'After All Scenario' step. The function is
+ * executed after each feature.
+ *
+ * @param tag An optional tag.
+ */
+export function afterAll(tag?: string): MethodDecorator {
+  const callsite = Callsite.capture();
+
+  return <T>(
+    target: any,
+    propertyKey: string | symbol,
+    descriptor: TypedPropertyDescriptor<T>
+  ) => {
+    const stepBinding: StepBinding = {
+      stepPattern: "",
+      bindingType: StepBindingFlags.afterAll,
+      targetPrototype: target,
+      targetPropertyKey: propertyKey,
+      argsLength: target[propertyKey].length,
+      callsite: callsite
+    };
+
+    if (tag) {
+      stepBinding.tag = tag;
     }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
