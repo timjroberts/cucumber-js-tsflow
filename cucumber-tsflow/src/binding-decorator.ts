@@ -229,17 +229,17 @@ function bindHook(stepBinding: StepBinding): void {
     value: stepBinding.argsLength
   });
 
+  // build the args for the hooks
+  const hookArgs: [any, ()=>any] | [any] = [bindingFunc];
+  if (stepBinding.tag !== DEFAULT_TAG) {
+    hookArgs.unshift(String(stepBinding.tag));
+  } 
+
   if (stepBinding.bindingType & StepBindingFlags.before) {
-    if (stepBinding.tag === DEFAULT_TAG) {
-      Before(bindingFunc);
-    } else {
-      Before(String(stepBinding.tag), bindingFunc);
-    }
+    Before(...hookArgs);
   } else if (stepBinding.bindingType & StepBindingFlags.after) {
-    if (stepBinding.tag === DEFAULT_TAG) {
-      After(bindingFunc);
-    } else {
-      After(String(stepBinding.tag), bindingFunc);
-    }
-  }
+    After(...hookArgs);
+  } /* else if (stepBinding.bindingType & StepBindingFlags.afterAll) {
+    AfterAll(bindingFunc);
+  } */
 }

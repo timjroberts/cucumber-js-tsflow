@@ -1,9 +1,11 @@
 import { equal } from "assert";
-import { after, afterAll, before, beforeAll, binding, given, when } from "cucumber-tsflow";
+import { after, afterAll, before, beforeAll, binding, given, then, when } from "cucumber-tsflow";
 
 class Foo {
   public readonly actual = true;
 }
+
+let afterBazCount = 0;
 
 // tslint:disable-next-line:max-classes-per-file
 @binding([Foo])
@@ -33,9 +35,20 @@ export default class TestSteps {
     equal(1+1, 2, "This is true");
   }
 
-  @after()
+  @then("baz")
+  public ThenBaz(): void {
+    equal(false, false, "This is false");
+  }
+
+  @after("not @baz")
   public after() {
     equal(true, true, "It's true, I ran");
+  }
+
+  @after("@baz")
+  public afterBazOnly() {
+    ++afterBazCount;
+    equal(afterBazCount, 1, "This should only ever be one");
   }
 
   @afterAll()

@@ -7,3 +7,7 @@ Scenario: Test Scenario
 @bar
 Scenario: Second Test Scenario
     When bar
+
+@baz 
+Scenario: Test hooks here
+    Then baz
