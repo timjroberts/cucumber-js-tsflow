@@ -9,30 +9,17 @@ import { StepBinding, StepBindingFlags } from "./step-binding";
  * @param tag An optional tag.
  */
 export function before(tag?: string): MethodDecorator {
-  const callsite = Callsite.capture();
+  return createDecoratorFactory(StepBindingFlags.before, tag);
+}
 
-  return <T>(
-    target: any,
-    propertyKey: string | symbol,
-    descriptor: TypedPropertyDescriptor<T>
-  ) => {
-    const stepBinding: StepBinding = {
-      stepPattern: "",
-      bindingType: StepBindingFlags.before,
-      targetPrototype: target,
-      targetPropertyKey: propertyKey,
-      argsLength: target[propertyKey].length,
-      callsite: callsite
-    };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
-
-    BindingRegistry.instance.registerStepBinding(stepBinding);
-
-    return descriptor;
-  };
+/**
+ * A method decorator that marks the associated function as a 'Before All Scenario' step. The function is
+ * executed before all scenarios are executed.
+ *
+ * @param tag An optional tag.
+ */
+export function beforeAll(tag?: string): MethodDecorator {
+  return createDecoratorFactory(StepBindingFlags.beforeAll, tag);
 }
 
 /**
@@ -42,7 +29,25 @@ export function before(tag?: string): MethodDecorator {
  * @param tag An optional tag.
  */
 export function after(tag?: string): MethodDecorator {
-  const callsite = Callsite.capture();
+  return createDecoratorFactory(StepBindingFlags.after, tag);
+}
+
+/**
+ * A method decorator that marks the associated function as an 'After All Scenario' step. The function is
+ * executed after all scenarios are executed.
+ *
+ * @param tag An optional tag.
+ */
+export function afterAll(tag?: string): MethodDecorator {
+  return createDecoratorFactory(StepBindingFlags.afterAll, tag);
+}
+
+function checkTag(tag: string): string {
+  return tag;
+}
+
+function createDecoratorFactory(flag: StepBindingFlags, tag?: string) {
+  const callSite = Callsite.capture();
 
   return <T>(
     target: any,
@@ -51,15 +56,15 @@ export function after(tag?: string): MethodDecorator {
   ) => {
     const stepBinding: StepBinding = {
       stepPattern: "",
-      bindingType: StepBindingFlags.after,
+      bindingType: flag,
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
-      callsite: callsite
+      callsite: callSite
     };
 
     if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
+      stepBinding.tag = checkTag(tag);
     }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
