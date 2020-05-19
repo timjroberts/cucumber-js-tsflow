@@ -34,6 +34,6 @@ jobs:
     - name: Run Test
       run: npm test
     - name: Publish Package
-      run: npm publish
+      run: npm run publish
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
