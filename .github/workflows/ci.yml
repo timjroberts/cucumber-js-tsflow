@@ -25,6 +25,7 @@ jobs:
       with:
         node-version: '12.x'
         registry-url: 'https://npm.pkg.github.com'
+        scope: '@wudong' 
 
     # Runs a single command using the runners shell
     - name: Install npm packages
@@ -34,6 +35,6 @@ jobs:
     - name: Run Test
       run: npm test
     - name: Publish Package
-      run: npm run publish
+      run: npm publish
       env: 
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
