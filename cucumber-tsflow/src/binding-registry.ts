@@ -1,4 +1,4 @@
-import * as _ from "underscore";
+import _ from "underscore";
 
 import { StepBinding } from "./step-binding";
 import { ContextType, StepPattern, TagName } from "./types";
@@ -131,7 +131,9 @@ export class BindingRegistry {
       tagMap.set(stepBinding.tag, stepBindings);
     }
 
-    stepBindings.push(stepBinding);
+    if (!stepBindings.some(b => isSameStepBinding(stepBinding, b))) {
+      stepBindings.push(stepBinding);
+    }
 
     // Index the step binding for the target
 
@@ -146,7 +148,17 @@ export class BindingRegistry {
       this._targetBindings.set(stepBinding.targetPrototype, targetBinding);
     }
 
-    targetBinding.stepBindings.push(stepBinding);
+    if (!targetBinding.stepBindings.some(b => isSameStepBinding(stepBinding, b))) {
+      targetBinding.stepBindings.push(stepBinding);
+    }
+
+    function isSameStepBinding(a: StepBinding, b: StepBinding) {
+      return (
+        a.callsite.filename === b.callsite.filename
+        && a.callsite.lineNumber === b.callsite.lineNumber
+        && a.stepPattern === b.stepPattern
+      );
+    }
   }
 
   /**

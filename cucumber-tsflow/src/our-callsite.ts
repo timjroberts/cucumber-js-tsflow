@@ -1,4 +1,4 @@
-import * as stack from "callsite";
+import stack from "callsite";
 
 /**
  * Represents a callsite of where a step binding is being applied.
