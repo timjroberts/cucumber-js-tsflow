@@ -1,4 +1,4 @@
-import _ from "underscore";
+import * as _ from "underscore";
 
 import { StepBinding } from "./step-binding";
 import { ContextType, StepPattern, TagName } from "./types";

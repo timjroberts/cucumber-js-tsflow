@@ -1,5 +1,5 @@
 import { After, Before, Given, Tag, Then, When } from "cucumber";
-import _ from "underscore";
+import * as _ from "underscore";
 
 import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import { ManagedScenarioContext } from "./managed-scenario-context";
@@ -158,7 +158,7 @@ function bindStepDefinition(stepBinding: StepBinding): void {
 
     return (bindingObject[
       matchingStepBindings[0].targetPropertyKey
-    ] as () => void).apply(bindingObject, arguments as any);
+    ] as () => void).apply(bindingObject, arguments);
   };
 
   Object.defineProperty(bindingFunc, "length", {
@@ -221,7 +221,7 @@ function bindHook(stepBinding: StepBinding): void {
 
     return (bindingObject[stepBinding.targetPropertyKey] as () => void).apply(
       bindingObject,
-      arguments as any
+      arguments
     );
   };
 
