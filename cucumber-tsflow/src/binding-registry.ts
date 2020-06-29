@@ -148,15 +148,17 @@ export class BindingRegistry {
       this._targetBindings.set(stepBinding.targetPrototype, targetBinding);
     }
 
-    if (!targetBinding.stepBindings.some(b => isSameStepBinding(stepBinding, b))) {
+    if (
+      !targetBinding.stepBindings.some(b => isSameStepBinding(stepBinding, b))
+    ) {
       targetBinding.stepBindings.push(stepBinding);
     }
 
     function isSameStepBinding(a: StepBinding, b: StepBinding) {
       return (
-        a.callsite.filename === b.callsite.filename
-        && a.callsite.lineNumber === b.callsite.lineNumber
-        && a.stepPattern === b.stepPattern
+        a.callsite.filename === b.callsite.filename &&
+        a.callsite.lineNumber === b.callsite.lineNumber &&
+        String(a.stepPattern) === String(b.stepPattern)
       );
     }
   }
