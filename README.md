@@ -1,3 +1,5 @@
+![CI](https://github.com/timjroberts/cucumber-js-tsflow/workflows/CI/badge.svg)
+
 # cucumber-tsflow
 
 Provides 'specflow' like bindings for CucumberJS in TypeScript 1.7+.
