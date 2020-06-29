@@ -33,7 +33,4 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Run Test
       run: npm test
-    - name: Publish Package
-      run: npm publish
-      env: 
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
+   
