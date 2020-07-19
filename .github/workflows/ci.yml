@@ -47,8 +47,9 @@ jobs:
 
       - name: Check version changes
         uses: EndBug/version-check@v1
-        file-name: ./cucumber-tsflow/package.json
         id: check
+        with:
+          file-name: ./cucumber-tsflow/package.json
 
       - name: Version update detected
         if: steps.check.outputs.changed == 'true'
