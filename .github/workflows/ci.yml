@@ -24,7 +24,6 @@ jobs:
       with:
         node-version: '12.x'
         registry-url: 'https://npm.pkg.github.com'
-        scope: '@timjroberts' 
 
     # Runs a single command using the runners shell
     - name: Install npm packages
@@ -34,3 +33,57 @@ jobs:
     - name: Run Test
       run: npm test
    
+  publish:
+    name: Publish to NPM & GitHub Package Registry
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'master') # Publish it only if the push comes from the master branch
+    needs: build # We need to wait for the build to be committed before publishing
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - name: Check version changes
+        uses: EndBug/version-check@v1
+        file-name: ./cucumber-tsflow/package.json
+        id: check
+
+      - name: Version update detected
+        if: steps.check.outputs.changed == 'true'
+        run: 'echo "Version change found! New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
+
+#      - name: Set up Node.js for NPM
+#        if: steps.check.outputs.changed == 'true'
+#        uses: actions/setup-node@v1
+#        with:
+#          registry-url: "https://registry.npmjs.org"
+#
+#      - name: Install dependencies
+#        if: steps.check.outputs.changed == 'true'
+#        run: npm install --only=prod
+#
+#      - name: Publish package to NPM
+#        if: steps.check.outputs.changed == 'true'
+#        run: npm publish
+#        env:
+#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Set up Node.js for GPR
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-node@v1
+        with:
+          registry-url: "https://npm.pkg.github.com/"
+          scope: "@wudong"
+
+      - name: Set up package for GPR # You need to make sure you package name has the scope needed for GPR
+        if: steps.check.outputs.changed == 'true'
+        working-directory: cucumber-tsflow
+        run: node grp.js "$GITHUB_REPOSITORY"
+
+      - name: Publish package to GPR
+        if: steps.check.outputs.changed == 'true'
+        run: ./node_modules/.bin/lerna publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
