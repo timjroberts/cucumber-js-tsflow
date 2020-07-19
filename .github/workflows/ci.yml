@@ -50,6 +50,7 @@ jobs:
         id: check
         with:
           file-name: ./cucumber-tsflow/package.json
+          diff-search: true
 
       - name: Version update detected
         if: steps.check.outputs.changed == 'true'
