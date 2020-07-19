@@ -5,7 +5,7 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [ master, add-ci-with-github-action ]
   pull_request:
     branches: [ master ]
 
