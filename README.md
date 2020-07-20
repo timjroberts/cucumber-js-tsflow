@@ -22,7 +22,7 @@ By default, CucumberJS looks for .feature files in a folder called 'features', s
 
 Feature: Example Feature
    This is an example feature
-   
+
    Scenario: Adding two numbers
       Given I enter '2' and '8'
       Then I receive the result '10'
@@ -46,7 +46,7 @@ class ArithmeticSteps {
     public givenTwoNumbers(num1: string, num2: string): void {
         this.computedResult = parseInt(num1) + parseInt(num2);
     }
-    
+
     @then(/I receive the result '(\d*)'/)
     public thenResultReceived(expectedResult: string): void {
         if (parseInt(expectedResult) !== this.computedResult) {
@@ -120,7 +120,7 @@ public givenAValueBasedSearch(searchValue: string): void {
     ...
 }
 
-@given(/I perform a search using the value "([^"]*)"/, "tagName")
+@given(/I perform a search using the value "([^"]*)"/, "@tagName")
 public givenAValueBasedSearch(searchValue: string): void {
     ...
     // The step definition that will execute if the feature or
@@ -128,6 +128,15 @@ public givenAValueBasedSearch(searchValue: string): void {
     ...
 }
 ```
+
+---
+*** NOTE ***
+In Cucumber.js it is recommended to prefix the tag with
+`@`. `cucumber-js-tsflow` versions up to 3.2.2 automatically
+prepend a `@` when specified tag name doesn't start with `@`, which
+causes some tag expression cannot be used. This behavior has been
+removed since version `3.3.0`.
+---
 
 #### Hooks
 
@@ -146,7 +155,7 @@ class MySteps {
     }
     ...
 
-    @before("requireTempDir")
+    @before("@requireTempDir")
     public async beforeAllScenariosRequiringTempDirectory(): Promise<void> {
         let tempDirInfo = await this.createTemporaryDirectory();
 
@@ -158,7 +167,7 @@ class MySteps {
         ...
     }
 
-    @after("requireTmpDir")
+    @after("@requireTmpDir")
     public afterAllScenarios(): void {
         ...
     }
@@ -201,4 +210,3 @@ class MySteps {
 
 export = MySteps;
 ```
-
