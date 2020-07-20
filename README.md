@@ -130,7 +130,7 @@ public givenAValueBasedSearch(searchValue: string): void {
 ```
 
 ---
-*** NOTE ***
+##### NOTE
 In Cucumber.js it is recommended to prefix the tag with
 `@`. `cucumber-js-tsflow` versions up to 3.2.2 automatically
 prepend a `@` when specified tag name doesn't start with `@`, which
