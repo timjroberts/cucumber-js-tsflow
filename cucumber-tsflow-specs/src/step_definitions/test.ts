@@ -6,7 +6,6 @@ class Foo {
 }
 
 let afterBazCount = 0;
-let afterCount = 0;
 
 // tslint:disable-next-line:max-classes-per-file
 @binding([Foo])
@@ -28,7 +27,7 @@ export default class TestSteps {
 
   @when("bar")
   public WhenBar(): void {
-    equal(1+1, 2, "This is true");
+    equal(1 + 1, 2, "This is true");
   }
 
   @then("baz")
@@ -36,16 +35,9 @@ export default class TestSteps {
     equal(false, false, "This is false");
   }
 
-  @after("not @baz")
-  public after() {
-    ++afterCount;
-    equal((afterCount < 3), true, "It's true, I ran");
-  }
-
-  @after("@baz")
+  @after("baz")
   public afterBazOnly() {
     ++afterBazCount;
     equal(afterBazCount, 1, "This should only ever be one");
   }
-
 }
