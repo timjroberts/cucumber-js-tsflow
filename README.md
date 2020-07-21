@@ -129,15 +129,6 @@ public givenAValueBasedSearch(searchValue: string): void {
 }
 ```
 
----
-*** NOTE ***
-In Cucumber.js it is recommended to prefix the tag with
-`@`. `cucumber-js-tsflow` versions up to 3.2.2 automatically
-prepend a `@` when specified tag name doesn't start with `@`, which
-causes some tag expression cannot be used. This behavior has been
-removed since version `3.3.0`.
----
-
 #### Hooks
 
 Hooks can be used to perform additional automation on specific events such as before or after scenario execution.
