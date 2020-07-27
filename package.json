@@ -14,7 +14,7 @@
     "postinstall": "lerna bootstrap",
     "precommit": "lint-staged && npm test",
     "pretest": "npm run build",
-    "test": "cucumber-js --require cucumber-tsflow-specs/dist cucumber-tsflow-specs"
+    "test": "cucumber-js --tags 'not @wip' --require cucumber-tsflow-specs/dist cucumber-tsflow-specs "
   },
   "lint-staged": {
     "*.ts": [
@@ -28,7 +28,6 @@
     ]
   },
   "devDependencies": {
-    "@types/callsite": "^1.0.30",
     "@types/cucumber": "^4.0.4",
     "@types/node": "10.7.1",
     "@types/underscore": "1.8.8",

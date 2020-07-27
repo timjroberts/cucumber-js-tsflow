@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "module": "umd",
+    "moduleResolution": "node",
     "target": "es6",
     "declaration": true,
     "declarationMap": true,

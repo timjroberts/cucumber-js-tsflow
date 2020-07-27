@@ -30,35 +30,29 @@ export default class TestSteps {
     console.log("@basic after hook is called.");
   }
 
-  @after("@tagging")
+  @after("@tag1")
   public afterForTagging() {
     // this is not called by tagging feature.
     expect(this.beforeIsCalled).toBe(false);
-    // tslint:disable-next-line:no-console
-    console.log("@tagging after hook is called.");
-  }
-
-  @after()
-  public afterWithoutTag() {
     expect(this.beforeWithNoTagIsCalled).toBe(true);
     expect(this.whenIsCalled).toBe(true);
     expect(this.givenIsCalled).toBe(true);
     expect(this.thenIsCalled).toBe(true);
     // tslint:disable-next-line:no-console
-    console.log("no tag after hook is called.");
+    console.log("@tags1 after hook is called.");
   }
 
-  @given(/some step to be executed/)
+  @given(/^some step to be executed$/)
   public givenSomeStepTobeExecuted() {
     this.givenIsCalled = true;
   }
 
-  @when(/the condition is right/)
+  @when(/^the condition is right$/)
   public whenTheConditionIsRight() {
     this.whenIsCalled = true;
   }
 
-  @then(/we can see the result correctly/)
+  @then(/^we can see the result correctly$/)
   public thenWeCanSeeTheResult() {
     this.thenIsCalled = true;
   }
