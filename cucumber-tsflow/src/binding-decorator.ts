@@ -158,7 +158,7 @@ function bindStepDefinition(stepBinding: StepBinding): void {
 
     return (bindingObject[
       matchingStepBindings[0].targetPropertyKey
-    ] as () => void).apply(bindingObject, arguments);
+    ] as () => void).apply(bindingObject, arguments as any);
   };
 
   Object.defineProperty(bindingFunc, "length", {
@@ -221,7 +221,7 @@ function bindHook(stepBinding: StepBinding): void {
 
     return (bindingObject[stepBinding.targetPropertyKey] as () => void).apply(
       bindingObject,
-      arguments
+      arguments as any
     );
   };
 

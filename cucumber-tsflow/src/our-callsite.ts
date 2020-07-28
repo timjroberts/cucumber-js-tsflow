@@ -1,4 +1,6 @@
-import * as stack from "callsite";
+import * as callsites from "callsites";
+// @ts-ignore
+import * as sourceMapSupport from "source-map-support";
 
 /**
  * Represents a callsite of where a step binding is being applied.
@@ -26,8 +28,11 @@ export class Callsite {
    * Captures the current [[Callsite]] object.
    */
   public static capture(): Callsite {
-    const stackFrame = stack()[2];
-
-    return new Callsite(stackFrame.getFileName(), stackFrame.getLineNumber());
+    const stack = callsites()[2];
+    const tsStack = sourceMapSupport.wrapCallSite(stack);
+    return new Callsite(
+      tsStack.getFileName() || "",
+      tsStack.getLineNumber() || -1
+    );
   }
 }
