@@ -1,5 +1,6 @@
-import { After, Before, Given, Tag, Then, When } from "cucumber";
+import { After, Before, Given, Tag, Then, When, World } from "cucumber";
 import * as _ from "underscore";
+import logger from "./logger";
 
 import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import { ManagedScenarioContext } from "./managed-scenario-context";
@@ -75,10 +76,14 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
  * function.
  */
 const ensureSystemBindings = _.once(() => {
-  Before(function(scenario: any) {
+  Before(function(scenario: { pickle: any; sourceLocation: any }) {
+    logger.trace(
+      "Setting up scenario context for scenario:",
+      JSON.stringify(scenario)
+    );
     this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(
-      scenario.name,
-      _.map(scenario.tags, (tag: Tag) => tag.name)
+      scenario.pickle.name,
+      _.map(scenario.pickle.tags, (tag: Tag) => tag.name)
     );
   });
 
@@ -118,7 +123,7 @@ const ensureSystemBindings = _.once(() => {
  * @param stepBinding The [[StepBinding]] that represents a 'given', 'when', or 'then' step definition.
  */
 function bindStepDefinition(stepBinding: StepBinding): void {
-  const bindingFunc = function(this: any): any {
+  const bindingFunc = function(this: World): any {
     const bindingRegistry = BindingRegistry.instance;
 
     const scenarioContext = this[
@@ -144,6 +149,12 @@ function bindStepDefinition(stepBinding: StepBinding): void {
       });
 
       throw new Error(message);
+    } else if (matchingStepBindings.length === 0) {
+      throw new Error(
+        `Cannot find matched step definition for ${stepBinding.stepPattern.toString()} with tag ${
+          scenarioContext.scenarioInfo.tags
+        } in binding registry`
+      );
     }
 
     const contextTypes = bindingRegistry.getContextTypesForTarget(

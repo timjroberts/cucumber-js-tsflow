@@ -7,22 +7,22 @@ export default class TestSteps {
   private givenIsCalled = false;
   private thenIsCalled = false;
 
-  @given(/^some step to be executed with tag$/, "@tags2")
+  @given(/^some step to be executed with tag$/, "@tag2")
   public givenSomeStepTobeExecuted() {
     this.givenIsCalled = true;
   }
 
-  @when(/^the condition is right with tag$/, "@tags2")
+  @when(/^the condition is right with tag$/, "@tag2")
   public whenTheConditionIsRight() {
     this.whenIsCalled = true;
   }
 
-  @then(/^we can see the result correctly with tag$/, "tags2")
+  @then(/^we can see the result correctly with tag$/, "tag2")
   public thenWeCanSeeTheResult() {
     this.thenIsCalled = true;
   }
 
-  @after("@tags2")
+  @after("@tag2")
   public afterTag() {
     expect(this.whenIsCalled).toBe(true);
     expect(this.givenIsCalled).toBe(true);

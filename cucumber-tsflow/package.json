@@ -21,6 +21,7 @@
   "dependencies": {
     "source-map-support": "^0.5.19",
     "callsites": "^3.1.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "log4js": "^6.3.0"
   }
 }

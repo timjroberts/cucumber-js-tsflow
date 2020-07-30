@@ -10,13 +10,16 @@ Scenario: Test step definitions without tags
     When the condition is right
     Then we can see the result correctly
 
-@wip
 @tag2
 Scenario: Test step definitions with tags
+
+  Step definitions that are tagged will only be used steps that has the tags.
+  One step can have multiple tags associated with it, for example, in this case, this
+  scenario has tags [tags, tag2]. A step definition that has a tag matching any of them
+  will be picked as candidate for execution.
 
     Given some step to be executed with tag
     When the condition is right with tag
     Then we can see the result correctly with tag
-
 
 
