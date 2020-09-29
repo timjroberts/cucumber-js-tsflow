@@ -8,6 +8,6 @@
   "main": "./index.js",
   "typings": "./dist/index.d.ts",
   "dependencies": {
-    "cucumber-tsflow": "^3.4.1"
+    "cucumber-tsflow": "^4.0.0"
   }
 }
