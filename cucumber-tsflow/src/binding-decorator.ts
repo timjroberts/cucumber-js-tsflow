@@ -1,4 +1,6 @@
-import { After, Before, Given, Tag, Then, When, World } from "cucumber";
+import { After, Before, Given, Then, When, World } from "@cucumber/cucumber";
+import { messages } from "@cucumber/messages";
+
 import * as _ from "underscore";
 import logger from "./logger";
 
@@ -6,7 +8,10 @@ import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import { ManagedScenarioContext } from "./managed-scenario-context";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { ContextType, StepPattern, TypeDecorator } from "./types";
-//
+
+interface WritableWorld extends World {
+  [key: string]: any;
+}
 
 /**
  * The property name of the current scenario context that will be attached to the Cucumber
@@ -76,18 +81,22 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
  * function.
  */
 const ensureSystemBindings = _.once(() => {
-  Before(function(scenario: { pickle: any; sourceLocation: any }) {
+  Before(function(this: WritableWorld, scenario) {
     logger.trace(
       "Setting up scenario context for scenario:",
       JSON.stringify(scenario)
     );
+
     this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(
-      scenario.pickle.name,
-      _.map(scenario.pickle.tags, (tag: Tag) => tag.name)
+      scenario.pickle.name!,
+      _.map(
+        scenario.pickle.tags!,
+        (tag: messages.Pickle.IPickleTag) => tag.name!
+      )
     );
   });
 
-  After(function() {
+  After(function(this: WritableWorld) {
     const scenarioContext = this[
       SCENARIO_CONTEXT_SLOTNAME
     ] as ManagedScenarioContext;
@@ -123,7 +132,7 @@ const ensureSystemBindings = _.once(() => {
  * @param stepBinding The [[StepBinding]] that represents a 'given', 'when', or 'then' step definition.
  */
 function bindStepDefinition(stepBinding: StepBinding): void {
-  const bindingFunc = function(this: World): any {
+  const bindingFunc = function(this: WritableWorld): any {
     const bindingRegistry = BindingRegistry.instance;
 
     const scenarioContext = this[
