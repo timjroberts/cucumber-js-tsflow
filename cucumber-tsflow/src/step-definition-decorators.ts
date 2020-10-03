@@ -12,7 +12,8 @@ import { StepBinding, StepBindingFlags } from "./step-binding";
 export function given(
   stepPattern: RegExp | string,
   tag?: string,
-  timeout?: number
+  timeout?: number,
+  wrapperOption?: any
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -27,16 +28,11 @@ export function given(
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
-      callsite: callsite
+      callsite: callsite,
+      tag: tag,
+      timeout: timeout,
+      wrapperOption: wrapperOption
     };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
-
-    if (timeout) {
-      stepBinding.timeout = timeout;
-    }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 
@@ -54,7 +50,8 @@ export function given(
 export function when(
   stepPattern: RegExp | string,
   tag?: string,
-  timeout?: number
+  timeout?: number,
+  wrapperOption?: any
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -69,16 +66,11 @@ export function when(
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
-      callsite: callsite
+      callsite: callsite,
+      tag: tag,
+      timeout: timeout,
+      wrapperOption: wrapperOption
     };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
-
-    if (timeout) {
-      stepBinding.timeout = timeout;
-    }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 
@@ -96,7 +88,8 @@ export function when(
 export function then(
   stepPattern: RegExp | string,
   tag?: string,
-  timeout?: number
+  timeout?: number,
+  wrapperOption?: any
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -111,16 +104,11 @@ export function then(
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
-      callsite: callsite
+      callsite: callsite,
+      tag: tag,
+      timeout: timeout,
+      wrapperOption: wrapperOption
     };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
-
-    if (timeout) {
-      stepBinding.timeout = timeout;
-    }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 

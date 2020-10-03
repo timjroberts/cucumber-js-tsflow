@@ -186,35 +186,32 @@ function bindStepDefinition(stepBinding: StepBinding): void {
   });
 
   if (stepBinding.bindingType & StepBindingFlags.given) {
-    if (stepBinding.timeout) {
-      Given(
-        stepBinding.stepPattern,
-        { timeout: stepBinding.timeout },
-        bindingFunc
-      );
-    } else {
-      Given(stepBinding.stepPattern, bindingFunc);
-    }
+    Given(
+      stepBinding.stepPattern,
+      {
+        timeout: stepBinding.timeout,
+        wrapperOptions: stepBinding.wrapperOption
+      },
+      bindingFunc
+    );
   } else if (stepBinding.bindingType & StepBindingFlags.when) {
-    if (stepBinding.timeout) {
-      When(
-        stepBinding.stepPattern,
-        { timeout: stepBinding.timeout },
-        bindingFunc
-      );
-    } else {
-      When(stepBinding.stepPattern, bindingFunc);
-    }
+    When(
+      stepBinding.stepPattern,
+      {
+        timeout: stepBinding.timeout,
+        wrapperOptions: stepBinding.wrapperOption
+      },
+      bindingFunc
+    );
   } else if (stepBinding.bindingType & StepBindingFlags.then) {
-    if (stepBinding.timeout) {
-      Then(
-        stepBinding.stepPattern,
-        { timeout: stepBinding.timeout },
-        bindingFunc
-      );
-    } else {
-      Then(stepBinding.stepPattern, bindingFunc);
-    }
+    Then(
+      stepBinding.stepPattern,
+      {
+        timeout: stepBinding.timeout,
+        wrapperOptions: stepBinding.wrapperOption
+      },
+      bindingFunc
+    );
   }
 }
 
@@ -249,17 +246,23 @@ function bindHook(stepBinding: StepBinding): void {
     value: stepBinding.argsLength
   });
 
+  const tags = stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag;
+
   if (stepBinding.bindingType & StepBindingFlags.before) {
-    if (stepBinding.tag === DEFAULT_TAG) {
-      Before(bindingFunc);
-    } else {
-      Before(String(stepBinding.tag), bindingFunc);
-    }
+    Before(
+      {
+        tags: tags,
+        timeout: stepBinding.timeout
+      },
+      bindingFunc
+    );
   } else if (stepBinding.bindingType & StepBindingFlags.after) {
-    if (stepBinding.tag === DEFAULT_TAG) {
-      After(bindingFunc);
-    } else {
-      After(String(stepBinding.tag), bindingFunc);
-    }
+    After(
+      {
+        tags: tags,
+        timeout: stepBinding.timeout
+      },
+      bindingFunc
+    );
   }
 }

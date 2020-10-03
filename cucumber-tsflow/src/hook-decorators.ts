@@ -8,7 +8,7 @@ import { StepBinding, StepBindingFlags } from "./step-binding";
  *
  * @param tag An optional tag.
  */
-export function before(tag?: string): MethodDecorator {
+export function before(tag?: string, timeout?: number): MethodDecorator {
   const callsite = Callsite.capture();
 
   return <T>(
@@ -22,12 +22,10 @@ export function before(tag?: string): MethodDecorator {
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
-      callsite: callsite
+      callsite: callsite,
+      tag: tag,
+      timeout: timeout
     };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 
@@ -41,7 +39,7 @@ export function before(tag?: string): MethodDecorator {
  *
  * @param tag An optional tag.
  */
-export function after(tag?: string): MethodDecorator {
+export function after(tag?: string, timeout?: number): MethodDecorator {
   const callsite = Callsite.capture();
 
   return <T>(
@@ -55,12 +53,10 @@ export function after(tag?: string): MethodDecorator {
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
-      callsite: callsite
+      callsite: callsite,
+      tag: tag,
+      timeout: timeout
     };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 

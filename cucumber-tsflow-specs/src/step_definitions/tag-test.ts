@@ -17,7 +17,7 @@ export default class TestSteps {
     this.whenIsCalled = true;
   }
 
-  @then(/^we can see the result correctly with tag$/, "tag2")
+  @then(/^we can see the result correctly with tag$/, "@tag2")
   public thenWeCanSeeTheResult() {
     this.thenIsCalled = true;
   }

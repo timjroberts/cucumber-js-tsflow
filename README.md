@@ -134,7 +134,7 @@ public givenAValueBasedSearch(searchValue: string): void {
 Hooks can be used to perform additional automation on specific events such as before or after scenario execution.
 Hooks can be restricted to run for only features or scenarios with a specific tag:
 
-```javascript
+```typescript
 import { binding, before, after } from "cucumber-tsflow";
 
 @binding()
@@ -166,6 +166,36 @@ class MySteps {
 
 export = MySteps;
 ```
+
+#### Timeout in step definition and hooks. 
+In step definition and hooks, we can set timeout. For example, to set the timeout for a step to be 20000ms, we can do: 
+
+```typescript
+
+@given(/I perform a search using the value "([^"]*)"/, undefined, 20000)
+public givenAValueBasedSearch(searchValue: string): void {
+    ...
+    // this step will time tou in 20000ms.
+    ...
+}
+
+``` 
+
+tsflow currently doesn't have a way to define global default step timeout, 
+but it can be easily done through cucumber.js ```setDefaultTimeout``` function.
+
+#### Passing WrapOptions
+In step definition, we can passing additional wrapoptions to cucumber js. For example: 
+```typescript
+
+@given(/I perform a search using the value "([^"]*)"/, undefined, undefined, {retry: 2})
+public givenAValueBasedSearch(searchValue: string): void {
+    ...
+    // this step will be retried by cucumber js    
+    ...
+}
+
+``` 
 
 ### Sharing Data between Bindings
 

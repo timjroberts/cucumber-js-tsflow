@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="cucumber-js" type="NodeJSConfigurationType" application-parameters="features/**/*.feature --require &quot;src/step_definitions/**/*.ts&quot;" nameIsGenerated="true" node-parameters="--require ts-node/register" path-to-js-file="$PROJECT_DIR$/node_modules/@cucumber/cucumber/bin/cucumber-js" working-dir="$PROJECT_DIR$/cucumber-tsflow-specs">
+    <method v="2" />
+  </configuration>
+</component>

@@ -111,6 +111,13 @@ export class BindingRegistry {
       stepBinding.tag = DEFAULT_TAG;
     }
 
+    if (stepBinding.tag !== DEFAULT_TAG && !stepBinding.tag.startsWith("@")) {
+      // tslint:disable-next-line:no-console
+      console.log(
+        "tag should start with @; tsflow has stopped to automatically prepend @ for you."
+      );
+    }
+
     const stepPattern: StepPattern = stepBinding.stepPattern
       ? stepBinding.stepPattern.toString()
       : DEFAULT_STEP_PATTERN;
