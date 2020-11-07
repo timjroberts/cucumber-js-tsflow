@@ -3,4 +3,5 @@ tsconfig.json
 typings.json
 typings
 .npmignore
+*.tsbuildinfo
 !dist/**/*.d.ts

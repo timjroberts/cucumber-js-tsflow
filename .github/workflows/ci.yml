@@ -29,7 +29,6 @@ jobs:
         node-version: '12.x'
         registry-url: 'https://npm.pkg.github.com'
         scope: '@timjroberts'
-
     - name: Install npm packages
       run: npm ci
     - name: Update package version
@@ -39,9 +38,10 @@ jobs:
     - name: Run specification tests
       run: npm test
     - name: Create npm package
+      if: github.event_name == 'push'
       run: npm pack ./cucumber-tsflow
-
     - uses: actions/upload-artifact@v2
+      if: github.event_name == 'push'
       with:
         name: npm-package
         path: cucumber-tsflow-*.tgz
