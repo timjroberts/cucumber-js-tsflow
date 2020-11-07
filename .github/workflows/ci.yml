@@ -20,17 +20,28 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+    # .NET Core is required in order to use nerdbank-gitversioning
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
     - uses: actions/setup-node@v1 
       with:
         node-version: '12.x'
         registry-url: 'https://npm.pkg.github.com'
-        scope: '@timjroberts' 
+        scope: '@timjroberts'
 
-    # Runs a single command using the runners shell
     - name: Install npm packages
       run: npm ci
-
-    # Runs a set of commands using the runners shell
-    - name: Run Test
+    - name: Update package version
+      run: npm run set-packageversion
+    - name: Build
+      run: npm run build
+    - name: Run specification tests
       run: npm test
-   
+    - name: Create npm package
+      run: npm pack ./cucumber-tsflow
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: npm-package
+        path: cucumber-tsflow-*.tgz
