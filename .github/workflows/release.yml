@@ -1,0 +1,69 @@
+#
+# This workflow creates a release from a specified branch. The Package version is managed
+# by Nerdbank Gitversioning based on configuration held in 'version.json' file.
+#
+name: Release
+on:
+  workflow_dispatch:
+
+jobs:
+  # Build, Test and Pack the 'cucumber-tsflow' package
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # avoid shallow clone (required by Nerbank GitVersioning)
+    - uses: actions/setup-dotnet@v1 # .NET Core is required in order to use nerdbank-gitversioning
+      with:
+        dotnet-version: 3.1.301
+    - uses: actions/setup-node@v1 
+      with:
+        node-version: '12.x'
+        registry-url: 'https://registry.npmjs.org'
+    - name: Install npm packages
+      run: npm ci
+    - name: Update package version
+      id: set_package_version
+      run: npm run set-packageversion
+    - name: Build
+      run: npm run build
+    - name: Run specification tests
+      run: npm test
+    - name: Create npm package
+      run: npm pack ./cucumber-tsflow
+    - name: Create version info file
+      run: echo "${{ steps.set_package_version.outputs.package_version }}" > versioninfo.txt
+    - uses: actions/upload-artifact@v2
+      with:
+        name: npm-package
+        path: |
+          versioninfo.txt
+          cucumber-tsflow-${{ steps.set_package_version.outputs.package_version }}.tgz
+  
+  # Publish the 'cucumber-tsflow' package to npm
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/setup-node@v1 
+      with:
+        node-version: '12.x'
+        registry-url: 'https://registry.npmjs.org'
+    - uses: actions/download-artifact@v2
+      name: Download npm package
+      with:
+        name: npm-package
+    - name: Read version info file
+      id: get_package_version
+      run: |
+        VER=`cat versioninfo.txt`
+        echo "::set-output name=package_version::$VER"
+    - name: Publish npm package
+      run: npm publish cucumber-tsflow-${{ steps.get_package_version.outputs.package_version }}.tgz
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
