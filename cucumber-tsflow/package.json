@@ -23,5 +23,8 @@
     "log4js": "^6.3.0",
     "source-map-support": "^0.5.19",
     "underscore": "^1.8.3"
+  },
+  "peerDependencies": {
+    "@cucumber/cucumber": ">7.0.0-rc || >7.0.0"
   }
 }
