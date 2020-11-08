@@ -1,39 +1,32 @@
-
 name: CI
-
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [ master, release/** ]
+    tags: [ v* ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, release/** ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  # Build, Test and Pack the 'cucumber-tsflow' package
   build:
-    # The type of runner that the job will run on
+    name: Build and Test
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0 # avoid shallow clone (required by Nerbank GitVersioning)
-    # .NET Core is required in order to use nerdbank-gitversioning
-    - uses: actions/setup-dotnet@v1
+    - uses: actions/setup-dotnet@v1 # .NET Core is required in order to use nerdbank-gitversioning
       with:
         dotnet-version: 3.1.301
     - uses: actions/setup-node@v1 
       with:
         node-version: '12.x'
-        registry-url: 'https://npm.pkg.github.com'
-        scope: '@timjroberts'
+        registry-url: 'https://registry.npmjs.org'
     - name: Install npm packages
       run: npm ci
     - name: Update package version
+      id: set_package_version
       run: npm run set-packageversion
     - name: Build
       run: npm run build
@@ -42,8 +35,36 @@ jobs:
     - name: Create npm package
       if: github.event_name == 'push'
       run: npm pack ./cucumber-tsflow
+    - run: echo "${{ steps.set_package_version.outputs.package_version }}" > versioninfo.txt
     - uses: actions/upload-artifact@v2
       if: github.event_name == 'push'
       with:
         name: npm-package
-        path: cucumber-tsflow-*.tgz
+        path: |
+          versioninfo.txt
+          cucumber-tsflow-${{ steps.set_package_version.outputs.package_version }}.tgz
+  
+  # Publish the 'cucumber-tsflow' package to npm (only on a push to a branch or a tag)
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push'
+
+    steps:
+    - uses: actions/setup-node@v1 
+      with:
+        node-version: '12.x'
+        registry-url: 'https://registry.npmjs.org'
+    - uses: actions/download-artifact@v2
+      name: Download npm package
+      with:
+        name: npm-package
+    - id: get_package_version
+      run: |
+        VER=`cat versioninfo.txt`
+        echo "::set-output name=package_version::$VER"
+    - name: Publish npm package
+      run: npm publish cucumber-tsflow-${{ steps.get_package_version.outputs.package_version }}.tgz
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
