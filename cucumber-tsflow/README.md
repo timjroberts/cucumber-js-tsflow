@@ -1,6 +1,6 @@
 # cucumber-tsflow
 
-Provides 'specflow' like bindings for CucumberJS in TypeScript 1.7+.
+Provides 'specflow' like bindings for Cucumber.js in TypeScript 1.7+.
 
 
 ### Bindings
