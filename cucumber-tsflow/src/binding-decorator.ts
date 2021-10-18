@@ -1,5 +1,5 @@
 import { After, Before, Given, Then, When, World } from "@cucumber/cucumber";
-import { messages } from "@cucumber/messages";
+import { PickleTag } from "@cucumber/messages";
 
 import * as _ from "underscore";
 import logger from "./logger";
@@ -40,7 +40,7 @@ const stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
  * An instance of the decorated class will be created for each scenario.
  */
 export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
-  return <T>(target: { new (...args: any[]): T }) => {
+  return <T>(target: new (...args: any[]) => T) => {
     ensureSystemBindings();
     const bindingRegistry = BindingRegistry.instance;
     bindingRegistry.registerContextTypesForTarget(
@@ -89,10 +89,7 @@ const ensureSystemBindings = _.once(() => {
 
     this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(
       scenario.pickle.name!,
-      _.map(
-        scenario.pickle.tags!,
-        (tag: messages.Pickle.IPickleTag) => tag.name!
-      )
+      _.map(scenario.pickle.tags!, (tag: PickleTag) => tag.name!)
     );
   });
 
@@ -145,9 +142,7 @@ function bindStepDefinition(stepBinding: StepBinding): void {
     );
 
     if (matchingStepBindings.length > 1) {
-      let message = `Ambiguous step definitions for '${
-        matchingStepBindings[0].stepPattern
-      }':\n`;
+      let message = `Ambiguous step definitions for '${matchingStepBindings[0].stepPattern}':\n`;
 
       matchingStepBindings.forEach(matchingStepBinding => {
         message =
