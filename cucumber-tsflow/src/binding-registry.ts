@@ -220,13 +220,14 @@ export class BindingRegistry {
     tags: TagName[],
     tagMap: Map<TagName, StepBinding[]>
   ): StepBinding[] {
-    const matchingStepBindings: StepBinding[] = _.flatten(
+    const matchingStepBindings: Array<StepBinding|undefined> = _.flatten(
       _.map(tags, tag => tagMap.get(tag))
     );
 
     return _.reject(
       matchingStepBindings,
       stepBinding => stepBinding === undefined
-    );
+    // Cast is safe because this operation removed all the undefined elements.
+    ) as StepBinding[];
   }
 }

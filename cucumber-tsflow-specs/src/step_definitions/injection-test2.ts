@@ -1,5 +1,5 @@
 import { binding, when } from "cucumber-tsflow";
-import * as expect from "expect";
+import expect from "expect";
 import { Workspace } from "./workspace";
 
 @binding([Workspace])
