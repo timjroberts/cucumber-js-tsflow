@@ -1,6 +1,7 @@
 import { BindingRegistry } from "./binding-registry";
 import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
+import { normalizeTag } from "./tag-normalization";
 
 /**
  * A method decorator that marks the associated function as a 'Before Scenario' step. The function is
@@ -22,12 +23,9 @@ export function before(tag?: string): MethodDecorator {
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
+      tag: normalizeTag(tag),
       callsite: callsite
     };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 
@@ -55,12 +53,9 @@ export function after(tag?: string): MethodDecorator {
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
+      tag: normalizeTag(tag),
       callsite: callsite
     };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 
