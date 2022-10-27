@@ -1,0 +1,8 @@
+{
+  "ignore": {
+    "@cucumber/cucumber": {
+      "versions": "^8",
+      "reason": "Mantain compatibility with cucumber 7 and 8"
+    }
+  }
+}
