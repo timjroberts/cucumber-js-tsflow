@@ -11,7 +11,8 @@
   "scripts": {
     "build": "tsc --build",
     "build:watch": "tsc --build --watch",
-    "postinstall": "lerna bootstrap",
+    "postinstall": "lerna bootstrap && npm run fix-peer-cucumber",
+    "fix-peer-cucumber": "rm -rf cucumber-tsflow/node_modules/@cucumber && ln -s ../../node_modules/@cucumber cucumber-tsflow/node_modules/@cucumber",
     "precommit": "lint-staged && npm test",
     "set-packageversion": "node .build/setPackageVersion.js",
     "pretest": "npm run build",
