@@ -9,13 +9,18 @@ jobs:
   build:
     name: Build and Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cucumberVersion: ['^7', '^8']
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
         with:
           node-version: 16
       - name: Install npm packages
-        run: npm ci
+        run: |-
+          npm ci
+          npm install @cucumber/cucumber@${{ matrix.cucumberVersion }}
       - name: Build
         run: npm run build
       - name: Run specification tests
