@@ -13,10 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1 
+    - uses: actions/setup-node@v3
       with:
-        node-version: '12.x'
-        registry-url: 'https://registry.npmjs.org'
+        node-version: 16
     - name: Install npm packages
       run: npm ci
     - name: Build

@@ -19,10 +19,9 @@ jobs:
     - uses: actions/setup-dotnet@v1 # .NET Core is required in order to use nerdbank-gitversioning
       with:
         dotnet-version: 3.1.301
-    - uses: actions/setup-node@v1 
+    - uses: actions/setup-node@v3
       with:
-        node-version: '12.x'
-        registry-url: 'https://registry.npmjs.org'
+        node-version: 16
     - name: Install npm packages
       run: npm ci
     - name: Update package version
@@ -50,9 +49,9 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/setup-node@v1 
+    - uses: actions/setup-node@v3
       with:
-        node-version: '12.x'
+        node-version: 16
         registry-url: 'https://registry.npmjs.org'
     - uses: actions/download-artifact@v2
       name: Download npm package
