@@ -1,5 +1,5 @@
 import { after, before, binding, given, then, when } from "cucumber-tsflow";
-import * as expect from "expect";
+import expect from "expect";
 
 @binding()
 export default class TestSteps {
