@@ -1,21 +1,21 @@
 {
-  "private": true,
   "name": "cucumber-tsflow-workspace",
-  "description": "Workspace for cucumber-tsflow",
   "version": "2.0.0",
-  "license": "MIT",
+  "private": true,
+  "description": "Workspace for cucumber-tsflow",
   "repository": {
     "type": "git",
     "url": "https://github.com/timjroberts/cucumber-js-tsflow.git"
   },
+  "license": "MIT",
   "scripts": {
     "build": "tsc --build",
     "build:watch": "tsc --build --watch",
     "postinstall": "lerna bootstrap",
     "precommit": "lint-staged && npm test",
+    "set-packageversion": "node .build/setPackageVersion.js",
     "pretest": "npm run build",
-    "test": "cucumber-js --tags \"not @wip\" --require cucumber-tsflow-specs/dist cucumber-tsflow-specs",
-    "set-packageversion": "node .build/setPackageVersion.js"
+    "test": "cucumber-js --tags \"not @wip\" --require cucumber-tsflow-specs/dist cucumber-tsflow-specs"
   },
   "lint-staged": {
     "*.ts": [
@@ -35,11 +35,11 @@
     "jest": "^29.2.2",
     "lerna": "^6.0.1",
     "lint-staged": "^13.0.3",
+    "nerdbank-gitversioning": "^3.5.119",
     "prettier": "^2.7.1",
     "ts-node": "^10.9.1",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^4.8.4",
-    "nerdbank-gitversioning": "^3.5.119"
+    "typescript": "^4.8.4"
   }
 }
