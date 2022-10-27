@@ -8,6 +8,7 @@ import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import { ManagedScenarioContext } from "./managed-scenario-context";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { ContextType, StepPattern, TypeDecorator } from "./types";
+import { IDefineTestStepHookOptions } from "@cucumber/cucumber/lib/support_code_library_builder/types";
 
 interface WritableWorld extends World {
   [key: string]: any;
@@ -125,7 +126,6 @@ const ensureSystemBindings = _.once(() => {
 /**
  * Binds a step definition to Cucumber.
  *
- * @param cucumber The cucumber object.
  * @param stepBinding The [[StepBinding]] that represents a 'given', 'when', or 'then' step definition.
  */
 function bindStepDefinition(stepBinding: StepBinding): void {
@@ -138,28 +138,7 @@ function bindStepDefinition(stepBinding: StepBinding): void {
 
     const matchingStepBindings = bindingRegistry.getStepBindings(
       stepBinding.stepPattern.toString(),
-      scenarioContext.scenarioInfo.tags
     );
-
-    if (matchingStepBindings.length > 1) {
-      let message = `Ambiguous step definitions for '${matchingStepBindings[0].stepPattern}':\n`;
-
-      matchingStepBindings.forEach(matchingStepBinding => {
-        message =
-          message +
-          `\t\t${String(
-            matchingStepBinding.targetPropertyKey
-          )} (${matchingStepBinding.callsite.toString()})\n`;
-      });
-
-      throw new Error(message);
-    } else if (matchingStepBindings.length === 0) {
-      throw new Error(
-        `Cannot find matched step definition for ${stepBinding.stepPattern.toString()} with tag ${
-          scenarioContext.scenarioInfo.tags
-        } in binding registry`
-      );
-    }
 
     const contextTypes = bindingRegistry.getContextTypesForTarget(
       matchingStepBindings[0].targetPrototype
@@ -180,36 +159,29 @@ function bindStepDefinition(stepBinding: StepBinding): void {
     value: stepBinding.argsLength
   });
 
+  const bindingOptions: IDefineTestStepHookOptions =  {
+    timeout: stepBinding.timeout,
+    tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
+  };
+
   if (stepBinding.bindingType & StepBindingFlags.given) {
-    if (stepBinding.timeout) {
-      Given(
-        stepBinding.stepPattern,
-        { timeout: stepBinding.timeout },
-        bindingFunc
-      );
-    } else {
-      Given(stepBinding.stepPattern, bindingFunc);
-    }
+    Given(
+      stepBinding.stepPattern,
+      bindingOptions,
+      bindingFunc
+    );
   } else if (stepBinding.bindingType & StepBindingFlags.when) {
-    if (stepBinding.timeout) {
-      When(
-        stepBinding.stepPattern,
-        { timeout: stepBinding.timeout },
-        bindingFunc
-      );
-    } else {
-      When(stepBinding.stepPattern, bindingFunc);
-    }
+    When(
+      stepBinding.stepPattern,
+      bindingOptions,
+      bindingFunc
+    );
   } else if (stepBinding.bindingType & StepBindingFlags.then) {
-    if (stepBinding.timeout) {
-      Then(
-        stepBinding.stepPattern,
-        { timeout: stepBinding.timeout },
-        bindingFunc
-      );
-    } else {
-      Then(stepBinding.stepPattern, bindingFunc);
-    }
+    Then(
+      stepBinding.stepPattern,
+      bindingOptions,
+      bindingFunc
+    );
   }
 }
 

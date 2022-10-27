@@ -19,6 +19,7 @@ Scenario: Test step definitions with tags
   will be picked as candidate for execution.
 
     Given some step to be executed with tag
+    And some step to be executed without a tag
     When the condition is right with tag
     Then we can see the result correctly with tag
 

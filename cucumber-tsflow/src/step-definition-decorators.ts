@@ -1,6 +1,7 @@
 import { BindingRegistry } from "./binding-registry";
 import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
+import { normalizeTag } from "./tag-normalization";
 
 /**
  * A method decorator that marks the associated function as a 'Given' step.
@@ -27,12 +28,9 @@ export function given(
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
+      tag: normalizeTag(tag),
       callsite: callsite
     };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
 
     if (timeout) {
       stepBinding.timeout = timeout;
@@ -69,12 +67,9 @@ export function when(
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
+      tag: normalizeTag(tag),
       callsite: callsite
     };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
 
     if (timeout) {
       stepBinding.timeout = timeout;
@@ -111,12 +106,9 @@ export function then(
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
+      tag: normalizeTag(tag),
       callsite: callsite
     };
-
-    if (tag) {
-      stepBinding.tag = tag[0] === "@" ? tag : `@${tag}`;
-    }
 
     if (timeout) {
       stepBinding.timeout = timeout;

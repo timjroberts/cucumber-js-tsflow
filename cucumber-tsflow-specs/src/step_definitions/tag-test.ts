@@ -5,11 +5,17 @@ import expect from "expect";
 export default class TestSteps {
   private whenIsCalled = false;
   private givenIsCalled = false;
+  private givenWithoutTagCalled = false;
   private thenIsCalled = false;
 
   @given(/^some step to be executed with tag$/, "@tag2")
   public givenSomeStepTobeExecuted() {
     this.givenIsCalled = true;
+  }
+
+  @given(/^some step to be executed without a tag$/, "not @tag1")
+  public givenSomeStepThatNegatesATag() {
+    this.givenWithoutTagCalled = true;
   }
 
   @when(/^the condition is right with tag$/, "@tag2")
@@ -26,6 +32,7 @@ export default class TestSteps {
   public afterTag() {
     expect(this.whenIsCalled).toBe(true);
     expect(this.givenIsCalled).toBe(true);
+    expect(this.givenWithoutTagCalled).toBe(true);
     expect(this.thenIsCalled).toBe(true);
     // tslint:disable-next-line:no-console
     console.log("@tagging afterTag method is called");
