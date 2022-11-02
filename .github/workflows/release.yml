@@ -5,6 +5,7 @@
 name: Release
 on:
   workflow_dispatch:
+
 jobs:
   # Build, Test and Pack the 'cucumber-tsflow' package
   build:
@@ -32,12 +33,15 @@ jobs:
       - name: Create npm package
         run: npm pack ./cucumber-tsflow
       - name: Create version info file
-        run: echo "${{ steps.set_package_version.outputs.package_version }}" > versioninfo.txt
+        run: |-
+          echo "${{ steps.set_package_version.outputs.package_version }}" > versioninfo.txt
+          jq '.releaseTag or "latest"' version.json > releasetag.txt
       - uses: actions/upload-artifact@v2
         with:
           name: npm-package
           path: |
             versioninfo.txt
+            releasetag.txt
             cucumber-tsflow-${{ steps.set_package_version.outputs.package_version }}.tgz
   # Publish the 'cucumber-tsflow' package to npm
   publish:
@@ -58,7 +62,12 @@ jobs:
         run: |
           VER=`cat versioninfo.txt`
           echo "::set-output name=package_version::$VER"
+          TAG=`cat releasetag.txt`
+          echo "::set-output name=release_tag::$TAG"
       - name: Publish npm package
-        run: npm publish cucumber-tsflow-${{ steps.get_package_version.outputs.package_version }}.tgz
+        run: |-
+          npm publish \
+            cucumber-tsflow-${{ steps.get_package_version.outputs.package_version }}.tgz
+            --tag ${{ step.get_package_version.outputs.release_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
