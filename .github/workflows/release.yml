@@ -68,6 +68,6 @@ jobs:
         run: |-
           npm publish \
             cucumber-tsflow-${{ steps.get_package_version.outputs.package_version }}.tgz
-            --tag ${{ step.get_package_version.outputs.release_tag }}
+            --tag ${{ steps.get_package_version.outputs.release_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
