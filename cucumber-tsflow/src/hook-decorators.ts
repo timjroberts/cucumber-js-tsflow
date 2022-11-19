@@ -3,14 +3,27 @@ import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { normalizeTag } from "./tag-normalization";
 
+type HookOptions = {
+  tag?: string,
+  timeout?: number,
+}
+
+function overloadedOption(tag?: string | HookOptions): HookOptions {
+  if (tag === undefined || typeof tag === 'string') return {tag};
+
+  return tag;
+}
+
 /**
  * A method decorator that marks the associated function as a 'Before Scenario' step. The function is
  * executed before each scenario.
  *
- * @param tag An optional tag.
+ * @param tagOrOption An optional tag or hook options object.
  */
-export function before(tag?: string, timeout?: number): MethodDecorator {
+export function before(tagOrOption?: string | HookOptions): MethodDecorator {
   const callsite = Callsite.capture();
+
+  const {tag, timeout} = overloadedOption(tagOrOption);
 
   return <T>(
     target: any,
@@ -38,10 +51,12 @@ export function before(tag?: string, timeout?: number): MethodDecorator {
  * A method decorator that marks the associated function as an 'After Scenario' step. The function is
  * executed after each scenario.
  *
- * @param tag An optional tag.
+ * @param tagOrOption An optional tag or hook options object.
  */
-export function after(tag?: string, timeout?: number): MethodDecorator {
+export function after(tagOrOption?: string | HookOptions): MethodDecorator {
   const callsite = Callsite.capture();
+
+  const {tag, timeout} = overloadedOption(tagOrOption);
 
   return <T>(
     target: any,

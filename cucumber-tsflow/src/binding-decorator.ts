@@ -217,22 +217,19 @@ function bindHook(stepBinding: StepBinding): void {
     value: stepBinding.argsLength
   });
 
-  const tags = stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag;
+  const bindingOptions: IDefineTestStepHookOptions =  {
+    timeout: stepBinding.timeout,
+    tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
+  };
 
   if (stepBinding.bindingType & StepBindingFlags.before) {
     Before(
-      {
-        tags: tags,
-        timeout: stepBinding.timeout
-      },
+      bindingOptions,
       bindingFunc
     );
   } else if (stepBinding.bindingType & StepBindingFlags.after) {
     After(
-      {
-        tags: tags,
-        timeout: stepBinding.timeout
-      },
+      bindingOptions,
       bindingFunc
     );
   }
