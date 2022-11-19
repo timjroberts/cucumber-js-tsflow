@@ -3,11 +3,12 @@ import expect from "expect";
 
 @binding()
 export default class TestSteps {
-  private givenIsCalled = false;
+  private beforeWithNoTagIsCalled = false;
   private beforeIsCalled = false;
+
+  private givenIsCalled = false;
   private whenIsCalled = false;
   private thenIsCalled = false;
-  private beforeWithNoTagIsCalled = false;
 
   @before()
   public beforeWithNoTag() {
@@ -19,9 +20,15 @@ export default class TestSteps {
     this.beforeIsCalled = true;
   }
 
+  @after()
+  public afterWithNoTag() {
+    expect(this.beforeWithNoTagIsCalled).toBe(true);
+    // tslint:disable-next-line:no-console
+    console.log("after hook is called.");
+  }
+
   @after("@basic")
   public after() {
-    expect(this.beforeWithNoTagIsCalled).toBe(true);
     expect(this.beforeIsCalled).toBe(true);
     expect(this.whenIsCalled).toBe(true);
     expect(this.givenIsCalled).toBe(true);
