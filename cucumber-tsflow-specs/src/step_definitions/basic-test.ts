@@ -1,4 +1,4 @@
-import { after, before, binding, given, then, when } from "cucumber-tsflow";
+import { after, beforeAll, afterAll, before, binding, given, then, when } from "cucumber-tsflow";
 import expect from "expect";
 
 @binding()
@@ -9,6 +9,20 @@ export default class TestSteps {
   private givenIsCalled = false;
   private whenIsCalled = false;
   private thenIsCalled = false;
+
+  private static beforeAllCalled = false;
+
+  @beforeAll()
+  public static beforeAll() {
+    this.beforeAllCalled = true;
+  }
+
+  @afterAll()
+  public static afterAll() {
+    expect(this.beforeAllCalled).toBe(true);
+    // tslint:disable-next-line:no-console
+    console.log("afterAll hook is called.");
+  }
 
   @before()
   public beforeWithNoTag() {

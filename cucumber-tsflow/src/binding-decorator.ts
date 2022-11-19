@@ -1,4 +1,4 @@
-import { After, Before, Given, Then, When, World } from "@cucumber/cucumber";
+import { After, AfterAll, Before, BeforeAll, Given, Then, When, World } from "@cucumber/cucumber";
 import { PickleTag } from "@cucumber/messages";
 
 import * as _ from "underscore";
@@ -48,28 +48,37 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
       target.prototype,
       requiredContextTypes
     );
-    bindingRegistry
-      .getStepBindingsForTarget(target.prototype)
-      .forEach(stepBinding => {
-        if (stepBinding.bindingType & StepBindingFlags.StepDefinitions) {
-          let stepBindingFlags = stepPatternRegistrations.get(
-            stepBinding.stepPattern.toString()
-          );
-          if (stepBindingFlags === undefined) {
-            stepBindingFlags = StepBindingFlags.none;
-          }
-          if (stepBindingFlags & stepBinding.bindingType) {
-            return;
-          }
-          bindStepDefinition(stepBinding);
-          stepPatternRegistrations.set(
-            stepBinding.stepPattern.toString(),
-            stepBindingFlags | stepBinding.bindingType
-          );
-        } else if (stepBinding.bindingType & StepBindingFlags.Hooks) {
-          bindHook(stepBinding);
+
+    const allBindings: StepBinding[] = [
+      ...bindingRegistry.getStepBindingsForTarget(target),
+      ...bindingRegistry.getStepBindingsForTarget(target.prototype),
+    ];
+
+
+    for (const stepBinding of allBindings) {
+      if (stepBinding.bindingType & StepBindingFlags.StepDefinitions) {
+        let stepBindingFlags = stepPatternRegistrations
+          .get(stepBinding.stepPattern.toString());
+
+        if (stepBindingFlags === undefined) {
+          stepBindingFlags = StepBindingFlags.none;
         }
-      });
+
+        if (stepBindingFlags & stepBinding.bindingType) {
+          return;
+        }
+
+        bindStepDefinition(stepBinding);
+
+        stepPatternRegistrations.set(
+          stepBinding.stepPattern.toString(),
+          stepBindingFlags | stepBinding.bindingType
+        );
+
+      } else if (stepBinding.bindingType & StepBindingFlags.Hooks) {
+        bindHook(stepBinding);
+      }
+    };
   };
 }
 
@@ -159,7 +168,7 @@ function bindStepDefinition(stepBinding: StepBinding): void {
     value: stepBinding.argsLength
   });
 
-  const bindingOptions: IDefineStepOptions & IDefineTestStepHookOptions =  {
+  const bindingOptions: IDefineStepOptions & IDefineTestStepHookOptions = {
     timeout: stepBinding.timeout,
     wrapperOptions: stepBinding.wrapperOption,
     tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
@@ -213,24 +222,34 @@ function bindHook(stepBinding: StepBinding): void {
     );
   };
 
+  const globalBindFunc = () => {
+    const targetPrototype = stepBinding.targetPrototype;
+    const targetPrototypeKey = stepBinding.targetPropertyKey;
+
+    return targetPrototype[targetPrototypeKey].apply(targetPrototype);
+  }
+
   Object.defineProperty(bindingFunc, "length", {
     value: stepBinding.argsLength
   });
 
-  const bindingOptions: IDefineTestStepHookOptions =  {
+  const bindingOptions: IDefineTestStepHookOptions = {
     timeout: stepBinding.timeout,
     tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
   };
 
-  if (stepBinding.bindingType & StepBindingFlags.before) {
-    Before(
-      bindingOptions,
-      bindingFunc
-    );
-  } else if (stepBinding.bindingType & StepBindingFlags.after) {
-    After(
-      bindingOptions,
-      bindingFunc
-    );
+  switch (stepBinding.bindingType) {
+    case StepBindingFlags.before:
+      Before(bindingOptions, bindingFunc);
+      break;
+    case StepBindingFlags.after:
+      After(bindingOptions, bindingFunc);
+      break;
+    case StepBindingFlags.beforeAll:
+      BeforeAll(globalBindFunc);
+      break;
+    case StepBindingFlags.afterAll:
+      AfterAll(globalBindFunc);
+      break;
   }
 }
