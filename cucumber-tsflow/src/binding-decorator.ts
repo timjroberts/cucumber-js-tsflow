@@ -8,7 +8,7 @@ import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import { ManagedScenarioContext } from "./managed-scenario-context";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { ContextType, StepPattern, TypeDecorator } from "./types";
-import { IDefineTestStepHookOptions } from "@cucumber/cucumber/lib/support_code_library_builder/types";
+import { IDefineStepOptions, IDefineTestStepHookOptions } from "@cucumber/cucumber/lib/support_code_library_builder/types";
 
 interface WritableWorld extends World {
   [key: string]: any;
@@ -159,8 +159,9 @@ function bindStepDefinition(stepBinding: StepBinding): void {
     value: stepBinding.argsLength
   });
 
-  const bindingOptions: IDefineTestStepHookOptions =  {
+  const bindingOptions: IDefineStepOptions & IDefineTestStepHookOptions =  {
     timeout: stepBinding.timeout,
+    wrapperOptions: stepBinding.wrapperOption,
     tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
   };
 
@@ -216,17 +217,23 @@ function bindHook(stepBinding: StepBinding): void {
     value: stepBinding.argsLength
   });
 
+  const tags = stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag;
+
   if (stepBinding.bindingType & StepBindingFlags.before) {
-    if (stepBinding.tag === DEFAULT_TAG) {
-      Before(bindingFunc);
-    } else {
-      Before(String(stepBinding.tag), bindingFunc);
-    }
+    Before(
+      {
+        tags: tags,
+        timeout: stepBinding.timeout
+      },
+      bindingFunc
+    );
   } else if (stepBinding.bindingType & StepBindingFlags.after) {
-    if (stepBinding.tag === DEFAULT_TAG) {
-      After(bindingFunc);
-    } else {
-      After(String(stepBinding.tag), bindingFunc);
-    }
+    After(
+      {
+        tags: tags,
+        timeout: stepBinding.timeout
+      },
+      bindingFunc
+    );
   }
 }

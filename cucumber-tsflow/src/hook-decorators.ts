@@ -9,7 +9,7 @@ import { normalizeTag } from "./tag-normalization";
  *
  * @param tag An optional tag.
  */
-export function before(tag?: string): MethodDecorator {
+export function before(tag?: string, timeout?: number): MethodDecorator {
   const callsite = Callsite.capture();
 
   return <T>(
@@ -24,7 +24,8 @@ export function before(tag?: string): MethodDecorator {
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
       tag: normalizeTag(tag),
-      callsite: callsite
+      callsite: callsite,
+      timeout: timeout
     };
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
@@ -39,7 +40,7 @@ export function before(tag?: string): MethodDecorator {
  *
  * @param tag An optional tag.
  */
-export function after(tag?: string): MethodDecorator {
+export function after(tag?: string, timeout?: number): MethodDecorator {
   const callsite = Callsite.capture();
 
   return <T>(
@@ -54,7 +55,8 @@ export function after(tag?: string): MethodDecorator {
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
       tag: normalizeTag(tag),
-      callsite: callsite
+      callsite: callsite,
+      timeout: timeout
     };
 
     BindingRegistry.instance.registerStepBinding(stepBinding);

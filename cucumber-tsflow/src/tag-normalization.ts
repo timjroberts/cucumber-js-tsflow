@@ -1,9 +1,9 @@
-import * as _ from "underscore";
-
 export function normalizeTag(tag?: string): string | undefined {
-  return tag === undefined || tag.includes('@')
     // Tag is not provided or already includes a @
-    ? tag
+    if (tag === undefined || tag.includes('@')) return undefined;
+
     // If a tag doesn't include any @, for compatibility, prefix it with a @
-    : `@${tag}`;
+
+    console.warn('cucumber-tsflow ')
+    return `@${tag}`;
 }

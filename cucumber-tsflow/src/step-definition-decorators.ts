@@ -13,7 +13,8 @@ import { normalizeTag } from "./tag-normalization";
 export function given(
   stepPattern: RegExp | string,
   tag?: string,
-  timeout?: number
+  timeout?: number,
+  wrapperOption?: any
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -29,12 +30,10 @@ export function given(
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
       tag: normalizeTag(tag),
-      callsite: callsite
+      callsite: callsite,
+      timeout: timeout,
+      wrapperOption: wrapperOption
     };
-
-    if (timeout) {
-      stepBinding.timeout = timeout;
-    }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 
@@ -52,7 +51,8 @@ export function given(
 export function when(
   stepPattern: RegExp | string,
   tag?: string,
-  timeout?: number
+  timeout?: number,
+  wrapperOption?: any
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -67,13 +67,11 @@ export function when(
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
+      callsite: callsite,
       tag: normalizeTag(tag),
-      callsite: callsite
+      timeout: timeout,
+      wrapperOption: wrapperOption
     };
-
-    if (timeout) {
-      stepBinding.timeout = timeout;
-    }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 
@@ -91,7 +89,8 @@ export function when(
 export function then(
   stepPattern: RegExp | string,
   tag?: string,
-  timeout?: number
+  timeout?: number,
+  wrapperOption?: any
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -106,13 +105,11 @@ export function then(
       targetPrototype: target,
       targetPropertyKey: propertyKey,
       argsLength: target[propertyKey].length,
+      callsite: callsite,
       tag: normalizeTag(tag),
-      callsite: callsite
+      timeout: timeout,
+      wrapperOption: wrapperOption
     };
-
-    if (timeout) {
-      stepBinding.timeout = timeout;
-    }
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 
