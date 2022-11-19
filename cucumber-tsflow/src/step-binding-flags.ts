@@ -34,14 +34,29 @@ export enum StepBindingFlags {
   after = 1 << 4,
 
   /**
+   * A 'Before All' hook binding.
+   */
+  beforeAll = 1 << 5,
+
+  /**
+   * An 'After All' hook binding.
+   */
+  afterAll = 1 << 6,
+
+  /**
    * All step definition bindings.
    */
-  StepDefinitions = StepBindingFlags.given |
-    StepBindingFlags.when |
-    StepBindingFlags.then,
+  StepDefinitions = 
+    StepBindingFlags.given
+    | StepBindingFlags.when
+    | StepBindingFlags.then,
 
   /**
    * All hook bindings.
    */
-  Hooks = StepBindingFlags.before | StepBindingFlags.after
+  Hooks =
+    StepBindingFlags.before
+    | StepBindingFlags.after
+    | StepBindingFlags.beforeAll
+    | StepBindingFlags.afterAll,
 }

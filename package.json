@@ -16,7 +16,7 @@
     "precommit": "lint-staged && npm test",
     "set-packageversion": "node .build/setPackageVersion.js",
     "pretest": "npm run build",
-    "test": "cucumber-js --tags \"not @wip\" --require cucumber-tsflow-specs/dist cucumber-tsflow-specs"
+    "test": "cucumber-js -p default cucumber-tsflow-specs"
   },
   "lint-staged": {
     "*.ts": [

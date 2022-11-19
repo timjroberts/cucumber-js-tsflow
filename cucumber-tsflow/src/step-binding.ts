@@ -41,6 +41,11 @@ export interface StepBinding {
   timeout?: number;
 
   /**
+   * The wrapper Option passing to cucumber
+   */
+  wrapperOption?: any;
+
+  /**
    * The callsite of the step binding.
    */
   callsite: Callsite;

@@ -1,4 +1,4 @@
-import { After, Before, Given, Then, When, World } from "@cucumber/cucumber";
+import { After, AfterAll, Before, BeforeAll, Given, Then, When, World } from "@cucumber/cucumber";
 import { PickleTag } from "@cucumber/messages";
 
 import * as _ from "underscore";
@@ -8,7 +8,8 @@ import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import { ManagedScenarioContext } from "./managed-scenario-context";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { ContextType, StepPattern, TypeDecorator } from "./types";
-import { IDefineTestStepHookOptions } from "@cucumber/cucumber/lib/support_code_library_builder/types";
+import { IDefineStepOptions, IDefineTestStepHookOptions } from "@cucumber/cucumber/lib/support_code_library_builder/types";
+import { CucumberAttachments, CucumberLog, WorldParameters } from "./provided-context";
 
 interface WritableWorld extends World {
   [key: string]: any;
@@ -48,28 +49,37 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
       target.prototype,
       requiredContextTypes
     );
-    bindingRegistry
-      .getStepBindingsForTarget(target.prototype)
-      .forEach(stepBinding => {
-        if (stepBinding.bindingType & StepBindingFlags.StepDefinitions) {
-          let stepBindingFlags = stepPatternRegistrations.get(
-            stepBinding.stepPattern.toString()
-          );
-          if (stepBindingFlags === undefined) {
-            stepBindingFlags = StepBindingFlags.none;
-          }
-          if (stepBindingFlags & stepBinding.bindingType) {
-            return;
-          }
-          bindStepDefinition(stepBinding);
-          stepPatternRegistrations.set(
-            stepBinding.stepPattern.toString(),
-            stepBindingFlags | stepBinding.bindingType
-          );
-        } else if (stepBinding.bindingType & StepBindingFlags.Hooks) {
-          bindHook(stepBinding);
+
+    const allBindings: StepBinding[] = [
+      ...bindingRegistry.getStepBindingsForTarget(target),
+      ...bindingRegistry.getStepBindingsForTarget(target.prototype),
+    ];
+
+
+    for (const stepBinding of allBindings) {
+      if (stepBinding.bindingType & StepBindingFlags.StepDefinitions) {
+        let stepBindingFlags = stepPatternRegistrations
+          .get(stepBinding.stepPattern.toString());
+
+        if (stepBindingFlags === undefined) {
+          stepBindingFlags = StepBindingFlags.none;
         }
-      });
+
+        if (stepBindingFlags & stepBinding.bindingType) {
+          return;
+        }
+
+        bindStepDefinition(stepBinding);
+
+        stepPatternRegistrations.set(
+          stepBinding.stepPattern.toString(),
+          stepBindingFlags | stepBinding.bindingType
+        );
+
+      } else if (stepBinding.bindingType & StepBindingFlags.Hooks) {
+        bindHook(stepBinding);
+      }
+    };
   };
 }
 
@@ -88,10 +98,16 @@ const ensureSystemBindings = _.once(() => {
       JSON.stringify(scenario)
     );
 
-    this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(
+    const scenarioContext = new ManagedScenarioContext(
       scenario.pickle.name!,
       _.map(scenario.pickle.tags!, (tag: PickleTag) => tag.name!)
     );
+
+    this[SCENARIO_CONTEXT_SLOTNAME] = scenarioContext;
+
+    scenarioContext.addExternalObject(new WorldParameters(this.parameters));
+    scenarioContext.addExternalObject(new CucumberLog(this.log));
+    scenarioContext.addExternalObject(new CucumberAttachments(this.attach));
   });
 
   After(function(this: WritableWorld) {
@@ -103,6 +119,28 @@ const ensureSystemBindings = _.once(() => {
       scenarioContext.dispose();
     }
   });
+
+  try {
+    const stackFilter = require('@cucumber/cucumber/lib/filter_stack_trace');
+    const path = require('path');
+
+    const originalFileNameFilter = stackFilter.isFileNameInCucumber;
+
+    if (originalFileNameFilter !== undefined) {
+      const projectRootPath = path.join(__dirname, '..') + '/';
+
+      Object.defineProperty(stackFilter, 'isFileNameInCucumber', {
+        value: (fileName: string) => originalFileNameFilter(fileName)
+          || fileName.startsWith(projectRootPath)
+          || fileName.includes('node_modules'),
+        configurable: true,
+        enumerable: true,
+      });
+    }
+  } catch {
+    // Ignore errors, proper stack filtering is not officially supported
+    // so we override on a best effor basis only
+  }
 
   // Decorate the Cucumber step definition snippet builder so that it uses our syntax
 
@@ -148,8 +186,6 @@ function bindStepDefinition(stepBinding: StepBinding): void {
       contextTypes
     );
 
-    bindingObject._worldObj = this;
-
     return (bindingObject[
       matchingStepBindings[0].targetPropertyKey
     ] as () => void).apply(bindingObject, arguments as any);
@@ -159,8 +195,9 @@ function bindStepDefinition(stepBinding: StepBinding): void {
     value: stepBinding.argsLength
   });
 
-  const bindingOptions: IDefineTestStepHookOptions =  {
+  const bindingOptions: IDefineStepOptions & IDefineTestStepHookOptions = {
     timeout: stepBinding.timeout,
+    wrapperOptions: stepBinding.wrapperOption,
     tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
   };
 
@@ -204,29 +241,40 @@ function bindHook(stepBinding: StepBinding): void {
       contextTypes
     );
 
-    bindingObject._worldObj = this;
-
     return (bindingObject[stepBinding.targetPropertyKey] as () => void).apply(
       bindingObject,
       arguments as any
     );
   };
 
+  const globalBindFunc = () => {
+    const targetPrototype = stepBinding.targetPrototype;
+    const targetPrototypeKey = stepBinding.targetPropertyKey;
+
+    return targetPrototype[targetPrototypeKey].apply(targetPrototype);
+  }
+
   Object.defineProperty(bindingFunc, "length", {
     value: stepBinding.argsLength
   });
 
-  if (stepBinding.bindingType & StepBindingFlags.before) {
-    if (stepBinding.tag === DEFAULT_TAG) {
-      Before(bindingFunc);
-    } else {
-      Before(String(stepBinding.tag), bindingFunc);
-    }
-  } else if (stepBinding.bindingType & StepBindingFlags.after) {
-    if (stepBinding.tag === DEFAULT_TAG) {
-      After(bindingFunc);
-    } else {
-      After(String(stepBinding.tag), bindingFunc);
-    }
+  const bindingOptions: IDefineTestStepHookOptions = {
+    timeout: stepBinding.timeout,
+    tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
+  };
+
+  switch (stepBinding.bindingType) {
+    case StepBindingFlags.before:
+      Before(bindingOptions, bindingFunc);
+      break;
+    case StepBindingFlags.after:
+      After(bindingOptions, bindingFunc);
+      break;
+    case StepBindingFlags.beforeAll:
+      BeforeAll(globalBindFunc);
+      break;
+    case StepBindingFlags.afterAll:
+      AfterAll(globalBindFunc);
+      break;
   }
 }
