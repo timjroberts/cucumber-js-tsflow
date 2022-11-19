@@ -1,21 +1,34 @@
-![CI](https://github.com/timjroberts/cucumber-js-tsflow/workflows/CI/badge.svg)
-
 # cucumber-tsflow
+
+![CI](https://github.com/timjroberts/cucumber-js-tsflow/workflows/CI/badge.svg)
 
 Provides 'specflow' like bindings for CucumberJS in TypeScript 1.7+.
 
-### Quick Start
+## Table of content
 
-cucumber-tsflow uses TypeScript Decorators to create SpecFlow like bindings for TypeScript classes and methods that allow those classes and methods to be used in your CucumberJS support files. As such, cucumber-tsflow has a peer dependency on CucumberJS, and you still run your specifications using the cucumber command line tool.
+See that menu icon to the left of "README.md"?
 
-##### Install cucumber and cucumber-tsflow
+Did you know that every markdown file in GitHub with more than two headings
+have that icon as a Table of Content linking to every heading?
+
+## Quick Start
+
+cucumber-tsflow uses TypeScript Decorators to create SpecFlow like bindings for
+TypeScript classes and methods that allow those classes and methods to be used
+in your CucumberJS support files. As such, cucumber-tsflow has a peer dependency
+on CucumberJS, and you still run your specifications using the cucumber
+command line tool.
+
+### Install cucumber and cucumber-tsflow
 
 ```bash
-npm install cucumber cucumber-tsflow
+npm install @cucumber/cucumber cucumber-tsflow
 ```
-###### Create .feature files to describe your specifications
 
-By default, CucumberJS looks for .feature files in a folder called 'features', so create that folder and then create a new file called 'my_feature.feature':
+### Create .feature files to describe your specifications
+
+By default, CucumberJS looks for .feature files in a folder called 'features',
+so create that folder and then create a new file called `my_feature.feature`:
 
 ```gherkin
 # features/my_feature.feature
@@ -27,13 +40,17 @@ Feature: Example Feature
       Given I enter '2' and '8'
       Then I receive the result '10'
 ```
-###### Create the Support Files to support the Feature
 
-By default, CucumberJS looks for support files beneath the 'features' folder. You can override this on the cucumber command line by specifying the '-r' option. However, let's work with the default and create our code in the default location. We need to write step definitions to support the two steps that we created above.
+### Create the Support Files to support the Feature
 
-Create a new 'ArithmeticSteps.ts' file:
+CucumberJS requires Support Files defining what each step in the Feature files mean.
 
-```javascript
+By default, CucumberJS looks for Support Files beneath the 'features' folder.
+We need to write step definitions to support the two steps that we created above.
+
+Create a new `ArithmeticSteps.ts` file:
+
+```ts
 // features/ArithmeticSteps.ts
 
 import { binding, given, then } from "cucumber-tsflow";
@@ -57,22 +74,50 @@ class ArithmeticSteps {
 
 export = ArithmeticSteps;
 ```
-Note how the cucumber-tsflow Decorators are being used to bind the methods in the class. During runtime, these Decorators simply call the Cucumber code on your behalf in order to register callbacks with Given(), When(), Then(), etc. The callbacks that are being registered with Cucumber are wrappers around your bound class.
 
-###### Compiling your TypeScript Support Code
+Note how the cucumber-tsflow Decorators are being used to bind the methods in
+the class. During runtime, these Decorators simply call the Cucumber code on
+your behalf in order to register callbacks with Given(), When(), Then(), etc.
 
-You'll also need a `tsconfig.json` file to compile your code. You'll also need to ensure that the `"moduleResolution": "node"` compiler option is set in order to bring in the typings that are shipped with cucumber-tsflow.
+The callbacks that are being registered with Cucumber are wrappers around your
+bound class. This allows you to maintain a state between each step on the same
+class by using instance properties.
 
-Once compiled, running the cucumber command line should execute your features along with the support code that you've created in the class.
+In this quick example, the entire test state is encapsulated directly in the class.
+As your test suite grows larger and step definitions get shared between
+multiple classes, you can use 'Context Injection' to share state between
+running step definitions (see below).
 
-In this quick example test state is encapsulated directly in the class. As your test suite grows larger and step definitions get shared between multiple classes, you can begin using 'Context Injection' to share state between running step definitions (see below).
+### Compiling your TypeScript Support Code
+
+To use `cucumber-tsflow` with TypeScript, you'll also need a `tsconfig.json` file
+with these options:
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "experimentalDecorators": true
+  }
+}
+```
+
+> Hint: You can add that to `features/tsconfig.json` to have it applied only for
+> your integration tests.
+
+With the TS config in place, CucumberJS should automatically compile your code
+before running it.
+
+## Reference
 
 ### Bindings
 
-Bindings provide the automation that connects a specification step in a Gherkin feature file to some code that
-executes for that step. When using Cucumber with TypeScript you can define this automation using a 'binding' class:
+Bindings provide the automation that connects a specification step in a Gherkin
+feature file to some code that executes for that step.
+When using Cucumber with TypeScript you can define this automation using the
+`binding` decorator on top of a class:
 
-```javascript
+```ts
 import { binding } from "cucumber-tsflow";
 
 @binding()
@@ -83,14 +128,18 @@ class MySteps {
 export = MySteps;
 ```
 
-*Note*: You must use the `export = <type>;` because Cucumber expects exports in this manner.
+Through this reference, classes decorated with the `binding` decorator are
+referred "binding classes".
+
+*Note*: You must use the `export = <class>;` due to how Cucumber interprets
+the exported items of a Support File.
 
 ### Step Definitions
 
-Step definitions can be bound to automation code in a 'binding' class by implementing a public function that is
-bound with a 'given', 'when' or 'then' binding decorator:
+Step definitions can be bound to automation code in a binding class by decorating
+a public function with a 'given', 'when' or 'then' binding decorator:
 
-```javascript
+```ts
 import { binding, given, when, then } from "cucumber-tsflow";
 
 @binding()
@@ -105,34 +154,51 @@ class MySteps {
 
 export = MySteps;
 ```
-The function follows the same requirements of functions you would normally supply to Cucumber which means that the
-functions may be synchronous by returning nothing, use the callback, or return a `Promise<T>`. Additionally, the
-function may also be `async` following the TypeScript async semantics.
 
-Step definitions may also be scoped at a tag level by supplying an optional tag name when using the binding
-decorators:
+The methods have the same requirements and guarantees of functions you would normally
+supply to Cucumber, which means that the methods may be:
 
-```javascript
-@given(/I perform a search using the value "([^"]*)"/)
-public givenAValueBasedSearch(searchValue: string): void {
-    ...
-    // The default step definition
-    ...
-}
+- Synchronous by returning `void`
+- Asynchronous by receiving and using a callback as the last parameter\
+    The callback has signature `() => void`
+- Asynchronous by returning a `Promise<void>`
 
-@given(/I perform a search using the value "([^"]*)"/, "@tagName")
-public givenAValueBasedSearch(searchValue: string): void {
-    ...
-    // The step definition that will execute if the feature or
-    // scenario has the @tagName defined on it
-    ...
+The step definition functions must always receive a pattern as the first argument,
+which can be either a string or a regular expression.
+
+Additionally, a step definition may receive additional options in the format:
+
+```ts
+@binding()
+class MySteps {
+    @given("pattern", {
+      tag: 'not @expensive',
+      timeout: 1000,
+      wrapperOptions: {},
+    })
+    public givenAValueBasedSearch(searchValue: string): void {
+        ...
+    }
 }
 ```
 
-#### Hooks
+For backward compatibility, the `tag` and `timeout` options can also be passed
+as direct arguments:
 
-Hooks can be used to perform additional automation on specific events such as before or after scenario execution.
-Hooks can be restricted to run for only features or scenarios with a specific tag:
+```ts
+@binding()
+class MySteps {
+    @given("pattern", 'not @expensive', 1000)
+    public givenAValueBasedSearch(searchValue: string): void {
+        ...
+    }
+}
+```
+
+### Hooks
+
+Hooks can be used to add logic that happens before or after each scenario execution.
+They are configured in the same way as the [Step Definitions](#step-definitions).
 
 ```typescript
 import { binding, before, after } from "cucumber-tsflow";
@@ -146,19 +212,7 @@ class MySteps {
     }
     ...
 
-    @before("@requireTempDir")
-    public async beforeAllScenariosRequiringTempDirectory(): Promise<void> {
-        let tempDirInfo = await this.createTemporaryDirectory();
-
-        ...
-    }
-
     @after()
-    public afterAllScenarios(): void {
-        ...
-    }
-
-    @after("@requireTmpDir")
     public afterAllScenarios(): void {
         ...
     }
@@ -167,59 +221,131 @@ class MySteps {
 export = MySteps;
 ```
 
-#### Timeout in step definition and hooks. 
-In step definition and hooks, we can set timeout. For example, to set the timeout for a step to be 20000ms, we can do: 
+Contrary to the Step Definitions, Hooks don't need a pattern since they don't
+run for some particular step, but once for each scenario.
 
-```typescript
+Hooks can receive aditional options just like the Step Definitions:
 
-@given(/I perform a search using the value "([^"]*)"/, undefined, 20000)
-public givenAValueBasedSearch(searchValue: string): void {
-    ...
-    // this step will time tou in 20000ms.
-    ...
+```ts
+@binding()
+class MySteps {
+    // Runs before each scenarios with tag `@requireTempDir` with 2 seconds of timeout
+    @before({tag: "@requireTempDir", timeout: 2000})
+    public async beforeAllScenariosRequiringTempDirectory(): Promise<void> {
+        let tempDirInfo = await this.createTemporaryDirectory();
+        ...
+    }
+
+    // Runs after each scenarios with tag `@requireTempDir` with 2 seconds of timeout
+    @after({tag: "@requireTempDir", timeout: 2000})
+    public afterAllScenariosRequiringTempDirectory(): void {
+        await this.deleteTemporaryDirectory();
+        ...
+    }
 }
+```
 
-``` 
+For backward compatibility, the `tag` option can also be passes as a direct argument:
 
-tsflow currently doesn't have a way to define global default step timeout, 
-but it can be easily done through cucumber.js ```setDefaultTimeout``` function.
+```ts
+@binding()
+class MySteps {
+    @before('@local')
+    public async runForLocalOnly(): Promise<void> {
+        ...
+    }
+}
+```
+
+### Step and hook options
+
+#### Tag filters
+
+Both Step Definitions and Hooks can receive a `tag` option. This option defines
+a filter such that the binding will only be considered for scenarios matching
+the filter.
+
+The syntax of the tag filter is a ["Tag expression"](https://cucumber.io/docs/cucumber/api/?lang=javascript#tag-expressions)
+specified by Cucumber.
+
+**Note**: The tag might be set for the `Feature` or for the `Scenario`, and there
+is no distinction between them. This is called ["Tag Inheritance"](https://cucumber.io/docs/cucumber/api/?lang=javascript#tag-inheritance).
+
+For backward compatibility, setting a tag to a single word is treated the same
+as a filter for that word as a tag:
+
+```ts
+// This backward compatible format
+@given({tag: 'foo'})
+
+// Is transformed into this
+@given({tag: '@foo'})
+```
+
+#### Timeout
+
+Both Step Definition and Hooks can receive a `timeout` option. This option defines
+the maximum runtime allowed for the binding before it is flagged as failed.
+
+`cucumber-tsflow` currently doesn't have a way to define a global default step timeout,
+but it can be easily done through CucumberJS' `setDefaultTimeout` function.
 
 #### Passing WrapOptions
-In step definition, we can passing additional wrapoptions to cucumber js. For example: 
-```typescript
 
-@given(/I perform a search using the value "([^"]*)"/, undefined, undefined, {retry: 2})
+In step definition, we can passing additional wrapper options to CucumberJS.
+
+For example:
+
+```typescript
+@given(/I perform a search using the value "([^"]*)"/, {wrapperOptions: {retry: 2}})
 public givenAValueBasedSearch(searchValue: string): void {
     ...
-    // this step will be retried by cucumber js    
-    ...
 }
+```
 
-``` 
+The type of `wrapperOptions` is defined by the function given to `setDefinitionFunctionWrapper`.
+
+**Note**: `wrapperOptions` and `setDefinitionFunctionWrapper` were deprecated in
+[CucumberJS 7.3.1](https://github.com/cucumber/cucumber-js/blob/8900158748a3f36c4b2fa5d172fe27013b39ab17/CHANGELOG.md#731---2021-07-20)
+and are kept here for backward compatibility only while this library supports
+CucumberJS 7.
 
 ### Sharing Data between Bindings
 
 #### Context Injection
 
-Like 'specflow', cucumber-tsflow supports a simple dependency injection framework that will instantitate and inject
-class instances into 'binding' classes for each execuing scenario.
+Like 'SpecFlow', `cucumber-tsflow` supports a simple dependency injection
+framework that will instantitate and inject class instances into binding classes
+for each executing scenario.
 
 To use context injection:
 
-* Create simple classes representing the shared data (they *must* have default constructors)
-* Define a constructor on the 'binding' classes that will require the shared data that accepts the context objects
-as parameters
-* Update the `@binding()` decorator to indicate the types of context objects that are required by the 'binding'
-class
+- Create simple classes representing the shared data and/or behavior.\
+    These classes **must** have public constructors with no arguments (default constructors).
+    Defining a class with no constructor at all also works.
+- Define a constructor on the binding classes that receives an instance of
+    the class defined above as an parameter.
+- Update the `@binding()` decorator to indicate the types of context objects
+    that are required by the binding class
 
-```javascript
+```ts
+// Workspace.ts
+
+export class Workspace {
+    public folder: string = "default folder";
+
+    public updateFolder(folder: string) {
+        this.folder = folder;
+    }
+}
+
+// my-steps.ts
 import { binding, before, after } from "cucumber-tsflow";
 import { Workspace } from "./Workspace";
 
 @binding([Workspace])
 class MySteps {
-    constructor(protected workspace: Workspace)
-    { }
+    public constructor(protected workspace: Workspace) { }
 
     @before("requireTempDir")
     public async beforeAllScenariosRequiringTempDirectory(): Promise<void> {
