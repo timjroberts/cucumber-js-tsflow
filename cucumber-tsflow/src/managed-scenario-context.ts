@@ -1,7 +1,7 @@
 import * as _ from "underscore";
 
 import { ScenarioContext, ScenarioInfo } from "./scenario-context";
-import { ContextType } from "./types";
+import { ContextType, isProvidedContextType } from "./types";
 
 /**
  * Represents a [[ScenarioContext]] implementation that manages a collection of context objects that
@@ -45,94 +45,15 @@ export class ManagedScenarioContext implements ScenarioContext {
     contextTypes: ContextType[]
   ): any {
     const invokeBindingConstructor = (args: any[]): any => {
-      switch (contextTypes.length) {
-        case 0:
-          return new (targetPrototype.constructor as any)();
-        case 1:
-          return new (targetPrototype.constructor as any)(args[0]);
-        case 2:
-          return new (targetPrototype.constructor as any)(args[0], args[1]);
-        case 3:
-          return new (targetPrototype.constructor as any)(
-            args[0],
-            args[1],
-            args[2]
-          );
-        case 4:
-          return new (targetPrototype.constructor as any)(
-            args[0],
-            args[1],
-            args[2],
-            args[3]
-          );
-        case 5:
-          return new (targetPrototype.constructor as any)(
-            args[0],
-            args[1],
-            args[2],
-            args[3],
-            args[4]
-          );
-        case 6:
-          return new (targetPrototype.constructor as any)(
-            args[0],
-            args[1],
-            args[2],
-            args[3],
-            args[4],
-            args[5]
-          );
-        case 7:
-          return new (targetPrototype.constructor as any)(
-            args[0],
-            args[1],
-            args[2],
-            args[3],
-            args[4],
-            args[5],
-            args[6]
-          );
-        case 8:
-          return new (targetPrototype.constructor as any)(
-            args[0],
-            args[1],
-            args[2],
-            args[3],
-            args[4],
-            args[5],
-            args[6],
-            args[7]
-          );
-        case 9:
-          return new (targetPrototype.constructor as any)(
-            args[0],
-            args[1],
-            args[2],
-            args[3],
-            args[4],
-            args[5],
-            args[6],
-            args[7],
-            args[8]
-          );
-        case 10:
-          return new (targetPrototype.constructor as any)(
-            args[0],
-            args[1],
-            args[2],
-            args[3],
-            args[4],
-            args[5],
-            args[6],
-            args[7],
-            args[8],
-            args[9]
-          );
-      }
+      return new (targetPrototype.constructor as any)(...args);
     };
 
     const contextObjects = _.map(contextTypes, contextType =>
       this.getOrActivateObject(contextType.prototype, () => {
+        if (isProvidedContextType(contextType)) {
+          throw new Error(`The requested type "${contextType.name}" should be provided by cucumber-tsflow, but was not registered. Please report a bug.`);
+        }
+
         return new contextType();
       })
     );
@@ -142,7 +63,7 @@ export class ManagedScenarioContext implements ScenarioContext {
 
   private getOrActivateObject(
     targetPrototype: any,
-    activatorFunc: (...args: any[]) => any
+    activatorFunc: () => any
   ): any {
     let activeObject = this._activeObjects.get(targetPrototype);
 
@@ -155,6 +76,23 @@ export class ManagedScenarioContext implements ScenarioContext {
     this._activeObjects.set(targetPrototype, activeObject);
 
     return activeObject;
+  }
+
+  /**
+   * @internal
+   */
+  public addExternalObject(value: unknown) {
+    if (value == null) return;
+
+    const proto = value.constructor.prototype;
+
+    const existingObject = this._activeObjects.get(proto);
+
+    if (existingObject !== undefined) {
+      throw new Error(`Conflicting objects of type "${proto.name}" registered.`);
+    }
+
+    this._activeObjects.set(proto, value);
   }
 }
 

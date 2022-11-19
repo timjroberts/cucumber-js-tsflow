@@ -9,6 +9,7 @@ import { ManagedScenarioContext } from "./managed-scenario-context";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { ContextType, StepPattern, TypeDecorator } from "./types";
 import { IDefineStepOptions, IDefineTestStepHookOptions } from "@cucumber/cucumber/lib/support_code_library_builder/types";
+import { CucumberAttachments, CucumberLog, WorldParameters } from "./provided-context";
 
 interface WritableWorld extends World {
   [key: string]: any;
@@ -97,10 +98,16 @@ const ensureSystemBindings = _.once(() => {
       JSON.stringify(scenario)
     );
 
-    this[SCENARIO_CONTEXT_SLOTNAME] = new ManagedScenarioContext(
+    const scenarioContext = new ManagedScenarioContext(
       scenario.pickle.name!,
       _.map(scenario.pickle.tags!, (tag: PickleTag) => tag.name!)
     );
+
+    this[SCENARIO_CONTEXT_SLOTNAME] = scenarioContext;
+
+    scenarioContext.addExternalObject(new WorldParameters(this.parameters));
+    scenarioContext.addExternalObject(new CucumberLog(this.log));
+    scenarioContext.addExternalObject(new CucumberAttachments(this.attach));
   });
 
   After(function(this: WritableWorld) {
@@ -179,8 +186,6 @@ function bindStepDefinition(stepBinding: StepBinding): void {
       contextTypes
     );
 
-    bindingObject._worldObj = this;
-
     return (bindingObject[
       matchingStepBindings[0].targetPropertyKey
     ] as () => void).apply(bindingObject, arguments as any);
@@ -235,8 +240,6 @@ function bindHook(stepBinding: StepBinding): void {
       stepBinding.targetPrototype,
       contextTypes
     );
-
-    bindingObject._worldObj = this;
 
     return (bindingObject[stepBinding.targetPropertyKey] as () => void).apply(
       bindingObject,
