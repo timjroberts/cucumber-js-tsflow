@@ -113,6 +113,28 @@ const ensureSystemBindings = _.once(() => {
     }
   });
 
+  try {
+    const stackFilter = require('@cucumber/cucumber/lib/filter_stack_trace');
+    const path = require('path');
+
+    const originalFileNameFilter = stackFilter.isFileNameInCucumber;
+
+    if (originalFileNameFilter !== undefined) {
+      const projectRootPath = path.join(__dirname, '..') + '/';
+
+      Object.defineProperty(stackFilter, 'isFileNameInCucumber', {
+        value: (fileName: string) => originalFileNameFilter(fileName)
+          || fileName.startsWith(projectRootPath)
+          || fileName.includes('node_modules'),
+        configurable: true,
+        enumerable: true,
+      });
+    }
+  } catch {
+    // Ignore errors, proper stack filtering is not officially supported
+    // so we override on a best effor basis only
+  }
+
   // Decorate the Cucumber step definition snippet builder so that it uses our syntax
 
   // let currentSnippetBuilder = cucumberSys.SupportCode.StepDefinitionSnippetBuilder;
