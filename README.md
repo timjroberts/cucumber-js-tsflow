@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/timjroberts/cucumber-js-tsflow/workflows/CI/badge.svg)
 
-Provides 'specflow' like bindings for CucumberJS in TypeScript 1.7+.
+Provides 'SpecFlow' like bindings for CucumberJS in TypeScript 1.7+.
 
 ## Table of content
 
@@ -357,3 +357,12 @@ class MySteps {
 
 export = MySteps;
 ```
+
+#### Provided Context Types
+
+This library provides 3 Context Types to interact with CucumberJS' World object.
+
+- `WorldParameters`, which expose value passed to the `worldParameters` configuration
+  or the `--world-parameters` CLI option.
+- `CucumberLog`, which exposes the `log` method of the `World` object.
+- `CucumberAttachments`, which exposes the `attach` method of the `World` object.
