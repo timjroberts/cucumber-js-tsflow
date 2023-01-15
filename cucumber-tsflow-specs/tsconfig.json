@@ -12,6 +12,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "removeComments": false,
+    "esModuleInterop": true,
+    "noEmit": true,
     "experimentalDecorators": true,
     "outDir": "./dist",
     "rootDir": "./src"
