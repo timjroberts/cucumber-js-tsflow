@@ -1,8 +1,14 @@
 import { DataTable } from "@cucumber/cucumber";
+import * as messages from "@cucumber/messages";
 import { binding, then } from "cucumber-tsflow";
 import expect from "expect";
-import { getPickleNamesInOrderOfExecution, getTestCaseResult } from "../support/helpers";
+import { Extractor } from "../support/helpers";
 import { TestRunner } from "../support/runner";
+
+const ENCODING_MAP: { [key: string]: messages.AttachmentContentEncoding } = {
+  IDENTITY: messages.AttachmentContentEncoding.IDENTITY,
+  BASE64: messages.AttachmentContentEncoding.BASE64
+};
 
 @binding([TestRunner])
 class ScenarioSteps {
@@ -22,22 +28,94 @@ class ScenarioSteps {
 
   @then("it runs the scenario {string}")
   public checkRunSingleScenario(scenario: string) {
-    const actualNames = getPickleNamesInOrderOfExecution(this.runner.lastRun.envelopes);
+    const actualNames = this.runner.extractor.getPickleNamesInOrderOfExecution();
     expect(actualNames).toEqual([scenario]);
   }
 
   @then("it runs the scenarios:")
   public checkScenarios(table: DataTable) {
     const expectedNames = table.rows().map(row => row[0]);
-    const actualNames = getPickleNamesInOrderOfExecution(this.runner.lastRun.envelopes);
+    const actualNames = this.runner.extractor.getPickleNamesInOrderOfExecution();
     expect(actualNames).toEqual(expectedNames);
   }
 
   @then("scenario {string} has status {string}")
   public checkScenarioStatus(name: string, status: string) {
-    const result = getTestCaseResult(this.runner.lastRun.envelopes, name);
+    const result = this.runner.extractor.getTestCaseResult(name);
 
     expect(result.status).toEqual(status.toUpperCase());
+  }
+
+  @then("scenario {string} step {string} has the attachments:")
+  public checkStepAttachment(
+    pickleName: string,
+    stepText: string,
+    table: DataTable
+  ) {
+    const expectedAttachments = table.hashes().map((x) => {
+      return {
+        body: x.DATA,
+        mediaType: x["MEDIA TYPE"],
+        contentEncoding: ENCODING_MAP[x["MEDIA ENCODING"]]
+      };
+    });
+
+    const actualAttachments = this.runner.extractor.getAttachmentsForStep(
+      pickleName,
+      stepText
+    )
+      .map(Extractor.simplifyAttachment);
+
+    expect(actualAttachments).toEqual(expectedAttachments);
+  }
+
+  @then("scenario {string} {string} hook has the attachments:")
+  public checkHookAttachment(
+    pickleName: string,
+    hookKeyword: string,
+    table: DataTable
+  ) {
+    const expectedAttachments: messages.Attachment[] = table
+      .hashes()
+      .map((x) => {
+        return {
+          body: x.DATA,
+          mediaType: x["MEDIA TYPE"],
+          contentEncoding: ENCODING_MAP[x["MEDIA ENCODING"]]
+        };
+      });
+
+    const actualAttachments = this.runner.extractor
+      .getAttachmentsForHook(
+        pickleName,
+        hookKeyword === "Before"
+      )
+      .map(Extractor.simplifyAttachment);
+
+    expect(actualAttachments).toEqual(expectedAttachments);
+  }
+
+  @then("scenario {string} step {string} has the logs:")
+  public checkStepLogs(pickleName: string, stepName: string, logs: DataTable) {
+    const expectedLogs = logs.raw().map(row => row[0]);
+    const actualLogs = Extractor.logsFromAttachments(
+      this.runner.extractor.getAttachmentsForStep(
+        pickleName,
+        stepName
+      )
+    );
+
+    expect(actualLogs).toStrictEqual(expectedLogs);
+  }
+
+  @then("scenario {string} step {string} has no attachments")
+  public checkNoStepLogs(pickleName: string, stepName: string) {
+    const attachments = this.runner.extractor.getAttachmentsForStep(
+      pickleName,
+      stepName
+    );
+
+    expect(attachments).toStrictEqual([]);
   }
 }
 
@@ -187,69 +265,5 @@ export = ScenarioSteps
 //       stepText
 //     );
 //     expect(new DataTable(pickleStep.argument.dataTable)).to.eql(dataTable);
-//   }
-// );
-//
-// Then(
-//   "scenario {string} step {string} has the attachments:",
-//   function(
-//     this: World,
-//     pickleName: string,
-//     stepText: string,
-//     table: DataTable
-//   ) {
-//     const expectedAttachments = table.hashes().map((x) => {
-//       return {
-//         body: x.DATA,
-//         mediaType: x["MEDIA TYPE"],
-//         contentEncoding: ENCODING_MAP[x["MEDIA ENCODING"]]
-//       };
-//     });
-//     const stepAttachments = getTestStepAttachmentsForStep(
-//       this.lastRun.envelopes,
-//       pickleName,
-//       stepText
-//     );
-//     const actualAttachments = stepAttachments.map((e) => {
-//       return {
-//         body: e.body,
-//         mediaType: e.mediaType,
-//         contentEncoding: e.contentEncoding
-//       };
-//     });
-//     expect(actualAttachments).to.eql(expectedAttachments);
-//   }
-// );
-//
-// Then(
-//   "scenario {string} {string} hook has the attachments:",
-//   function(
-//     this: World,
-//     pickleName: string,
-//     hookKeyword: string,
-//     table: DataTable
-//   ) {
-//     const expectedAttachments: messages.Attachment[] = table
-//       .hashes()
-//       .map((x) => {
-//         return {
-//           body: x.DATA,
-//           mediaType: x["MEDIA TYPE"],
-//           contentEncoding: ENCODING_MAP[x["MEDIA ENCODING"]]
-//         };
-//       });
-//     const hookAttachments = getTestStepAttachmentsForHook(
-//       this.lastRun.envelopes,
-//       pickleName,
-//       hookKeyword === "Before"
-//     );
-//     const actualAttachments = hookAttachments.map((e) => {
-//       return {
-//         body: e.body,
-//         mediaType: e.mediaType,
-//         contentEncoding: e.contentEncoding
-//       };
-//     });
-//     expect(actualAttachments).to.eql(expectedAttachments);
 //   }
 // );

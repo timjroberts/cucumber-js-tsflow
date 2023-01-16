@@ -38,21 +38,25 @@ class CucumberSteps {
     this.runner.verifiedLastRunError = true;
   }
 
+  @then("the output contains {string}")
   @then("the output contains text:")
   public checkStdoutContains(text: string) {
     expect(this.runner.lastRun.output).toContain(text);
   }
 
+  @then("the output does not contain {string}")
   @then("the output does not contain text:")
   public checkStdoutDoesNotContains(text: string) {
     expect(this.runner.lastRun.output).not.toContain(text);
   }
 
+  @then("the error output contains {string}")
   @then("the error output contains text:")
   public checkStderrContains(text: string) {
     expect(this.runner.lastRun.errorOutput).toContain(text);
   }
 
+  @then("the error output does not contain {string}")
   @then("the error output does not contain text:")
   public checkStderrDoesNotContains(text: string) {
     expect(this.runner.lastRun.errorOutput).not.toContain(text);

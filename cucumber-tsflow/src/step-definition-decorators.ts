@@ -10,9 +10,11 @@ type StepOptions = {
 }
 
 function overloadedOptions(tag?: string | StepOptions, timeout?: number): StepOptions {
-  if (tag === undefined || typeof tag === 'string') return { tag, timeout };
+  if (tag === undefined || typeof tag === "string") {
+    return { tag, timeout };
+  }
 
-  if (timeout === undefined) {
+  if (timeout !== undefined) {
     throw new Error("Cannot specify a separate timeout argument when an options object is given.");
   }
 
@@ -29,7 +31,7 @@ function overloadedOptions(tag?: string | StepOptions, timeout?: number): StepOp
 export function given(
   stepPattern: RegExp | string,
   tagOrOption?: string | StepOptions,
-  timeout?: number,
+  timeout?: number
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -68,7 +70,7 @@ export function given(
 export function when(
   stepPattern: RegExp | string,
   tagOrOption?: string | StepOptions,
-  timeout?: number,
+  timeout?: number
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -107,7 +109,7 @@ export function when(
 export function then(
   stepPattern: RegExp | string,
   tagOrOption?: string,
-  timeout?: number,
+  timeout?: number
 ): MethodDecorator {
   const callsite = Callsite.capture();
 

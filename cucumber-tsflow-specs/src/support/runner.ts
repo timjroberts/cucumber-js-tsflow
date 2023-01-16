@@ -11,6 +11,7 @@ import { pipeline, Writable } from "stream";
 import stripAnsi from "strip-ansi";
 import util from "util";
 import VError from "verror";
+import { Extractor } from "./helpers";
 import { TestDir } from "./testDir";
 
 const projectPath = path.join(__dirname, "..", "..", "..");
@@ -56,6 +57,10 @@ export class TestRunner {
     return this._lastRun;
   }
 
+  public get extractor(): Extractor {
+    return new Extractor(this.lastRun.envelopes)
+  }
+
   public async run(envOverride: NodeJS.ProcessEnv | null = null): Promise<void> {
     const messageFilename = "message.ndjson";
     const env = { ...process.env, ...this.sharedEnv, ...envOverride };
@@ -67,7 +72,8 @@ export class TestRunner {
           cucumberBinPath,
           "--format", `message:${messageFilename}`,
           "--require-module", "ts-node/register",
-          "--require", "step_definitions/**/*.ts"
+          "--require", "step_definitions/**/*.ts",
+          "--publish-quiet"
         ],
         { cwd: this.dir.path, env },
         (error, stdout, stderr) => {
