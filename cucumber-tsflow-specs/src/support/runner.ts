@@ -58,7 +58,7 @@ export class TestRunner {
   }
 
   public get extractor(): Extractor {
-    return new Extractor(this.lastRun.envelopes)
+    return new Extractor(this.lastRun.envelopes);
   }
 
   public async run(envOverride: NodeJS.ProcessEnv | null = null): Promise<void> {
@@ -72,6 +72,7 @@ export class TestRunner {
           cucumberBinPath,
           "--format", `message:${messageFilename}`,
           "--require-module", "ts-node/register",
+          "--require", "a-logging.ts",
           "--require", "step_definitions/**/*.ts",
           "--publish-quiet"
         ],

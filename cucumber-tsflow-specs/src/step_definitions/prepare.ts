@@ -9,6 +9,7 @@ const projectNodeModulePath = path.join(projectPath, "node_modules");
 const cucumberPath = path.join(projectNodeModulePath, "@cucumber", "cucumber");
 const tsNodePath = path.join(projectNodeModulePath, "ts-node");
 const projectLibPath = path.join(projectPath, "cucumber-tsflow");
+const log4jsPath = path.join(projectLibPath, "node_modules", "log4js");
 
 @binding([TestRunner])
 class Prepare {
@@ -73,10 +74,13 @@ class Prepare {
       tmpDirNodeModulesPath,
       "cucumber-tsflow"
     ));
+    fsExtra.ensureSymlinkSync(log4jsPath, path.join(
+      tmpDirNodeModulesPath,
+      "log4js"
+    ));
   }
 
   private writeDefaultFiles(tags: string[]) {
-
     if (!tags.includes("custom-tsconfig")) {
       fsExtra.outputJsonSync(
         this.runner.dir.getPath("tsconfig.json"),
@@ -85,6 +89,27 @@ class Prepare {
             experimentalDecorators: true
           }
         }
+      );
+    }
+
+    if (!tags.includes("no-logging")) {
+      fsExtra.outputFileSync(
+        this.runner.dir.getPath("a-logging.ts"),
+        `
+import * as log4js from 'log4js';
+
+log4js.configure({
+  appenders: {
+    logfile: {
+      type: "file",
+      filename: "output.log",
+    }
+  },
+  categories: {
+    default: { appenders: ["logfile"], level: "trace" },
+  }
+});
+`
       );
     }
   }

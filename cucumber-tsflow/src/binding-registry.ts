@@ -150,7 +150,7 @@ export class BindingRegistry {
       targetBinding.stepBindings.push(stepBinding);
     }
 
-    logger.debug("All target step bindings",
+    logger.trace("All target step bindings",
       targetBinding.stepBindings.map(binding => `${binding.stepPattern} ${binding.tag}`)
     );
 
