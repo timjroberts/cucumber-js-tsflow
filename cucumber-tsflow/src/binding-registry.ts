@@ -42,8 +42,7 @@ export class BindingRegistry {
    * @returns A [[BindingRegistry]].
    */
   public static get instance(): BindingRegistry {
-    const BINDING_REGISTRY_SLOTNAME: string =
-            "__CUCUMBER_TSFLOW_BINDINGREGISTRY";
+    const BINDING_REGISTRY_SLOTNAME: string = "__CUCUMBER_TSFLOW_BINDINGREGISTRY";
 
     const registry = (global as any)[BINDING_REGISTRY_SLOTNAME];
 
