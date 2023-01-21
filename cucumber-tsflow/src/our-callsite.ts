@@ -15,6 +15,18 @@ export class Callsite {
   constructor(public filename: string, public lineNumber: number) {}
 
   /**
+   * Captures the current [[Callsite]] object.
+   */
+  public static capture(up = 1): Callsite {
+    const stack = callsites()[up + 1];
+    const tsStack = sourceMapSupport.wrapCallSite(stack);
+    return new Callsite(
+      tsStack.getFileName() || "",
+      tsStack.getLineNumber() || -1
+    );
+  }
+
+  /**
    * Returns a string representation of the callsite.
    *
    * @returns A string representing the callsite formatted with the filename and line
@@ -22,17 +34,5 @@ export class Callsite {
    */
   public toString(): string {
     return `${this.filename}:${this.lineNumber}`;
-  }
-
-  /**
-   * Captures the current [[Callsite]] object.
-   */
-  public static capture(): Callsite {
-    const stack = callsites()[2];
-    const tsStack = sourceMapSupport.wrapCallSite(stack);
-    return new Callsite(
-      tsStack.getFileName() || "",
-      tsStack.getLineNumber() || -1
-    );
   }
 }

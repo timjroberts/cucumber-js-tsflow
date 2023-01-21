@@ -14,12 +14,7 @@ export type TagName = string;
  * Represents a class that will be injected into a binding class to provide context
  * during the execution of a Cucumber scenario.
  */
-export interface CustomContextType {
-  /**
-   * A default constructor.
-   */
-  new (): any;
-}
+export type CustomContextType = new () => any;
 
 export type ProvidedContextType =
   typeof WorldParameters
@@ -38,4 +33,4 @@ export function isProvidedContextType(typ: ContextType): typ is ProvidedContextT
   return providedPrototypes.some(proto => Object.is(typ, proto));
 }
 
-export type TypeDecorator = <T>(target: { new (...args: any[]): T }) => void;
+export type TypeDecorator = <T>(target: new (...args: any[]) => T) => void;

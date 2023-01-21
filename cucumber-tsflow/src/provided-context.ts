@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 import { ICreateAttachment, ICreateLog } from "@cucumber/cucumber/lib/runtime/attachment_manager";
 
 export class WorldParameters<T = any> {
