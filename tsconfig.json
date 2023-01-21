@@ -1,4 +1,8 @@
 {
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "esModuleInterop": true
+  },
   "files": [],
   "include": [],
   "references": [

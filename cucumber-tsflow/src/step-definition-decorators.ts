@@ -1,18 +1,23 @@
 import { BindingRegistry } from "./binding-registry";
+import logger from "./logger";
 import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { normalizeTag } from "./tag-normalization";
 
-type StepOptions = {
+interface StepOptions {
   tag?: string,
+
   timeout?: number,
+
   wrapperOption?: any,
 }
 
 function overloadedOptions(tag?: string | StepOptions, timeout?: number): StepOptions {
-  if (tag === undefined || typeof tag === 'string') return { tag, timeout };
+  if (tag === undefined || typeof tag === "string") {
+    return { tag, timeout };
+  }
 
-  if (timeout === undefined) {
+  if (timeout !== undefined) {
     throw new Error("Cannot specify a separate timeout argument when an options object is given.");
   }
 
@@ -29,7 +34,7 @@ function overloadedOptions(tag?: string | StepOptions, timeout?: number): StepOp
 export function given(
   stepPattern: RegExp | string,
   tagOrOption?: string | StepOptions,
-  timeout?: number,
+  timeout?: number
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -52,6 +57,11 @@ export function given(
       wrapperOption: options.wrapperOption
     };
 
+    logger.trace(
+      "Registering step definition:",
+      stepBinding
+    );
+
     BindingRegistry.instance.registerStepBinding(stepBinding);
 
     return descriptor;
@@ -68,7 +78,7 @@ export function given(
 export function when(
   stepPattern: RegExp | string,
   tagOrOption?: string | StepOptions,
-  timeout?: number,
+  timeout?: number
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -107,7 +117,7 @@ export function when(
 export function then(
   stepPattern: RegExp | string,
   tagOrOption?: string,
-  timeout?: number,
+  timeout?: number
 ): MethodDecorator {
   const callsite = Callsite.capture();
 

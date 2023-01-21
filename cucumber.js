@@ -1,19 +1,21 @@
-const cucumberPkg = require('@cucumber/cucumber/package.json');
+const cucumberPkg = require("@cucumber/cucumber/package.json");
 
-module.exports = cucumberPkg.version.startsWith('7.')
+module.exports = cucumberPkg.version.startsWith("7.")
   ? {
     default: [
-      '--publish-quiet',
-      '--require cucumber-tsflow-specs/dist/**/*.js',
-      '--world-parameters \'{"foo":"bar"}\'',
-    ].join(' ')
+      "--publish-quiet",
+      "--require-module ts-node/register",
+      "--require cucumber-tsflow-specs/src/**/*.ts",
+      "--world-parameters '{\"foo\":\"bar\"}'"
+    ].join(" ")
   }
   : {
     default: {
       publishQuiet: true,
-      require: ['cucumber-tsflow-specs/dist/**/*.js'],
+      requireModule: ["ts-node/register"],
+      require: ["cucumber-tsflow-specs/src/**/*.ts"],
       worldParameters: {
-        foo: 'bar',
+        foo: "bar"
       }
-    },
+    }
   };
