@@ -44,6 +44,18 @@ class CucumberSteps {
     expect(this.runner.lastRun.output).toContain(text);
   }
 
+  @then("the output contains {string} once")
+  public checkStdoutContainsOnce(text: string) {
+    const { output } = this.runner.lastRun;
+
+    expect(output).toContain(text);
+
+    const firstOccurrence = output.indexOf(text);
+    const remaining = output.substring(firstOccurrence + 1);
+
+    expect(remaining).not.toContain(text);
+  }
+
   @then("the output does not contain {string}")
   @then("the output does not contain text:")
   public checkStdoutDoesNotContains(text: string) {

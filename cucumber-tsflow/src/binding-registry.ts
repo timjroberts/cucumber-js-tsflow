@@ -1,4 +1,4 @@
-import * as _ from "underscore";
+import logger from "./logger";
 
 import { StepBinding } from "./step-binding";
 import { ContextType, StepPattern } from "./types";
@@ -33,6 +33,7 @@ export const DEFAULT_TAG: string = "*";
  */
 export class BindingRegistry {
   private _bindings = new Map<StepPattern, StepBinding[]>();
+
   private _targetBindings = new Map<any, TargetBinding>();
 
   /**
@@ -42,7 +43,7 @@ export class BindingRegistry {
    */
   public static get instance(): BindingRegistry {
     const BINDING_REGISTRY_SLOTNAME: string =
-      "__CUCUMBER_TSFLOW_BINDINGREGISTRY";
+            "__CUCUMBER_TSFLOW_BINDINGREGISTRY";
 
     const registry = (global as any)[BINDING_REGISTRY_SLOTNAME];
 
@@ -123,7 +124,10 @@ export class BindingRegistry {
       this._bindings.set(stepPattern, stepBindings);
     }
 
+    logger.trace("Attempting to register step binding", stepBinding);
+
     if (!stepBindings.some(b => isSameStepBinding(stepBinding, b))) {
+      logger.trace("Saving new step binding.");
       stepBindings.push(stepBinding);
     }
 
@@ -143,8 +147,13 @@ export class BindingRegistry {
     if (
       !targetBinding.stepBindings.some(b => isSameStepBinding(stepBinding, b))
     ) {
+      logger.trace("Saving new step binding to target.");
       targetBinding.stepBindings.push(stepBinding);
     }
+
+    logger.debug("All target step bindings",
+      targetBinding.stepBindings.map(binding => `${binding.stepPattern} ${binding.tag}`)
+    );
 
     function isSameStepBinding(a: StepBinding, b: StepBinding) {
       return (

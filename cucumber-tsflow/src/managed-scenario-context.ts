@@ -8,7 +8,8 @@ import { ContextType, isProvidedContextType } from "./types";
  * are created and used by binding classes during a running Cucumber scenario.
  */
 export class ManagedScenarioContext implements ScenarioContext {
-  private _scenarioInfo: ScenarioInfo;
+  private readonly _scenarioInfo: ScenarioInfo;
+
   private _activeObjects = new Map<any, any>();
 
   constructor(scenarioTitle: string, tags: string[]) {
@@ -40,6 +41,23 @@ export class ManagedScenarioContext implements ScenarioContext {
     });
   }
 
+  /**
+   * @internal
+   */
+  public addExternalObject(value: unknown) {
+    if (value == null) { return; }
+
+    const proto = value.constructor.prototype;
+
+    const existingObject = this._activeObjects.get(proto);
+
+    if (existingObject !== undefined) {
+      throw new Error(`Conflicting objects of type "${proto.name}" registered.`);
+    }
+
+    this._activeObjects.set(proto, value);
+  }
+
   private activateBindingClass(
     targetPrototype: any,
     contextTypes: ContextType[]
@@ -51,7 +69,8 @@ export class ManagedScenarioContext implements ScenarioContext {
     const contextObjects = _.map(contextTypes, contextType =>
       this.getOrActivateObject(contextType.prototype, () => {
         if (isProvidedContextType(contextType)) {
-          throw new Error(`The requested type "${contextType.name}" should be provided by cucumber-tsflow, but was not registered. Please report a bug.`);
+          throw new Error(
+            `The requested type "${contextType.name}" should be provided by cucumber-tsflow, but was not registered. Please report a bug.`);
         }
 
         return new contextType();
@@ -76,23 +95,6 @@ export class ManagedScenarioContext implements ScenarioContext {
     this._activeObjects.set(targetPrototype, activeObject);
 
     return activeObject;
-  }
-
-  /**
-   * @internal
-   */
-  public addExternalObject(value: unknown) {
-    if (value == null) return;
-
-    const proto = value.constructor.prototype;
-
-    const existingObject = this._activeObjects.get(proto);
-
-    if (existingObject !== undefined) {
-      throw new Error(`Conflicting objects of type "${proto.name}" registered.`);
-    }
-
-    this._activeObjects.set(proto, value);
   }
 }
 

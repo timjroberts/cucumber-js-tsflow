@@ -1,11 +1,14 @@
 import { BindingRegistry } from "./binding-registry";
+import logger from "./logger";
 import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { normalizeTag } from "./tag-normalization";
 
-type StepOptions = {
+interface StepOptions {
   tag?: string,
+
   timeout?: number,
+
   wrapperOption?: any,
 }
 
@@ -53,6 +56,11 @@ export function given(
       timeout: options.timeout,
       wrapperOption: options.wrapperOption
     };
+
+    logger.trace(
+      "Registering step definition:",
+      stepBinding
+    );
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 

@@ -3,22 +3,23 @@ import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { normalizeTag } from "./tag-normalization";
 
-type HookOptions = {
+interface HookOptions {
   tag?: string,
+
   timeout?: number,
 }
 
 function overloadedOption(tag?: string | HookOptions): HookOptions {
-  if (tag === undefined || typeof tag === 'string') return { tag };
+  if (tag === undefined || typeof tag === "string") { return { tag }; }
 
   return tag;
 }
 
 function createHookDecorator(
   flag: StepBindingFlags,
-  tagOrOption?: string | HookOptions,
+  tagOrOption?: string | HookOptions
 ): MethodDecorator {
-  const callsite = Callsite.capture();
+  const callsite = Callsite.capture(2);
 
   const { tag, timeout } = overloadedOption(tagOrOption);
 
