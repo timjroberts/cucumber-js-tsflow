@@ -67,6 +67,47 @@ Feature: Cucumber context objects
             | my string | text/plain+custom | IDENTITY       |
         And scenario "example" step "And another step" has no attachments
 
+    Scenario: Using the cucumber attachments in hooks
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+              Scenario: example
+                Given a step
+            """
+        And a file named "step_definitions/steps.ts" with:
+            """ts
+            import {binding, before, after, given, CucumberAttachments} from 'cucumber-tsflow';
+
+            @binding([CucumberAttachments])
+            class Steps {
+                public constructor(private readonly att: CucumberAttachments) {}
+
+                @before()
+                public before() {
+                    this.att.attach("my first string", "text/plain+custom");
+                }
+
+                @given("a step")
+                public one() {}
+
+                @after()
+                public after() {
+                    this.att.attach("my second string", "text/plain+custom");
+                }
+            }
+
+            export = Steps;
+            """
+        When I run cucumber-js
+        Then it passes
+        And scenario "example" "Before" hook has the attachments:
+            | DATA            | MEDIA TYPE        | MEDIA ENCODING |
+            | my first string | text/plain+custom | IDENTITY       |
+        And scenario "example" "After" hook has the attachments:
+            | DATA             | MEDIA TYPE        | MEDIA ENCODING |
+            | my second string | text/plain+custom | IDENTITY       |
+        And scenario "example" step "Given a step" has no attachments
+
     Scenario: Using world parameters
         Given a file named "cucumber.js" with:
             """js

@@ -134,7 +134,9 @@ export class Extractor {
   public getAttachmentsForHook(pickleName: string, isBeforeHook: boolean): messages.Attachment[] {
     const pickle = this.getPickle(pickleName);
     const testCase = this.getTestCase(pickle.id);
-    const testStepIndex = isBeforeHook ? 0 : testCase.testSteps.length - 1;
+    // Ignore the first Before hook and the last After hook
+    // Those are used to set up and tear down the tsflow harness
+    const testStepIndex = isBeforeHook ? 1 : testCase.testSteps.length - 2;
     const testStep = testCase.testSteps[testStepIndex];
     const testCaseStarted = this.getTestCaseStarted(testCase.id);
     return this.getTestStepAttachments(testCaseStarted.id, testStep.id);
