@@ -59,7 +59,7 @@ import { binding, given, then } from "cucumber-tsflow";
 class ArithmeticSteps {
     private computedResult: number;
 
-    @given(/I enter '(\d*)' and '(\d*)'"/)
+    @given(/I enter '(\d*)' and '(\d*)'/)
     public givenTwoNumbers(num1: string, num2: string): void {
         this.computedResult = parseInt(num1) + parseInt(num2);
     }
