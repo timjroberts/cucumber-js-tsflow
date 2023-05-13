@@ -5,19 +5,16 @@ import * as messages from "@cucumber/messages";
 import assert from "assert";
 import { execFile } from "child_process";
 import expect from "expect";
-import fs from "fs";
 import path from "path";
-import { pipeline, Writable } from "stream";
+import { Writable } from "stream";
+import { finished } from "stream/promises";
 import stripAnsi from "strip-ansi";
-import util from "util";
 import VError from "verror";
 import { Extractor } from "./helpers";
 import { TestDir } from "./testDir";
 
 const projectPath = path.join(__dirname, "..", "..", "..");
 const cucumberBinPath = path.join(projectPath, "node_modules", ".bin", "cucumber-js");
-
-const asyncPipeline = util.promisify(pipeline);
 
 interface IRunResult {
   error: any;
@@ -88,19 +85,18 @@ export class TestRunner {
       : "";
 
     const envelopes: messages.Envelope[] = [];
-    const messageOutputPath = this.dir.getPath(messageFilename);
-    if (fs.existsSync(messageOutputPath)) {
-      await asyncPipeline(
-        fs.createReadStream(messageOutputPath, { encoding: "utf-8" }),
-        new messageStreams.NdjsonToMessageStream(),
-        new Writable({
-          objectMode: true,
-          write(envelope: messages.Envelope, _: BufferEncoding, callback) {
-            envelopes.push(envelope);
-            callback();
-          }
-        })
-      );
+    const messageOutputStream = this.dir.readFileStream(messageFilename)
+      ?.pipe(new messageStreams.NdjsonToMessageStream())
+      .pipe(new Writable({
+        objectMode: true,
+        write(envelope: messages.Envelope, _: BufferEncoding, callback) {
+          envelopes.push(envelope);
+          callback();
+        }
+      }));
+
+    if (messageOutputStream !== undefined) {
+      await finished(messageOutputStream);
     }
 
     this._lastRun = {
