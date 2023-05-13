@@ -3,6 +3,13 @@
   "description": "Provides 'specflow' like bindings for CucumberJS 7.0.0+ in TypeScript 1.7+.",
   "version": "4.0.0",
   "author": "Tim Roberts <tim@timjroberts.com>",
+  "maintainers": [
+    {
+      "name": "Luiz Ferraz",
+      "email": "luiz@lferraz.com",
+      "url": "https://github.com/Fryuni"
+    }
+  ],
   "license": "MIT",
   "main": "./dist",
   "keywords": [
