@@ -44,6 +44,7 @@ class CucumberSteps {
   }
 
   @then("the output contains {string} once")
+  @then("the output contains text once:")
   public checkStdoutContainsOnce(text: string) {
     const { output } = this.runner.lastRun;
 
