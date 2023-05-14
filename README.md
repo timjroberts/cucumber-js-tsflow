@@ -34,11 +34,11 @@ so create that folder and then create a new file called `my_feature.feature`:
 # features/my_feature.feature
 
 Feature: Example Feature
-   This is an example feature
+    This is an example feature
 
-   Scenario: Adding two numbers
-      Given I enter '2' and '8'
-      Then I receive the result '10'
+    Scenario: Adding two numbers
+        Given I enter '2' and '8'
+        Then I receive the result '10'
 ```
 
 ### Create the Support Files to support the Feature
@@ -57,19 +57,19 @@ import { binding, given, then } from "cucumber-tsflow";
 
 @binding()
 class ArithmeticSteps {
-    private computedResult: number;
+  private computedResult: number;
 
-    @given(/I enter '(\d*)' and '(\d*)'"/)
-    public givenTwoNumbers(num1: string, num2: string): void {
-        this.computedResult = parseInt(num1) + parseInt(num2);
-    }
+  @given(/I enter '(\d*)' and '(\d*)'/)
+  public givenTwoNumbers(num1: string, num2: string): void {
+    this.computedResult = parseInt(num1) + parseInt(num2);
+  }
 
-    @then(/I receive the result '(\d*)'/)
-    public thenResultReceived(expectedResult: string): void {
-        if (parseInt(expectedResult) !== this.computedResult) {
-            throw new Error("Arithmetic Error");
-        }
+  @then(/I receive the result '(\d*)'/)
+  public thenResultReceived(expectedResult: string): void {
+    if (parseInt(expectedResult) !== this.computedResult) {
+      throw new Error("Arithmetic Error");
     }
+  }
 }
 
 export = ArithmeticSteps;
@@ -122,7 +122,7 @@ import { binding } from "cucumber-tsflow";
 
 @binding()
 class MySteps {
-    ...
+  // ...
 }
 
 export = MySteps;
@@ -144,12 +144,10 @@ import { binding, given, when, then } from "cucumber-tsflow";
 
 @binding()
 class MySteps {
-    ...
-    @given(/I perform a search using the value "([^"]*)"/)
-    public givenAValueBasedSearch(searchValue: string): void {
-        ...
-    }
-    ...
+  @given(/I perform a search using the value "([^"]*)"/)
+  public givenAValueBasedSearch(searchValue: string): void {
+    // ...
+  }
 }
 
 export = MySteps;
@@ -160,7 +158,7 @@ supply to Cucumber, which means that the methods may be:
 
 - Synchronous by returning `void`
 - Asynchronous by receiving and using a callback as the last parameter\
-    The callback has signature `() => void`
+  The callback has signature `() => void`
 - Asynchronous by returning a `Promise<void>`
 
 The step definition functions must always receive a pattern as the first argument,
@@ -171,14 +169,14 @@ Additionally, a step definition may receive additional options in the format:
 ```ts
 @binding()
 class MySteps {
-    @given("pattern", {
-      tag: 'not @expensive',
-      timeout: 1000,
-      wrapperOptions: {},
-    })
-    public givenAValueBasedSearch(searchValue: string): void {
-        ...
-    }
+  @given("pattern", {
+    tag: 'not @expensive',
+    timeout: 1000,
+    wrapperOptions: {},
+  })
+  public givenAValueBasedSearch(searchValue: string): void {
+    // ...
+  }
 }
 ```
 
@@ -188,10 +186,10 @@ as direct arguments:
 ```ts
 @binding()
 class MySteps {
-    @given("pattern", 'not @expensive', 1000)
-    public givenAValueBasedSearch(searchValue: string): void {
-        ...
-    }
+  @given("pattern", 'not @expensive', 1000)
+  public givenAValueBasedSearch(searchValue: string): void {
+    // ...
+  }
 }
 ```
 
@@ -201,21 +199,29 @@ Hooks can be used to add logic that happens before or after each scenario execut
 They are configured in the same way as the [Step Definitions](#step-definitions).
 
 ```typescript
-import { binding, before, after } from "cucumber-tsflow";
+import { binding, before, beforeAll, after, afterAll } from "cucumber-tsflow";
 
 @binding()
 class MySteps {
-    ...
-    @before()
-    public beforeAllScenarios(): void {
-        ...
-    }
-    ...
+  @beforeAll()
+  public static beforeAllScenarios(): void {
+    // ...
+  }
 
-    @after()
-    public afterAllScenarios(): void {
-        ...
-    }
+  @afterAll()
+  public static beforeAllScenarios(): void {
+    // ...
+  }
+
+  @before()
+  public beforeAllScenarios(): void {
+    // ...
+  }
+
+  @after()
+  public afterAllScenarios(): void {
+    // ...
+  }
 }
 
 export = MySteps;
@@ -229,19 +235,19 @@ Hooks can receive aditional options just like the Step Definitions:
 ```ts
 @binding()
 class MySteps {
-    // Runs before each scenarios with tag `@requireTempDir` with 2 seconds of timeout
-    @before({tag: "@requireTempDir", timeout: 2000})
-    public async beforeAllScenariosRequiringTempDirectory(): Promise<void> {
-        let tempDirInfo = await this.createTemporaryDirectory();
-        ...
-    }
+  // Runs before each scenarios with tag `@requireTempDir` with 2 seconds of timeout
+  @before({ tag: "@requireTempDir", timeout: 2000 })
+  public async beforeAllScenariosRequiringTempDirectory(): Promise<void> {
+    let tempDirInfo = await this.createTemporaryDirectory();
+    // ...
+  }
 
-    // Runs after each scenarios with tag `@requireTempDir` with 2 seconds of timeout
-    @after({tag: "@requireTempDir", timeout: 2000})
-    public afterAllScenariosRequiringTempDirectory(): void {
-        await this.deleteTemporaryDirectory();
-        ...
-    }
+  // Runs after each scenarios with tag `@requireTempDir` with 2 seconds of timeout
+  @after({ tag: "@requireTempDir", timeout: 2000 })
+  public async afterAllScenariosRequiringTempDirectory(): void {
+    await this.deleteTemporaryDirectory();
+    // ...
+  }
 }
 ```
 
@@ -250,10 +256,10 @@ For backward compatibility, the `tag` option can also be passes as a direct argu
 ```ts
 @binding()
 class MySteps {
-    @before('@local')
-    public async runForLocalOnly(): Promise<void> {
-        ...
-    }
+  @before('@local')
+  public async runForLocalOnly(): Promise<void> {
+  ...
+  }
 }
 ```
 
@@ -265,21 +271,23 @@ Both Step Definitions and Hooks can receive a `tag` option. This option defines
 a filter such that the binding will only be considered for scenarios matching
 the filter.
 
-The syntax of the tag filter is a ["Tag expression"](https://cucumber.io/docs/cucumber/api/?lang=javascript#tag-expressions)
+The syntax of the tag filter is
+a ["Tag expression"](https://cucumber.io/docs/cucumber/api/?lang=javascript#tag-expressions)
 specified by Cucumber.
 
 **Note**: The tag might be set for the `Feature` or for the `Scenario`, and there
-is no distinction between them. This is called ["Tag Inheritance"](https://cucumber.io/docs/cucumber/api/?lang=javascript#tag-inheritance).
+is no distinction between them. This is
+called ["Tag Inheritance"](https://cucumber.io/docs/cucumber/api/?lang=javascript#tag-inheritance).
 
 For backward compatibility, setting a tag to a single word is treated the same
 as a filter for that word as a tag:
 
 ```ts
 // This backward compatible format
-@given({tag: 'foo'})
+@given({ tag: 'foo' })
 
 // Is transformed into this
-@given({tag: '@foo'})
+@given({ tag: '@foo' })
 ```
 
 #### Timeout
@@ -297,9 +305,14 @@ In step definition, we can passing additional wrapper options to CucumberJS.
 For example:
 
 ```typescript
-@given(/I perform a search using the value "([^"]*)"/, {wrapperOptions: {retry: 2}})
-public givenAValueBasedSearch(searchValue: string): void {
-    ...
+@given(/I perform a search using the value "([^"]*)"/, { wrapperOptions: { retry: 2 } })
+public
+givenAValueBasedSearch(searchValue
+:
+string
+):
+void {
+  ...
 }
 ```
 
@@ -321,22 +334,22 @@ for each executing scenario.
 To use context injection:
 
 - Create simple classes representing the shared data and/or behavior.\
-    These classes **must** have public constructors with no arguments (default constructors).
-    Defining a class with no constructor at all also works.
+  These classes **must** have public constructors with no arguments (default constructors).
+  Defining a class with no constructor at all also works.
 - Define a constructor on the binding classes that receives an instance of
-    the class defined above as an parameter.
+  the class defined above as an parameter.
 - Update the `@binding()` decorator to indicate the types of context objects
-    that are required by the binding class
+  that are required by the binding class
 
 ```ts
 // Workspace.ts
 
 export class Workspace {
-    public folder: string = "default folder";
+  public folder: string = "default folder";
 
-    public updateFolder(folder: string) {
-        this.folder = folder;
-    }
+  public updateFolder(folder: string) {
+    this.folder = folder;
+  }
 }
 
 // my-steps.ts
@@ -345,14 +358,14 @@ import { Workspace } from "./Workspace";
 
 @binding([Workspace])
 class MySteps {
-    public constructor(protected workspace: Workspace) { }
+  public constructor(protected workspace: Workspace) { }
 
-    @before("requireTempDir")
-    public async beforeAllScenariosRequiringTempDirectory(): Promise<void> {
-        let tempDirInfo = await this.createTemporaryDirectory();
+  @before("requireTempDir")
+  public async beforeAllScenariosRequiringTempDirectory(): Promise<void> {
+    let tempDirInfo = await this.createTemporaryDirectory();
 
-        this.workspace.updateFolder(tempDirInfo);
-    }
+    this.workspace.updateFolder(tempDirInfo);
+  }
 }
 
 export = MySteps;

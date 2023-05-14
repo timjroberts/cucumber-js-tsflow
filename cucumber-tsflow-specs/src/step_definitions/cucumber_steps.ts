@@ -26,8 +26,7 @@ class CucumberSteps {
 
   @then("it passes")
   public checkPassed() {
-    // Noop, this is validated at scenario wrap up
-    // The step is defined here to allow for better feature stories
+    expect(this.runner.lastRun.error).toBeNull();
   }
 
   @then("it fails")
@@ -45,6 +44,7 @@ class CucumberSteps {
   }
 
   @then("the output contains {string} once")
+  @then("the output contains text once:")
   public checkStdoutContainsOnce(text: string) {
     const { output } = this.runner.lastRun;
 

@@ -35,7 +35,7 @@ jobs:
       - name: Create version info file
         run: |-
           echo "${{ steps.set_package_version.outputs.package_version }}" > versioninfo.txt
-          jq '.releaseTag or "latest"' version.json > releasetag.txt
+          jq '.releaseTag // "latest"' version.json > releasetag.txt
       - uses: actions/upload-artifact@v2
         with:
           name: npm-package
@@ -48,6 +48,8 @@ jobs:
     name: Publish to npm
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      contents: write
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -71,3 +73,10 @@ jobs:
             --tag ${{ steps.get_package_version.outputs.release_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish GitHub release
+        uses: ncipollo/release-action
+        with:
+          tag: ${{ steps.get_package_version.outputs.package_version }}
+          commit: ${{ github.sha }}
+          artifacts: cucumber-tsflow-${{ steps.get_package_version.outputs.package_version }}.tgz
+          generateReleaseNotes: true

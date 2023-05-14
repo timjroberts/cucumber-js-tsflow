@@ -109,8 +109,8 @@ const ensureSystemBindings = _.once(() => {
     this[SCENARIO_CONTEXT_SLOTNAME] = scenarioContext;
 
     scenarioContext.addExternalObject(new WorldParameters(this.parameters));
-    scenarioContext.addExternalObject(new CucumberLog(this.log));
-    scenarioContext.addExternalObject(new CucumberAttachments(this.attach));
+    scenarioContext.addExternalObject(new CucumberLog(this.log.bind(this)));
+    scenarioContext.addExternalObject(new CucumberAttachments(this.attach.bind(this)));
   });
 
   After(function(this: WritableWorld) {

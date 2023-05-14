@@ -58,8 +58,7 @@ class Prepare {
   }
 
   private setupNodeModules() {
-    const tmpDirNodeModulesPath = this.runner.dir.getPath("node_modules");
-    fsExtra.mkdirpSync(tmpDirNodeModulesPath);
+    const tmpDirNodeModulesPath = this.runner.dir.mkdir("node_modules");
 
     fsExtra.ensureSymlinkSync(cucumberPath, path.join(
       tmpDirNodeModulesPath,
@@ -82,19 +81,19 @@ class Prepare {
 
   private writeDefaultFiles(tags: string[]) {
     if (!tags.includes("custom-tsconfig")) {
-      fsExtra.outputJsonSync(
-        this.runner.dir.getPath("tsconfig.json"),
-        {
+      this.runner.dir.writeFile(
+        "tsconfig.json",
+        JSON.stringify({
           compilerOptions: {
             experimentalDecorators: true
           }
-        }
+        })
       );
     }
 
     if (!tags.includes("no-logging")) {
-      fsExtra.outputFileSync(
-        this.runner.dir.getPath("a-logging.ts"),
+      this.runner.dir.writeFile(
+        "a-logging.ts",
         `
 import * as log4js from 'log4js';
 
