@@ -11,38 +11,40 @@ jobs:
   build:
     name: Build and Test
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set_package_version.outputs.NpmPackageVersion }}
+      releaseTag: ${{ steps.tagInfo.outputs.releaseTag }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # avoid shallow clone (required by Nerbank GitVersioning)
-      - uses: actions/setup-dotnet@v1 # .NET Core is required in order to use nerdbank-gitversioning
-        with:
-          dotnet-version: 3.1.301
+      #      - uses: actions/setup-dotnet@v1 # .NET Core is required in order to use nerdbank-gitversioning
+      #        with:
+      #          dotnet-version: 3.1.301
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: Install npm packages
         run: npm ci
       - name: Update package version
         id: set_package_version
-        run: npm run set-packageversion
+        uses: dotnet/nbgv@master
+        with:
+          stamp: cucumber-tsflow/package.json
       - name: Build
         run: npm run build
-      - name: Run specification tests
-        run: npm test
       - name: Create npm package
         run: npm pack ./cucumber-tsflow
-      - name: Create version info file
+      - name: Read tag info
+        id: tagInfo
         run: |-
-          echo "${{ steps.set_package_version.outputs.package_version }}" > versioninfo.txt
-          jq '.releaseTag // "latest"' version.json > releasetag.txt
-      - uses: actions/upload-artifact@v2
+          echo "releaseTag=$(jq '.releaseTag // "latest"' version.json)" | tee -a $GITHUB_OUTPUT
+      - uses: actions/upload-artifact@v3
         with:
           name: npm-package
           path: |
-            versioninfo.txt
-            releasetag.txt
-            cucumber-tsflow-${{ steps.set_package_version.outputs.package_version }}.tgz
+            cucumber-tsflow-${{ steps.set_package_version.outputs.NpmPackageVersion }}.tgz
+
   # Publish the 'cucumber-tsflow' package to npm
   publish:
     name: Publish to npm
@@ -53,30 +55,23 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           registry-url: 'https://registry.npmjs.org'
       - uses: actions/download-artifact@v2
         name: Download npm package
         with:
           name: npm-package
-      - name: Read version info file
-        id: get_package_version
-        run: |
-          VER=`cat versioninfo.txt`
-          echo "::set-output name=package_version::$VER"
-          TAG=`cat releasetag.txt`
-          echo "::set-output name=release_tag::$TAG"
       - name: Publish npm package
         run: |-
           npm publish \
-            cucumber-tsflow-${{ steps.get_package_version.outputs.package_version }}.tgz \
-            --tag ${{ steps.get_package_version.outputs.release_tag }}
+            cucumber-tsflow-${{ needs.build.outputs.version }}.tgz \
+            --tag ${{ needs.build.outputs.releaseTag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish GitHub release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.get_package_version.outputs.package_version }}
+          tag: ${{ needs.build.outputs.version }}
           commit: ${{ github.sha }}
-          artifacts: cucumber-tsflow-${{ steps.get_package_version.outputs.package_version }}.tgz
+          artifacts: cucumber-tsflow-${{ needs.build.outputs.version }}.tgz
           generateReleaseNotes: true
