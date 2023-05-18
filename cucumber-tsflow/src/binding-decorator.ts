@@ -7,7 +7,7 @@ import { PickleTag } from "@cucumber/messages";
 import * as _ from "underscore";
 import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import logger from "./logger";
-import { ManagedScenarioContext } from "./managed-scenario-context";
+import { ManagedScenarioContext, ScenarioInfo } from "./managed-scenario-context";
 import { CucumberAttachments, CucumberLog, WorldParameters } from "./provided-context";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { ContextType, StepPattern, TypeDecorator } from "./types";
@@ -101,13 +101,18 @@ const ensureSystemBindings = _.once(() => {
       JSON.stringify(scenario)
     );
 
-    const scenarioContext = new ManagedScenarioContext(
+    const scenarioInfo = new ScenarioInfo(
       scenario.pickle.name!,
       _.map(scenario.pickle.tags!, (tag: PickleTag) => tag.name!)
     );
 
+    const scenarioContext = new ManagedScenarioContext(
+      scenarioInfo
+    );
+
     this[SCENARIO_CONTEXT_SLOTNAME] = scenarioContext;
 
+    scenarioContext.addExternalObject(scenarioInfo);
     scenarioContext.addExternalObject(new WorldParameters(this.parameters));
     scenarioContext.addExternalObject(new CucumberLog(this.log.bind(this)));
     scenarioContext.addExternalObject(new CucumberAttachments(this.attach.bind(this)));

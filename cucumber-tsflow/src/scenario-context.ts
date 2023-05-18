@@ -1,5 +1,3 @@
-import * as _ from "underscore";
-
 import { ScenarioInfo } from "./scenario-info";
 
 /**

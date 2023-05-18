@@ -1,11 +1,15 @@
-import * as _ from "underscore";
-
 import { TagName } from "./types";
 
 /**
  * Provides information about a running Cucumber scenario.
  */
 export class ScenarioInfo {
+  private _attributeTags?: Map<string, Record<string, string>>;
+
+  private _optionTags?: Map<string, string>;
+
+  private _flagTags?: Set<string>;
+
   /**
    * Initializes the [[ScenarioInfo]] object.
    *
@@ -14,4 +18,40 @@ export class ScenarioInfo {
    * running Cucumber scenario.
    */
   constructor(public scenarioTitle: string, public tags: TagName[]) {}
+
+  private static parseAttributeTags(_tags: TagName[]): Map<string, Record<string, string>> {
+    return new Map();
+  }
+
+  private static parseOptionTags(_tags: TagName[]): Map<string, string> {
+    return new Map();
+  }
+
+  private static parseFlagTags(_tags: TagName[]): Set<string> {
+    return new Set();
+  }
+
+  public getAttributeTag(name: string): Record<string, string> | undefined {
+    if (this._attributeTags === undefined) {
+      this._attributeTags = ScenarioInfo.parseAttributeTags(this.tags);
+    }
+
+    return this._attributeTags.get(name);
+  }
+
+  public getOptionTag(name: string): string | undefined {
+    if (this._optionTags === undefined) {
+      this._optionTags = ScenarioInfo.parseOptionTags(this.tags);
+    }
+
+    return this._optionTags.get(name);
+  }
+
+  public getFlag(name: string): boolean {
+    if (this._flagTags === undefined) {
+      this._flagTags = ScenarioInfo.parseFlagTags(this.tags);
+    }
+
+    return this._flagTags.has(name);
+  }
 }
