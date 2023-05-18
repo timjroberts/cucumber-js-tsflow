@@ -44,7 +44,7 @@ Feature: Tag parameters
             export = Steps;
             """
 
-    Scenario: Checking for an absent tag flag
+    Scenario: Checking for an absent flag
         Given a file named "features/a.feature" with:
             """feature
             Feature: Feature
@@ -79,6 +79,57 @@ Feature: Tag parameters
               Scenario: Two
                 Then the flag "enableFoo" is disabled
                 Then the flag "enableBar" is enabled
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for an absent option
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+              Scenario: example
+                Then the option tag "foo" is unset
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for an option on the feature
+        Given a file named "features/a.feature" with:
+            """feature
+            @foo(bar)
+            Feature: Feature
+              Scenario: One
+                Then the option tag "foo" is set to "bar"
+              Scenario: Two
+                Then the option tag "foo" is set to "bar"
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for an option on the scenario
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+              @foo(bar)
+              Scenario: One
+                Then the option tag "foo" is set to "bar"
+              @foo(baz)
+              Scenario: Two
+                Then the option tag "foo" is set to "baz"
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for an option on the scenario overriding one on the feature
+        Given a file named "features/a.feature" with:
+            """feature
+            @foo(bar)
+            Feature: Feature
+              Scenario: One
+                Then the option tag "foo" is set to "bar"
+              @foo(baz)
+              Scenario: Two
+                Then the option tag "foo" is set to "baz"
             """
         When I run cucumber-js
         Then it passes

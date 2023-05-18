@@ -24,8 +24,23 @@ export class ScenarioInfo {
     return new Map();
   }
 
-  private static parseOptionTags(_tags: TagName[]): Map<string, string> {
-    return new Map();
+  private static parseOptionTags(tags: TagName[]): Map<string, string> {
+    const RGX = /^@?(?<option>[\w-]+)\((?<value>.+?)\)$/s;
+
+    const result = new Map<string, string>();
+
+    for (const tag of tags) {
+      const match = tag.match(RGX)?.groups;
+
+      if (match !== undefined) {
+        const { option, value } = match;
+        result.set(option, value);
+      }
+    }
+
+    logger.trace("Parsed options", { fromTags: tags, options: result });
+
+    return result;
   }
 
   private static parseFlagTags(tags: TagName[]): Set<string> {
