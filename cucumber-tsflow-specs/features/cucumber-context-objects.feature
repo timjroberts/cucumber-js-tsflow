@@ -153,3 +153,39 @@ Feature: Cucumber context objects
 
         When I run cucumber-js
         Then it passes
+
+    Scenario: Reading the scenario information
+        Given a file named "features/a.feature" with:
+            """feature
+            @foo
+            Feature: Feature
+              @bar
+              Scenario: example
+                Then the scenario title is "example"
+                And  the tags are [ "@foo", "@bar" ]
+            """
+        And a file named "step_definitions/steps.ts" with:
+            """ts
+            import {binding, then, ScenarioInfo} from 'cucumber-tsflow';
+            import * as assert from 'node:assert';
+
+            @binding([ScenarioInfo])
+            class Steps {
+                public constructor(private readonly scenario: ScenarioInfo) {}
+
+                @then("the scenario title is {string}")
+                public checkScenarioName(name: string) {
+                    assert.strictEqual(this.scenario.scenarioTitle, name);
+                }
+
+                @then("the tags are {}")
+                public checkTags(tags: string) {
+                    assert.deepStrictEqual(this.scenario.tags, JSON.parse(tags));
+                }
+            }
+
+            export = Steps;
+            """
+
+        When I run cucumber-js
+        Then it passes
