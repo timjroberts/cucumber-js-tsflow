@@ -1,3 +1,4 @@
+import assert from "assert";
 import { binding, then, when } from "cucumber-tsflow";
 import expect from "expect";
 import { parseEnvString } from "../support/helpers";
@@ -26,7 +27,11 @@ class CucumberSteps {
 
   @then("it passes")
   public checkPassed() {
-    expect(this.runner.lastRun.error).toBeNull();
+    assert.strictEqual(
+      this.runner.lastRun.error,
+      null,
+      this.runner.lastRun.errorOutput
+    );
   }
 
   @then("it fails")

@@ -30,6 +30,7 @@ Feature: Tag parameters
                     assert.strictEqual(this.scenario.getOptionTag(name), undefined);
                 }
 
+                @then("the attribute tag {string} is set to {}")
                 @then("the attribute tag {string} is set to:")
                 public checkAttributes(name: string, values: string) {
                     assert.deepStrictEqual(this.scenario.getAttributeTag(name), JSON.parse(values));
@@ -130,6 +131,57 @@ Feature: Tag parameters
               @foo(baz)
               Scenario: Two
                 Then the option tag "foo" is set to "baz"
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for an absent attribute tag
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+              Scenario: example
+                Then the attribute tag "foo" is unset
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for an attribute tag on the feature
+        Given a file named "features/a.feature" with:
+            """feature
+            @foo({"bar":1})
+            Feature: Feature
+              Scenario: One
+                Then the attribute tag "foo" is set to { "bar": 1 }
+              Scenario: Two
+                Then the attribute tag "foo" is set to { "bar": 1 }
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for an attribute tag on the scenario
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+              @foo({"bar":1})
+              Scenario: One
+                Then the attribute tag "foo" is set to { "bar": 1 }
+              @foo({"bar":2})
+              Scenario: Two
+                Then the attribute tag "foo" is set to { "bar": 2 }
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for an attribute tag on the scenario overriding one on the feature
+        Given a file named "features/a.feature" with:
+            """feature
+            @foo({"bar":1})
+            Feature: Feature
+              Scenario: One
+                Then the attribute tag "foo" is set to { "bar": 1 }
+              @foo({"not-bar":2})
+              Scenario: Two
+                Then the attribute tag "foo" is set to { "not-bar": 2 }
             """
         When I run cucumber-js
         Then it passes

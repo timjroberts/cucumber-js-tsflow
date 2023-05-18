@@ -5,7 +5,7 @@ import { TagName } from "./types";
  * Provides information about a running Cucumber scenario.
  */
 export class ScenarioInfo {
-  private _attributeTags?: Map<string, Record<string, string>>;
+  private _attributeTags?: Map<string, unknown>;
 
   private _optionTags?: Map<string, string>;
 
@@ -20,8 +20,23 @@ export class ScenarioInfo {
    */
   constructor(public scenarioTitle: string, public tags: TagName[]) {}
 
-  private static parseAttributeTags(_tags: TagName[]): Map<string, Record<string, string>> {
-    return new Map();
+  private static parseAttributeTags(tags: TagName[]): Map<string, unknown> {
+    const RGX = /^@?(?<attributeName>[\w-]+)\((?<value>.+?)\)$/s;
+
+    const result = new Map<string, unknown>();
+
+    for (const tag of tags) {
+      const match = tag.match(RGX)?.groups;
+
+      if (match !== undefined) {
+        const { attributeName, value } = match;
+        result.set(attributeName, JSON.parse(value));
+      }
+    }
+
+    logger.trace("Parsed attribute tags", { fromTags: tags, options: result });
+
+    return result;
   }
 
   private static parseOptionTags(tags: TagName[]): Map<string, string> {
@@ -61,7 +76,7 @@ export class ScenarioInfo {
     return result;
   }
 
-  public getAttributeTag(name: string): Record<string, string> | undefined {
+  public getAttributeTag(name: string): unknown | undefined {
     if (this._attributeTags === undefined) {
       this._attributeTags = ScenarioInfo.parseAttributeTags(this.tags);
     }
