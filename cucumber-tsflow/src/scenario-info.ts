@@ -1,3 +1,4 @@
+import logger from "./logger";
 import { TagName } from "./types";
 
 /**
@@ -27,8 +28,22 @@ export class ScenarioInfo {
     return new Map();
   }
 
-  private static parseFlagTags(_tags: TagName[]): Set<string> {
-    return new Set();
+  private static parseFlagTags(tags: TagName[]): Set<string> {
+    const RGX = /^@?(?<flag>[\w-]+)$/s;
+
+    const result = new Set<string>();
+
+    for (const tag of tags) {
+      const flag = tag.match(RGX)?.groups?.flag;
+
+      if (flag !== undefined) {
+        result.add(flag);
+      }
+    }
+
+    logger.trace("Parsed flags", { fromTags: tags, flags: result });
+
+    return result;
   }
 
   public getAttributeTag(name: string): Record<string, string> | undefined {
