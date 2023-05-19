@@ -1,4 +1,5 @@
 import { CucumberAttachments, CucumberLog, WorldParameters } from "./provided-context";
+import { ScenarioInfo } from "./scenario-info";
 
 /**
  * A string representation of a [[RegExp]] that defines a Cucumber step pattern.
@@ -17,7 +18,8 @@ export type TagName = string;
 export type CustomContextType = new () => any;
 
 export type ProvidedContextType =
-  typeof WorldParameters
+  | typeof ScenarioInfo
+  | typeof WorldParameters
   | typeof CucumberLog
   | typeof CucumberAttachments;
 
@@ -27,6 +29,7 @@ const providedPrototypes: ProvidedContextType[] = [
   WorldParameters,
   CucumberLog,
   CucumberAttachments,
+  ScenarioInfo
 ];
 
 export function isProvidedContextType(typ: ContextType): typ is ProvidedContextType {

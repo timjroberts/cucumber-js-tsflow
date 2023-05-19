@@ -26,7 +26,14 @@ class CucumberSteps {
 
   @then("it passes")
   public checkPassed() {
-    expect(this.runner.lastRun.error).toBeNull();
+    const { lastRun } = this.runner;
+
+    if (lastRun?.error != null) {
+      throw new Error(
+        `Last run errored unexpectedly. Output:\n\n${lastRun.output}\n\n` +
+        `Error Output:\n\n${lastRun.errorOutput}`
+      );
+    }
   }
 
   @then("it fails")

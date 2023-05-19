@@ -1,6 +1,6 @@
 import * as _ from "underscore";
-
-import { ScenarioContext, ScenarioInfo } from "./scenario-context";
+import { ScenarioContext } from "./scenario-context";
+import { ScenarioInfo } from "./scenario-info";
 import { ContextType, isProvidedContextType } from "./types";
 
 /**
@@ -8,17 +8,12 @@ import { ContextType, isProvidedContextType } from "./types";
  * are created and used by binding classes during a running Cucumber scenario.
  */
 export class ManagedScenarioContext implements ScenarioContext {
-  private readonly _scenarioInfo: ScenarioInfo;
-
   private _activeObjects = new Map<any, any>();
 
-  constructor(scenarioTitle: string, tags: string[]) {
-    this._scenarioInfo = new ScenarioInfo(scenarioTitle, tags);
-  }
+  constructor(private readonly _scenarioInfo: ScenarioInfo) {}
 
   /**
    * Gets information about the scenario.
-   *
    */
   public get scenarioInfo(): ScenarioInfo {
     return this._scenarioInfo;
