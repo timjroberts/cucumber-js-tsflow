@@ -116,7 +116,7 @@ export function when(
  */
 export function then(
   stepPattern: RegExp | string,
-  tagOrOption?: string,
+  tagOrOption?: string | StepOptions,
   timeout?: number
 ): MethodDecorator {
   const callsite = Callsite.capture();
