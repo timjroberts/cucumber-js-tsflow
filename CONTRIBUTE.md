@@ -1,3 +1,14 @@
+The project should set-up all of its inner links and bindings when you first install it.
+
+Run the tests locally to ensure everything is properly configured.
+
+```terminal
+> git clone https://github.com/timjroberts/cucumber-js-tsflow.git
+> cd cucumber-js-tsflow
+> npm install
+> npm test
+```
+
 ## Setting up Run/Debug in IDE
 
 For IntelliJ, a run configuration is stored in ```.run/cucumber-js.run.xml``` to run/debug the tests.

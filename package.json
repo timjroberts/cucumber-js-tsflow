@@ -9,14 +9,16 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "tsc --build",
+    "clean": "rm -rf tmp tsconfig.tsbuildinfo cucumber-tsflow/tsconfig.tsbuildinfo cucumber-tsflow/dist cucumber-tsflow-specs/tsconfig.tsbuildinfo",
+    "build": "tsc -p cucumber-tsflow",
     "build:watch": "tsc --build --watch",
+    "preinstall": "cd cucumber-tsflow && npm install && cd ../cucumber-tsflow-specs && npm install",
     "postinstall": "lerna bootstrap && npm run fix-peer-cucumber",
-    "fix-peer-cucumber": "rm -rf cucumber-tsflow/node_modules/@cucumber && ln -s ../../node_modules/@cucumber cucumber-tsflow/node_modules/@cucumber",
+    "fix-peer-cucumber": "rm -rf cucumber-tsflow/node_modules/@cucumber/cucumber && ln -s ../../node_modules/@cucumber cucumber-tsflow/node_modules/@cucumber/cucumber",
     "precommit": "lint-staged && npm test",
     "set-packageversion": "node .build/setPackageVersion.js",
     "pretest": "npm run build",
-    "test": "cucumber-js -p default cucumber-tsflow-specs"
+    "test": "cucumber-js -p default cucumber-tsflow-specs/features/**/*.feature"
   },
   "lint-staged": {
     "*.ts": [
