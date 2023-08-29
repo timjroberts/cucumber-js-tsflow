@@ -11,7 +11,6 @@ module.exports = cucumberPkg.version.startsWith("7.")
   }
   : {
     default: {
-      publishQuiet: true,
       requireModule: ["ts-node/register"],
       require: ["cucumber-tsflow-specs/src/**/*.ts"],
       worldParameters: {
