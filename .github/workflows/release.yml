@@ -17,10 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # avoid shallow clone (required by Nerbank GitVersioning)
-      #      - uses: actions/setup-dotnet@v1 # .NET Core is required in order to use nerdbank-gitversioning
-      #        with:
-      #          dotnet-version: 3.1.301
+          # avoid shallow clone (required by Nerbank GitVersioning)
+          fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
           node-version: 18
