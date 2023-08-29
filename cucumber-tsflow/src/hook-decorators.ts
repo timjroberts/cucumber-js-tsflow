@@ -4,13 +4,15 @@ import { StepBinding, StepBindingFlags } from "./step-binding";
 import { normalizeTag } from "./tag-normalization";
 
 interface HookOptions {
-  tag?: string,
+  tag?: string;
 
-  timeout?: number,
+  timeout?: number;
 }
 
 function overloadedOption(tag?: string | HookOptions): HookOptions {
-  if (tag === undefined || typeof tag === "string") { return { tag }; }
+  if (tag === undefined || typeof tag === "string") {
+    return { tag };
+  }
 
   return tag;
 }
@@ -36,7 +38,7 @@ function createHookDecorator(
       argsLength: target[propertyKey].length,
       tag: normalizeTag(tag),
       callsite: callsite,
-      timeout: timeout
+      timeout: timeout,
     };
 
     BindingRegistry.instance.registerStepBinding(stepBinding);

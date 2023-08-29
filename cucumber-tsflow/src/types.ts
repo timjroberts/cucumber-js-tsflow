@@ -1,4 +1,8 @@
-import { CucumberAttachments, CucumberLog, WorldParameters } from "./provided-context";
+import {
+  CucumberAttachments,
+  CucumberLog,
+  WorldParameters,
+} from "./provided-context";
 import { ScenarioInfo } from "./scenario-info";
 
 /**
@@ -29,11 +33,13 @@ const providedPrototypes: ProvidedContextType[] = [
   WorldParameters,
   CucumberLog,
   CucumberAttachments,
-  ScenarioInfo
+  ScenarioInfo,
 ];
 
-export function isProvidedContextType(typ: ContextType): typ is ProvidedContextType {
-  return providedPrototypes.some(proto => Object.is(typ, proto));
+export function isProvidedContextType(
+  typ: ContextType
+): typ is ProvidedContextType {
+  return providedPrototypes.some((proto) => Object.is(typ, proto));
 }
 
 export type TypeDecorator = <T>(target: new (...args: any[]) => T) => void;

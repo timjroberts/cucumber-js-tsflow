@@ -14,7 +14,9 @@ export class TestDir {
     this._path = newPath;
   }
 
-  public readFileStream(...pathParts: string[] | [string[]]): ReadStream | null {
+  public readFileStream(
+    ...pathParts: string[] | [string[]]
+  ): ReadStream | null {
     const filePath = this.getPath(...pathParts);
 
     if (fs.existsSync(filePath)) {
@@ -41,8 +43,9 @@ export class TestDir {
   }
 
   public writeFile(pathParts: string | string[], data: string): void {
-    const pathArgs = (typeof pathParts === "string" ? [pathParts] : pathParts)
-      .flatMap(part => part.split("/"));
+    const pathArgs = (
+      typeof pathParts === "string" ? [pathParts] : pathParts
+    ).flatMap((part) => part.split("/"));
 
     if (pathArgs.length > 1) {
       this.mkdir(pathArgs.slice(0, pathArgs.length - 1));
@@ -60,10 +63,11 @@ export class TestDir {
   }
 
   private getPath(...pathParts: string[] | [string[]]): string {
-    return path.join(this.path, ...(
-      pathParts.length === 1 && Array.isArray(pathParts[0])
+    return path.join(
+      this.path,
+      ...(pathParts.length === 1 && Array.isArray(pathParts[0])
         ? pathParts[0]
-        : (pathParts as string[])
-    ));
+        : (pathParts as string[]))
+    );
   }
 }

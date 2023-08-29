@@ -7,7 +7,7 @@ import { TestRunner } from "../support/runner";
 
 const ENCODING_MAP: { [key: string]: messages.AttachmentContentEncoding } = {
   IDENTITY: messages.AttachmentContentEncoding.IDENTITY,
-  BASE64: messages.AttachmentContentEncoding.BASE64
+  BASE64: messages.AttachmentContentEncoding.BASE64,
 };
 
 @binding([TestRunner])
@@ -17,9 +17,7 @@ class ScenarioSteps {
   @then("it runs {int} scenarios")
   public checkScenarioCount(expectedCount: number) {
     const startedTestCases = this.runner.lastRun.envelopes.reduce(
-      (acc, e) => e.testCaseStarted == null
-        ? acc
-        : acc + 1,
+      (acc, e) => (e.testCaseStarted == null ? acc : acc + 1),
       0
     );
 
@@ -28,14 +26,16 @@ class ScenarioSteps {
 
   @then("it runs the scenario {string}")
   public checkRunSingleScenario(scenario: string) {
-    const actualNames = this.runner.extractor.getPickleNamesInOrderOfExecution();
+    const actualNames =
+      this.runner.extractor.getPickleNamesInOrderOfExecution();
     expect(actualNames).toEqual([scenario]);
   }
 
   @then("it runs the scenarios:")
   public checkScenarios(table: DataTable) {
-    const expectedNames = table.rows().map(row => row[0]);
-    const actualNames = this.runner.extractor.getPickleNamesInOrderOfExecution();
+    const expectedNames = table.rows().map((row) => row[0]);
+    const actualNames =
+      this.runner.extractor.getPickleNamesInOrderOfExecution();
     expect(actualNames).toEqual(expectedNames);
   }
 
@@ -56,14 +56,12 @@ class ScenarioSteps {
       return {
         body: x.DATA,
         mediaType: x["MEDIA TYPE"],
-        contentEncoding: ENCODING_MAP[x["MEDIA ENCODING"]]
+        contentEncoding: ENCODING_MAP[x["MEDIA ENCODING"]],
       };
     });
 
-    const actualAttachments = this.runner.extractor.getAttachmentsForStep(
-      pickleName,
-      stepText
-    )
+    const actualAttachments = this.runner.extractor
+      .getAttachmentsForStep(pickleName, stepText)
       .map(Extractor.simplifyAttachment);
 
     expect(actualAttachments).toEqual(expectedAttachments);
@@ -81,15 +79,12 @@ class ScenarioSteps {
         return {
           body: x.DATA,
           mediaType: x["MEDIA TYPE"],
-          contentEncoding: ENCODING_MAP[x["MEDIA ENCODING"]]
+          contentEncoding: ENCODING_MAP[x["MEDIA ENCODING"]],
         };
       });
 
     const actualAttachments = this.runner.extractor
-      .getAttachmentsForHook(
-        pickleName,
-        hookKeyword === "Before"
-      )
+      .getAttachmentsForHook(pickleName, hookKeyword === "Before")
       .map(Extractor.simplifyAttachment);
 
     expect(actualAttachments).toEqual(expectedAttachments);
@@ -97,12 +92,9 @@ class ScenarioSteps {
 
   @then("scenario {string} step {string} has the logs:")
   public checkStepLogs(pickleName: string, stepName: string, logs: DataTable) {
-    const expectedLogs = logs.raw().map(row => row[0]);
+    const expectedLogs = logs.raw().map((row) => row[0]);
     const actualLogs = Extractor.logsFromAttachments(
-      this.runner.extractor.getAttachmentsForStep(
-        pickleName,
-        stepName
-      )
+      this.runner.extractor.getAttachmentsForStep(pickleName, stepName)
     );
 
     expect(actualLogs).toStrictEqual(expectedLogs);
@@ -119,7 +111,7 @@ class ScenarioSteps {
   }
 }
 
-export = ScenarioSteps
+export = ScenarioSteps;
 
 // Then(
 //   "the scenario {string} has the steps:",

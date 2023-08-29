@@ -5,20 +5,25 @@ import { StepBinding, StepBindingFlags } from "./step-binding";
 import { normalizeTag } from "./tag-normalization";
 
 interface StepOptions {
-  tag?: string,
+  tag?: string;
 
-  timeout?: number,
+  timeout?: number;
 
-  wrapperOption?: any,
+  wrapperOption?: any;
 }
 
-function overloadedOptions(tag?: string | StepOptions, timeout?: number): StepOptions {
+function overloadedOptions(
+  tag?: string | StepOptions,
+  timeout?: number
+): StepOptions {
   if (tag === undefined || typeof tag === "string") {
     return { tag, timeout };
   }
 
   if (timeout !== undefined) {
-    throw new Error("Cannot specify a separate timeout argument when an options object is given.");
+    throw new Error(
+      "Cannot specify a separate timeout argument when an options object is given."
+    );
   }
 
   return tag;
@@ -54,13 +59,10 @@ export function given(
       callsite: callsite,
       tag: normalizeTag(options.tag),
       timeout: options.timeout,
-      wrapperOption: options.wrapperOption
+      wrapperOption: options.wrapperOption,
     };
 
-    logger.trace(
-      "Registering step definition:",
-      stepBinding
-    );
+    logger.trace("Registering step definition:", stepBinding);
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
 
@@ -98,7 +100,7 @@ export function when(
       callsite: callsite,
       tag: normalizeTag(options.tag),
       timeout: options.timeout,
-      wrapperOption: options.wrapperOption
+      wrapperOption: options.wrapperOption,
     };
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
@@ -137,7 +139,7 @@ export function then(
       callsite: callsite,
       tag: normalizeTag(options.tag),
       timeout: options.timeout,
-      wrapperOption: options.wrapperOption
+      wrapperOption: options.wrapperOption,
     };
 
     BindingRegistry.instance.registerStepBinding(stepBinding);

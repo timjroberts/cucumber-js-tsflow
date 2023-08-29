@@ -1,4 +1,8 @@
-import { IJsonFeature, IJsonScenario, IJsonStep } from "@cucumber/cucumber/lib/formatter/json_formatter";
+import {
+  IJsonFeature,
+  IJsonScenario,
+  IJsonStep,
+} from "@cucumber/cucumber/lib/formatter/json_formatter";
 import { valueOrDefault } from "@cucumber/cucumber/lib/value_checker";
 import * as messages from "@cucumber/messages";
 
@@ -105,5 +109,5 @@ export const ignorableKeys = [
   "nanos",
   "seconds",
   // errors
-  "message"
+  "message",
 ];

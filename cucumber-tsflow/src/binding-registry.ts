@@ -42,7 +42,8 @@ export class BindingRegistry {
    * @returns A [[BindingRegistry]].
    */
   public static get instance(): BindingRegistry {
-    const BINDING_REGISTRY_SLOTNAME: string = "__CUCUMBER_TSFLOW_BINDINGREGISTRY";
+    const BINDING_REGISTRY_SLOTNAME: string =
+      "__CUCUMBER_TSFLOW_BINDINGREGISTRY";
 
     const registry = (global as any)[BINDING_REGISTRY_SLOTNAME];
 
@@ -74,7 +75,7 @@ export class BindingRegistry {
     if (!targetDecorations) {
       targetDecorations = {
         stepBindings: [],
-        contextTypes: []
+        contextTypes: [],
       };
 
       this._targetBindings.set(targetPrototype, targetDecorations);
@@ -125,7 +126,7 @@ export class BindingRegistry {
 
     logger.trace("Attempting to register step binding", stepBinding);
 
-    if (!stepBindings.some(b => isSameStepBinding(stepBinding, b))) {
+    if (!stepBindings.some((b) => isSameStepBinding(stepBinding, b))) {
       logger.trace("Saving new step binding.");
       stepBindings.push(stepBinding);
     }
@@ -137,21 +138,24 @@ export class BindingRegistry {
     if (!targetBinding) {
       targetBinding = {
         stepBindings: [],
-        contextTypes: []
+        contextTypes: [],
       };
 
       this._targetBindings.set(stepBinding.targetPrototype, targetBinding);
     }
 
     if (
-      !targetBinding.stepBindings.some(b => isSameStepBinding(stepBinding, b))
+      !targetBinding.stepBindings.some((b) => isSameStepBinding(stepBinding, b))
     ) {
       logger.trace("Saving new step binding to target.");
       targetBinding.stepBindings.push(stepBinding);
     }
 
-    logger.trace("All target step bindings",
-      targetBinding.stepBindings.map(binding => `${binding.stepPattern} ${binding.tag}`)
+    logger.trace(
+      "All target step bindings",
+      targetBinding.stepBindings.map(
+        (binding) => `${binding.stepPattern} ${binding.tag}`
+      )
     );
 
     function isSameStepBinding(a: StepBinding, b: StepBinding) {

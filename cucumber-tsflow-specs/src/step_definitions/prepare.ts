@@ -19,7 +19,7 @@ class Prepare {
   public setupTestDir({ gherkinDocument, pickle }: ITestCaseHookParameter) {
     const { line } = formatterHelpers.PickleParser.getPickleLocation({
       gherkinDocument,
-      pickle
+      pickle,
     });
 
     const tmpDir = path.join(
@@ -35,8 +35,8 @@ class Prepare {
     this.setupNodeModules();
 
     const tags = [
-      ...pickle.tags.map(tag => tag.name),
-      ...gherkinDocument.feature?.tags.map(tag => tag.name) ?? []
+      ...pickle.tags.map((tag) => tag.name),
+      ...(gherkinDocument.feature?.tags.map((tag) => tag.name) ?? []),
     ];
 
     this.writeDefaultFiles(tags);
@@ -46,13 +46,10 @@ class Prepare {
   public tearDownTestDir() {
     const { lastRun } = this.runner;
 
-    if (
-      lastRun?.error != null &&
-      !this.runner.verifiedLastRunError
-    ) {
+    if (lastRun?.error != null && !this.runner.verifiedLastRunError) {
       throw new Error(
         `Last run errored unexpectedly. Output:\n\n${lastRun.output}\n\n` +
-        `Error Output:\n\n${lastRun.errorOutput}`
+          `Error Output:\n\n${lastRun.errorOutput}`
       );
     }
   }
@@ -60,23 +57,22 @@ class Prepare {
   private setupNodeModules() {
     const tmpDirNodeModulesPath = this.runner.dir.mkdir("node_modules");
 
-    fsExtra.ensureSymlinkSync(cucumberPath, path.join(
-      tmpDirNodeModulesPath,
-      "@cucumber",
-      "cucumber"
-    ));
-    fsExtra.ensureSymlinkSync(tsNodePath, path.join(
-      tmpDirNodeModulesPath,
-      "ts-node"
-    ));
-    fsExtra.ensureSymlinkSync(projectLibPath, path.join(
-      tmpDirNodeModulesPath,
-      "cucumber-tsflow"
-    ));
-    fsExtra.ensureSymlinkSync(log4jsPath, path.join(
-      tmpDirNodeModulesPath,
-      "log4js"
-    ));
+    fsExtra.ensureSymlinkSync(
+      cucumberPath,
+      path.join(tmpDirNodeModulesPath, "@cucumber", "cucumber")
+    );
+    fsExtra.ensureSymlinkSync(
+      tsNodePath,
+      path.join(tmpDirNodeModulesPath, "ts-node")
+    );
+    fsExtra.ensureSymlinkSync(
+      projectLibPath,
+      path.join(tmpDirNodeModulesPath, "cucumber-tsflow")
+    );
+    fsExtra.ensureSymlinkSync(
+      log4jsPath,
+      path.join(tmpDirNodeModulesPath, "log4js")
+    );
   }
 
   private writeDefaultFiles(tags: string[]) {
@@ -85,8 +81,8 @@ class Prepare {
         "tsconfig.json",
         JSON.stringify({
           compilerOptions: {
-            experimentalDecorators: true
-          }
+            experimentalDecorators: true,
+          },
         })
       );
     }

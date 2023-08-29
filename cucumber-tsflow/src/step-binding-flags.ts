@@ -46,17 +46,15 @@ export enum StepBindingFlags {
   /**
    * All step definition bindings.
    */
-  StepDefinitions = 
-    StepBindingFlags.given
-    | StepBindingFlags.when
-    | StepBindingFlags.then,
+  StepDefinitions = StepBindingFlags.given |
+    StepBindingFlags.when |
+    StepBindingFlags.then,
 
   /**
    * All hook bindings.
    */
-  Hooks =
-    StepBindingFlags.before
-    | StepBindingFlags.after
-    | StepBindingFlags.beforeAll
-    | StepBindingFlags.afterAll,
+  Hooks = StepBindingFlags.before |
+    StepBindingFlags.after |
+    StepBindingFlags.beforeAll |
+    StepBindingFlags.afterAll,
 }

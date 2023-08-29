@@ -14,7 +14,12 @@ import { Extractor } from "./helpers";
 import { TestDir } from "./testDir";
 
 const projectPath = path.join(__dirname, "..", "..", "..");
-const cucumberBinPath = path.join(projectPath, "node_modules", ".bin", "cucumber-js");
+const cucumberBinPath = path.join(
+  projectPath,
+  "node_modules",
+  ".bin",
+  "cucumber-js"
+);
 
 interface IRunResult {
   error: any;
@@ -58,7 +63,9 @@ export class TestRunner {
     return new Extractor(this.lastRun.envelopes);
   }
 
-  public async run(envOverride: NodeJS.ProcessEnv | null = null): Promise<void> {
+  public async run(
+    envOverride: NodeJS.ProcessEnv | null = null
+  ): Promise<void> {
     const messageFilename = "message.ndjson";
     const env = { ...process.env, ...this.sharedEnv, ...envOverride };
 
@@ -67,11 +74,15 @@ export class TestRunner {
         "node",
         [
           cucumberBinPath,
-          "--format", `message:${messageFilename}`,
-          "--require-module", "ts-node/register",
-          "--require", "a-logging.ts",
-          "--require", "step_definitions/**/*.ts",
-          "--publish-quiet"
+          "--format",
+          `message:${messageFilename}`,
+          "--require-module",
+          "ts-node/register",
+          "--require",
+          "a-logging.ts",
+          "--require",
+          "step_definitions/**/*.ts",
+          "--publish-quiet",
         ],
         { cwd: this.dir.path, env },
         (error, stdout, stderr) => {
@@ -80,20 +91,22 @@ export class TestRunner {
       );
     });
 
-    const stderrSuffix = result.error != null
-      ? VError.fullStack(result.error)
-      : "";
+    const stderrSuffix =
+      result.error != null ? VError.fullStack(result.error) : "";
 
     const envelopes: messages.Envelope[] = [];
-    const messageOutputStream = this.dir.readFileStream(messageFilename)
+    const messageOutputStream = this.dir
+      .readFileStream(messageFilename)
       ?.pipe(new messageStreams.NdjsonToMessageStream())
-      .pipe(new Writable({
-        objectMode: true,
-        write(envelope: messages.Envelope, _: BufferEncoding, callback) {
-          envelopes.push(envelope);
-          callback();
-        }
-      }));
+      .pipe(
+        new Writable({
+          objectMode: true,
+          write(envelope: messages.Envelope, _: BufferEncoding, callback) {
+            envelopes.push(envelope);
+            callback();
+          },
+        })
+      );
 
     if (messageOutputStream !== undefined) {
       await finished(messageOutputStream);
@@ -103,7 +116,7 @@ export class TestRunner {
       error: result.error,
       errorOutput: result.stderr + stderrSuffix,
       envelopes,
-      output: stripAnsi(result.stdout)
+      output: stripAnsi(result.stdout),
     };
     this.verifiedLastRunError = false;
 

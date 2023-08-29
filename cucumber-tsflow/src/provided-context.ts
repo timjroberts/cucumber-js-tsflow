@@ -1,5 +1,8 @@
 /* tslint:disable:max-classes-per-file */
-import { ICreateAttachment, ICreateLog } from "@cucumber/cucumber/lib/runtime/attachment_manager";
+import {
+  ICreateAttachment,
+  ICreateLog,
+} from "@cucumber/cucumber/lib/runtime/attachment_manager";
 import { Readable } from "stream";
 
 export class WorldParameters<T = any> {

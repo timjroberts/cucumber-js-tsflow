@@ -14,9 +14,7 @@ class CucumberSteps {
 
   @when("I run cucumber-js with env `{}`")
   public async runCucumberWithEnv(envString: string) {
-    await this.runner.run(
-      parseEnvString(envString)
-    );
+    await this.runner.run(parseEnvString(envString));
   }
 
   @when("I run cucumber-js")
@@ -31,7 +29,7 @@ class CucumberSteps {
     if (lastRun?.error != null) {
       throw new Error(
         `Last run errored unexpectedly. Output:\n\n${lastRun.output}\n\n` +
-        `Error Output:\n\n${lastRun.errorOutput}`
+          `Error Output:\n\n${lastRun.errorOutput}`
       );
     }
   }

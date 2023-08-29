@@ -40,14 +40,18 @@ export class ManagedScenarioContext implements ScenarioContext {
    * @internal
    */
   public addExternalObject(value: unknown) {
-    if (value == null) { return; }
+    if (value == null) {
+      return;
+    }
 
     const proto = value.constructor.prototype;
 
     const existingObject = this._activeObjects.get(proto);
 
     if (existingObject !== undefined) {
-      throw new Error(`Conflicting objects of type "${proto.name}" registered.`);
+      throw new Error(
+        `Conflicting objects of type "${proto.name}" registered.`
+      );
     }
 
     this._activeObjects.set(proto, value);
@@ -61,11 +65,12 @@ export class ManagedScenarioContext implements ScenarioContext {
       return new (targetPrototype.constructor as any)(...args);
     };
 
-    const contextObjects = _.map(contextTypes, contextType =>
+    const contextObjects = _.map(contextTypes, (contextType) =>
       this.getOrActivateObject(contextType.prototype, () => {
         if (isProvidedContextType(contextType)) {
           throw new Error(
-            `The requested type "${contextType.name}" should be provided by cucumber-tsflow, but was not registered. Please report a bug.`);
+            `The requested type "${contextType.name}" should be provided by cucumber-tsflow, but was not registered. Please report a bug.`
+          );
         }
 
         return new contextType();

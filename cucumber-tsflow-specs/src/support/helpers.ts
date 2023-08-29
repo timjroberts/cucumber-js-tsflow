@@ -1,7 +1,10 @@
 // Adapted from:
 // https://github.com/cucumber/cucumber-js/blob/6505e61abce385787767f270b6ce2077eb3d7c1c/features/support/message_helpers.ts
 import { getGherkinStepMap } from "@cucumber/cucumber/lib/formatter/helpers/gherkin_document_parser";
-import { getPickleStepMap, getStepKeyword } from "@cucumber/cucumber/lib/formatter/helpers/pickle_parser";
+import {
+  getPickleStepMap,
+  getStepKeyword,
+} from "@cucumber/cucumber/lib/formatter/helpers/pickle_parser";
 import { doesHaveValue } from "@cucumber/cucumber/lib/value_checker";
 import * as messages from "@cucumber/messages";
 import { Query } from "@cucumber/query";
@@ -33,25 +36,33 @@ export interface IStepTextAndResult {
   result: messages.TestStepResult;
 }
 
-export type SimpleAttachment = Pick<messages.Attachment, "body" | "mediaType" | "contentEncoding">;
+export type SimpleAttachment = Pick<
+  messages.Attachment,
+  "body" | "mediaType" | "contentEncoding"
+>;
 
 export class Extractor {
   public constructor(private readonly envelopes: messages.Envelope[]) {}
 
-  public static logsFromAttachments(attachments: messages.Attachment[]): string[] {
+  public static logsFromAttachments(
+    attachments: messages.Attachment[]
+  ): string[] {
     return attachments
-      .filter(att => (
-        att.contentEncoding === messages.AttachmentContentEncoding.IDENTITY
-        && att.mediaType === "text/x.cucumber.log+plain"
-      ))
-      .map(att => att.body);
+      .filter(
+        (att) =>
+          att.contentEncoding === messages.AttachmentContentEncoding.IDENTITY &&
+          att.mediaType === "text/x.cucumber.log+plain"
+      )
+      .map((att) => att.body);
   }
 
-  public static simplifyAttachment(attachment: messages.Attachment): SimpleAttachment {
+  public static simplifyAttachment(
+    attachment: messages.Attachment
+  ): SimpleAttachment {
     return {
       body: attachment.body,
       mediaType: attachment.mediaType,
-      contentEncoding: attachment.contentEncoding
+      contentEncoding: attachment.contentEncoding,
     };
   }
 
@@ -72,7 +83,10 @@ export class Extractor {
     return result;
   }
 
-  public getPickleStep(pickleName: string, stepText: string): messages.PickleStep {
+  public getPickleStep(
+    pickleName: string,
+    stepText: string
+  ): messages.PickleStep {
     const pickle = this.getPickle(pickleName);
     const gherkinDocument = this.getGherkinDocument(pickle.uri);
     return this.getPickleStepByStepText(pickle, gherkinDocument, stepText);
@@ -82,10 +96,15 @@ export class Extractor {
     const query = new Query();
     this.envelopes.forEach((envelope) => query.update(envelope));
     const pickle = this.getPickle(pickleName);
-    return messages.getWorstTestStepResult(query.getPickleTestStepResults([pickle.id]));
+    return messages.getWorstTestStepResult(
+      query.getPickleTestStepResults([pickle.id])
+    );
   }
 
-  public getTestStepResults(pickleName: string, attempt = 0): IStepTextAndResult[] {
+  public getTestStepResults(
+    pickleName: string,
+    attempt = 0
+  ): IStepTextAndResult[] {
     const pickle = this.getPickle(pickleName);
     const gherkinDocument = this.getGherkinDocument(pickle.uri);
     const testCase = this.getTestCase(pickle.id);
@@ -117,12 +136,22 @@ export class Extractor {
     });
   }
 
-  public getAttachmentsForStep(pickleName: string, stepText: string): messages.Attachment[] {
+  public getAttachmentsForStep(
+    pickleName: string,
+    stepText: string
+  ): messages.Attachment[] {
     const pickle = this.getPickle(pickleName);
     const gherkinDocument = this.getGherkinDocument(pickle.uri);
     const testCase = this.getTestCase(pickle.id);
-    const pickleStep = this.getPickleStepByStepText(pickle, gherkinDocument, stepText);
-    assert.ok(pickleStep, `Step "${stepText}" not found in pickle ${dump(pickle)}`);
+    const pickleStep = this.getPickleStepByStepText(
+      pickle,
+      gherkinDocument,
+      stepText
+    );
+    assert.ok(
+      pickleStep,
+      `Step "${stepText}" not found in pickle ${dump(pickle)}`
+    );
 
     const testStep = testCase.testSteps.find(
       (s) => s.pickleStepId === pickleStep.id
@@ -131,7 +160,10 @@ export class Extractor {
     return this.getTestStepAttachments(testCaseStarted.id, testStep.id);
   }
 
-  public getAttachmentsForHook(pickleName: string, isBeforeHook: boolean): messages.Attachment[] {
+  public getAttachmentsForHook(
+    pickleName: string,
+    isBeforeHook: boolean
+  ): messages.Attachment[] {
     const pickle = this.getPickle(pickleName);
     const testCase = this.getTestCase(pickle.id);
     // Ignore the first Before hook and the last After hook
@@ -184,7 +216,10 @@ export class Extractor {
     return testCaseEnvelope.testCase!;
   }
 
-  private getTestCaseStarted(testCaseId: string, attempt = 0): messages.TestCaseStarted {
+  private getTestCaseStarted(
+    testCaseId: string,
+    attempt = 0
+  ): messages.TestCaseStarted {
     const testCaseStartedEnvelope = this.envelopes.find(
       (e) =>
         e.testCaseStarted != null &&
@@ -227,4 +262,3 @@ export class Extractor {
       .map((e) => e.attachment!);
   }
 }
-
