@@ -14,6 +14,7 @@ module.exports = cucumberPkg.version.startsWith("7.")
     default: {
       requireModule: ["ts-node/register"],
       require: ["cucumber-tsflow-specs/src/**/*.ts"],
+      tags: 'now @oldApis',
       worldParameters: {
         foo: "bar"
       }
