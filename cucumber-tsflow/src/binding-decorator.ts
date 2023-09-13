@@ -18,6 +18,7 @@ import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import logger from "./logger";
 import {
   ManagedScenarioContext,
+  ScenarioContext,
   ScenarioInfo,
 } from "./managed-scenario-context";
 import {
@@ -101,6 +102,26 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
       }
     }
   };
+}
+
+function getContextFromWorld(world: World): ScenarioContext {
+    const context: unknown = (world as Record<string, any>)[SCENARIO_CONTEXT_SLOTNAME];
+
+    if (context instanceof ManagedScenarioContext) {
+      return context;
+    }
+
+    throw new Error('Scenario context have not been initialized in the provided World object.');
+}
+
+export function getBindingFromWorld<T extends ContextType>( world: World, contextType: T): InstanceType<T> {
+  const context = getContextFromWorld(world);
+
+  return context.getContextInstance(contextType);
+}
+
+export function ensureWorldIsInitialized() {
+  ensureSystemBindings();
 }
 
 /**

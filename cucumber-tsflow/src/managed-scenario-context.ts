@@ -39,6 +39,21 @@ export class ManagedScenarioContext implements ScenarioContext {
   /**
    * @internal
    */
+  public getContextInstance(contextType: ContextType) {
+      return this.getOrActivateObject(contextType.prototype, () => {
+        if (isProvidedContextType(contextType)) {
+          throw new Error(
+            `The requested type "${contextType.name}" should be provided by cucumber-tsflow, but was not registered. Please report a bug.`
+          );
+        }
+
+        return new contextType();
+      });
+  }
+
+  /**
+   * @internal
+   */
   public addExternalObject(value: unknown) {
     if (value == null) {
       return;
@@ -65,17 +80,7 @@ export class ManagedScenarioContext implements ScenarioContext {
       return new (targetPrototype.constructor as any)(...args);
     };
 
-    const contextObjects = _.map(contextTypes, (contextType) =>
-      this.getOrActivateObject(contextType.prototype, () => {
-        if (isProvidedContextType(contextType)) {
-          throw new Error(
-            `The requested type "${contextType.name}" should be provided by cucumber-tsflow, but was not registered. Please report a bug.`
-          );
-        }
-
-        return new contextType();
-      })
-    );
+    const contextObjects = _.map(contextTypes, this.getContextInstance.bind(this));
 
     return invokeBindingConstructor(contextObjects);
   }
