@@ -200,3 +200,43 @@ Feature: Support for Cucumber hooks
             .step has executed
             .hook two has executed
             """
+
+    @newApis
+    Scenario: Binding named hooks
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+                Scenario: example
+                    Given a step
+            """
+        And a file named "step_definitions/steps.ts" with:
+            """ts
+            import {binding, given, before, after} from 'cucumber-tsflow';
+
+            @binding()
+            class Steps {
+                private state = 'hook has not executed';
+
+                @before({name: 'setup environment'})
+                public before() {
+                    this.state = 'before hook executed';
+                }
+
+                @given("a step")
+                public given() {
+                    console.log(this.state);
+                    this.state = 'step has executed';
+                }
+
+                @after({name: 'tear down environment'})
+                public after() {
+                    console.log(this.state);
+                }
+            }
+
+            export = Steps;
+            """
+        When I run cucumber-js
+        Then it passes
+        And the hook "setup environment" was executed on scenario "example"
+        And the hook "tear down environment" was executed on scenario "example"

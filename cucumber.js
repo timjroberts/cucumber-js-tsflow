@@ -6,6 +6,7 @@ module.exports = cucumberPkg.version.startsWith("7.")
       "--publish-quiet",
       "--require-module ts-node/register",
       "--require cucumber-tsflow-specs/src/**/*.ts",
+      "--tags 'not @newApis'",
       "--world-parameters '{\"foo\":\"bar\"}'"
     ].join(" ")
   }

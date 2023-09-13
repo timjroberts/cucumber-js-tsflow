@@ -302,6 +302,7 @@ function bindHook(stepBinding: StepBinding): void {
   const bindingOptions: IDefineTestStepHookOptions = {
     timeout: stepBinding.timeout,
     tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
+    ...stepBinding.hookOptions ?? {},
   };
 
   logger.trace("Binding hook:", stepBinding);

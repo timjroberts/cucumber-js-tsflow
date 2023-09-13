@@ -1,5 +1,6 @@
 import { DataTable } from "@cucumber/cucumber";
 import * as messages from "@cucumber/messages";
+import assert from 'assert';
 import { binding, then } from "cucumber-tsflow";
 import expect from "expect";
 import { Extractor } from "../support/helpers";
@@ -108,6 +109,14 @@ class ScenarioSteps {
     );
 
     expect(attachments).toStrictEqual([]);
+  }
+
+  @then("the hook {string} was executed on scenario {string}")
+  public checkNamedHookExecution(hookName: string, scenarioName: string) {
+    const hook = this.runner.extractor.getHookByName(hookName);
+    const executions = this.runner.extractor.getHookExecutions(scenarioName, hook.id);
+
+    assert(executions.length === 1, `Hook ${hookName} executed ${executions.length} times on scenario "${scenarioName}"`);
   }
 }
 
