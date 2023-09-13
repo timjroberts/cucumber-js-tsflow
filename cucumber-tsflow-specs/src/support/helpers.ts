@@ -92,6 +92,23 @@ export class Extractor {
     return this.getPickleStepByStepText(pickle, gherkinDocument, stepText);
   }
 
+  public getHookByName(hookName: string,): messages.Hook {
+    const hookEnvelope = this.envelopes.find(({hook}) => (
+        hook?.name === hookName
+    ))
+
+    assert.ok(hookEnvelope, `Unknown hook ${hookName}`);
+
+    return hookEnvelope.hook!;
+  }
+
+  public getHookExecutions(pickleName: string, hookId: string): messages.TestStep[] {
+    const pickle = this.getPickle(pickleName);
+    const testCase = this.getTestCase(pickle.id);
+
+    return testCase.testSteps.filter(step => step.hookId === hookId)
+  }
+
   public getTestCaseResult(pickleName: string): messages.TestStepResult {
     const query = new Query();
     this.envelopes.forEach((envelope) => query.update(envelope));

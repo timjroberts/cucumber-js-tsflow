@@ -1,20 +1,20 @@
+import type {IDefineTestCaseHookOptions} from '@cucumber/cucumber/lib/support_code_library_builder/types';
 import { BindingRegistry } from "./binding-registry";
 import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
 import { normalizeTag } from "./tag-normalization";
 
-interface HookOptions {
-  tag?: string;
-
-  timeout?: number;
-}
+// Replace `tags` with `tag` for backwards compatibility
+type HookOptions = Omit<IDefineTestCaseHookOptions, 'tags'> & {
+  tag?: string,
+};
 
 function overloadedOption(tag?: string | HookOptions): HookOptions {
   if (tag === undefined || typeof tag === "string") {
     return { tag };
   }
 
-  return tag;
+  return tag
 }
 
 function createHookDecorator(
@@ -23,7 +23,7 @@ function createHookDecorator(
 ): MethodDecorator {
   const callsite = Callsite.capture(2);
 
-  const { tag, timeout } = overloadedOption(tagOrOption);
+  const { tag, timeout, ...hookOptions } = overloadedOption(tagOrOption);
 
   return <T>(
     target: any,
@@ -39,6 +39,7 @@ function createHookDecorator(
       tag: normalizeTag(tag),
       callsite: callsite,
       timeout: timeout,
+      hookOptions: hookOptions,
     };
 
     BindingRegistry.instance.registerStepBinding(stepBinding);
