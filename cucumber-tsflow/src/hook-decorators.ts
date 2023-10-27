@@ -1,4 +1,4 @@
-import type {IDefineTestCaseHookOptions} from '@cucumber/cucumber/lib/support_code_library_builder/types';
+import type {IDefineTestCaseHookOptions, IDefineTestRunHookOptions} from '@cucumber/cucumber/lib/support_code_library_builder/types';
 import { BindingRegistry } from "./binding-registry";
 import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
@@ -72,18 +72,18 @@ export function after(tagOrOption?: string | HookOptions): MethodDecorator {
  * A method decorator that marks the associated function as a 'Before Scenario' step. The function is
  * executed before each scenario.
  *
- * @param tagOrOption An optional tag or hook options object.
+ * @param options Optional hook options object.
  */
-export function beforeAll(tagOrOption?: string | HookOptions): MethodDecorator {
-  return createHookDecorator(StepBindingFlags.beforeAll, tagOrOption);
+export function beforeAll(options?: IDefineTestRunHookOptions): MethodDecorator {
+  return createHookDecorator(StepBindingFlags.beforeAll, options);
 }
 
 /**
  * A method decorator that marks the associated function as an 'After Scenario' step. The function is
  * executed after each scenario.
  *
- * @param tagOrOption An optional tag or hook options object.
+ * @param options Optional hook options object.
  */
-export function afterAll(tagOrOption?: string | HookOptions): MethodDecorator {
-  return createHookDecorator(StepBindingFlags.afterAll, tagOrOption);
+export function afterAll(options?: IDefineTestRunHookOptions): MethodDecorator {
+  return createHookDecorator(StepBindingFlags.afterAll, options);
 }
