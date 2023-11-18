@@ -19,7 +19,7 @@ export type TagName = string;
  * Represents a class that will be injected into a binding class to provide context
  * during the execution of a Cucumber scenario.
  */
-export type CustomContextType = new () => any;
+export type CustomContextType = new (...args: any[]) => any;
 
 export type ProvidedContextType =
   | typeof ScenarioInfo
@@ -37,7 +37,7 @@ const providedPrototypes: ProvidedContextType[] = [
 ];
 
 export function isProvidedContextType(
-  typ: ContextType
+  typ: ContextType,
 ): typ is ProvidedContextType {
   return providedPrototypes.some((proto) => Object.is(typ, proto));
 }

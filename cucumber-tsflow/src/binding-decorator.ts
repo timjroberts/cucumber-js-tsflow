@@ -68,6 +68,14 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
       requiredContextTypes
     );
 
+    if (Array.isArray(requiredContextTypes)) {
+      for (const i in requiredContextTypes) {
+        if (typeof requiredContextTypes[i] === 'undefined') {
+          throw new Error(`Undefined context type at index ${i} for ${target.name}, do you possibly have a circular dependency?`);
+        }
+      }
+    }
+
     const allBindings: StepBinding[] = [
       ...bindingRegistry.getStepBindingsForTarget(target),
       ...bindingRegistry.getStepBindingsForTarget(target.prototype),
