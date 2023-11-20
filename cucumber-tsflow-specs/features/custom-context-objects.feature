@@ -349,3 +349,56 @@ Feature: Custom context objects
             Undefined context type at index 0 for StepsTwo, do you possibly have a circular dependency?
             """
 
+    Scenario: In-file circular dependencies are thrown as maximum call stack exceeded errors
+        Given a file named "features/a.feature" with:
+        """feature
+        Feature: some feature
+          Scenario: scenario a
+            Given the state is "initial value"
+            When I set the state to "step value"
+            Then the state is "step value"
+        """
+        And a file named "support/circular.ts" with:
+        """ts
+        import {binding} from 'cucumber-tsflow';
+
+        export class StateOne {
+            constructor(public stateTwo: StateTwo) { }
+        }
+
+        @binding([StateOne])
+        export class StateTwo {
+            public value: string = "initial value";
+            constructor(public stateOne: StateOne) { }
+        }
+
+        exports.StateOne = binding([StateTwo])(StateOne);
+        """
+        And a file named "step_definitions/one.ts" with:
+        """ts
+        import {StateTwo} from '../support/circular';
+        import * as assert from 'node:assert';
+        import {binding, when, then} from 'cucumber-tsflow';
+
+        @binding([StateTwo])
+        class Steps {
+            public constructor(private readonly stateTwo: StateTwo) {
+            }
+
+            @when("I set the state to {string}")
+            public setState(newValue: string) {
+                this.stateTwo.value = newValue;
+            }
+
+            @then("the state is {string}")
+            public checkValue(value: string) {
+                console.log(`The state is '${this.stateTwo.value}'`);
+                assert.equal(this.stateTwo.value, value, "State value does not match");
+            }
+        }
+
+        export = Steps;
+        """
+        When I run cucumber-js
+        Then it fails
+        And the output contains "RangeError: Maximum call stack size exceeded"
