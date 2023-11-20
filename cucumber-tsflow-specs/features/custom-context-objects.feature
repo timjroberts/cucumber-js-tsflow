@@ -203,7 +203,6 @@ Feature: Custom context objects
         And the output contains "The state is 'initial value'"
         And the output contains "The state is 'step value'"
 
-
     Scenario: Circular dependencies are explicitly communicated to the developer
         Given a file named "features/a.feature" with:
             """feature
@@ -279,3 +278,74 @@ Feature: Custom context objects
             """
             Undefined context type at index 0 for StateOne, do you possibly have a circular dependency?
             """
+
+
+    Scenario: Circular dependencies within the same file are vaguely communicated to the developer
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: some feature
+              Scenario: scenario a
+                Given the state is "initial value"
+                When I set the state to "step value"
+                Then the state is "step value"
+            """
+        And a file named "support/state.ts" with:
+            """ts
+            import {binding} from 'cucumber-tsflow';
+
+            export class StateOne {
+                constructor(public stateTwo: StateTwo) { }
+            }
+
+            @binding([StateOne])
+            export class StateTwo {
+                public value: string = "initial value";
+                constructor(public stateOne: StateOne) { }
+            }
+
+            exports.StateOne = binding([StateTwo])(StateOne);
+            """
+        And a file named "step_definitions/one.ts" with:
+            """ts
+            import {StateTwo} from '../support/state';
+            import {binding, when} from 'cucumber-tsflow';
+
+            @binding([StateTwo])
+            class StepsOne {
+                public constructor(private readonly stateTwo: StateTwo) {
+                }
+
+                @when("I set the state to {string}")
+                public setState(newValue: string) {
+                    this.stateTwo.value = newValue;
+                }
+            }
+
+            export = StepsOne;
+            """
+        And a file named "step_definitions/two.ts" with:
+            """ts
+            import {StateOne} from '../support/state';
+            import {binding, then} from 'cucumber-tsflow';
+            import * as assert from 'node:assert';
+
+            @binding([StateOne])
+            class StepsTwo {
+                public constructor(private readonly stateOne: StateOne) {}
+
+                @then("the state is {string}")
+                public checkValue(value: string) {
+                    console.log(`The state is '${this.stateOne.stateTwo.value}'`);
+                    assert.equal(this.stateOne.stateTwo.value, value, "State value does not match");
+                }
+            }
+
+            export = StepsTwo;
+            """
+        When I run cucumber-js
+        Then it fails
+        And the error output contains text:
+            """
+            Undefined context type at index 0 for StepsTwo, do you possibly have a circular dependency?
+            """
+
