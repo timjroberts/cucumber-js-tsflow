@@ -203,7 +203,7 @@ Feature: Custom context objects
         And the output contains "The state is 'initial value'"
         And the output contains "The state is 'step value'"
 
-    Scenario: Circular dependencies are explicitly communicated to the developer
+    Scenario: Cyclic imports are detected and communicated to the developer
         Given a file named "features/a.feature" with:
             """feature
             Feature: some feature
@@ -276,11 +276,11 @@ Feature: Custom context objects
         Then it fails
         And the error output contains text:
             """
-            Undefined context type at index 0 for StateOne, do you possibly have a circular dependency?
+            Error: Undefined dependency detected in StateOne. You possibly have an import cycle.
+            See https://nodejs.org/api/modules.html#modules_cycles
             """
 
-
-    Scenario: Circular dependencies within the same file are vaguely communicated to the developer
+    Scenario: Cyclic state dependencies are detected and communicated to the developer
         Given a file named "features/a.feature" with:
             """feature
             Feature: some feature
@@ -346,10 +346,10 @@ Feature: Custom context objects
         Then it fails
         And the error output contains text:
             """
-            Undefined context type at index 0 for StepsTwo, do you possibly have a circular dependency?
+            Error: Cyclic dependency detected: StateOne -> StateTwo -> StateOne
             """
 
-    Scenario: In-file circular dependencies are thrown as maximum call stack exceeded errors
+    Scenario: Cyclic single-file state dependencies are detected and communicated to the developer
         Given a file named "features/a.feature" with:
         """feature
         Feature: some feature
@@ -401,4 +401,7 @@ Feature: Custom context objects
         """
         When I run cucumber-js
         Then it fails
-        And the output contains "RangeError: Maximum call stack size exceeded"
+        And the error output contains text:
+            """
+            Error: Cyclic dependency detected: StateOne -> StateTwo -> StateOne
+            """
