@@ -51,6 +51,29 @@ const stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
 
 // tslint:disable:no-bitwise
 
+function ensureNoCyclicDependencies(target: any, currentPath: any[] = []) {
+  const dependencies = BindingRegistry.instance.getContextTypesForTarget(target.prototype);
+
+  if (dependencies.length === 0) {
+    return;
+  }
+
+  for (const dependency of dependencies) {
+    if (dependency === undefined) {
+      throw new Error(
+          `Undefined dependency detected in ${target.name}. You possibly have an import cycle.\n`
+          + 'See https://nodejs.org/api/modules.html#modules_cycles'
+      );
+    }
+
+    if (currentPath.includes(dependency)) {
+      throw new Error(`Cyclic dependency detected: ${dependency.name} -> ${target.name} -> ${currentPath.map((t) => t.name).join(' -> ')}`);
+    }
+
+    ensureNoCyclicDependencies(dependency, [...currentPath, target]);
+  }
+}
+
 /**
  * A class decorator that marks the associated class as a CucumberJS binding.
  *
@@ -68,13 +91,7 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
       requiredContextTypes
     );
 
-    if (Array.isArray(requiredContextTypes)) {
-      for (const i in requiredContextTypes) {
-        if (typeof requiredContextTypes[i] === 'undefined') {
-          throw new Error(`Undefined context type at index ${i} for ${target.name}, do you possibly have a circular dependency?`);
-        }
-      }
-    }
+    ensureNoCyclicDependencies(target);
 
     const allBindings: StepBinding[] = [
       ...bindingRegistry.getStepBindingsForTarget(target),
