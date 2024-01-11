@@ -379,3 +379,5 @@ This library provides 3 Context Types to interact with CucumberJS' World object.
   or the `--world-parameters` CLI option.
 - `CucumberLog`, which exposes the `log` method of the `World` object.
 - `CucumberAttachments`, which exposes the `attach` method of the `World` object.
+- `ScenarioInfo`, which exposes information about the running scenario and allows
+  changing the behavior of steps and hooks based on tags easier.
