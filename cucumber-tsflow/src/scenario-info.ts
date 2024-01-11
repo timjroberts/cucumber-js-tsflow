@@ -7,7 +7,7 @@ import { TagName } from "./types";
 export class ScenarioInfo {
   private _attributeTags?: Map<string, unknown>;
 
-  private _optionTags?: Map<string, string>;
+  private _optionTags?: Map<string, string[]>;
 
   private _flagTags?: Set<string>;
 
@@ -39,17 +39,23 @@ export class ScenarioInfo {
     return result;
   }
 
-  private static parseOptionTags(tags: TagName[]): Map<string, string> {
+  private static parseOptionTags(tags: TagName[]): Map<string, string[]> {
     const RGX = /^@?(?<option>[\w-]+)\((?<value>.+?)\)$/s;
 
-    const result = new Map<string, string>();
+    const result = new Map<string, string[]>();
 
     for (const tag of tags) {
       const match = tag.match(RGX)?.groups;
 
       if (match !== undefined) {
         const { option, value } = match;
-        result.set(option, value);
+
+        const list = result.get(option)
+        if (list === undefined) {
+          result.set(option, [value]);
+        } else {
+          list.push(value);
+        }
       }
     }
 
@@ -89,7 +95,15 @@ export class ScenarioInfo {
       this._optionTags = ScenarioInfo.parseOptionTags(this.tags);
     }
 
-    return this._optionTags.get(name);
+    return this._optionTags.get(name)?.at(-1);
+  }
+
+  public getMultiOptionTag(name: string): string[] | undefined {
+    if (this._optionTags === undefined) {
+      this._optionTags = ScenarioInfo.parseOptionTags(this.tags);
+    }
+
+    return this._optionTags.get(name) ?? [];
   }
 
   public getFlag(name: string): boolean {
