@@ -30,6 +30,11 @@ Feature: Tag parameters
                     assert.strictEqual(this.scenario.getOptionTag(name), undefined);
                 }
 
+                @then("the multi option tag {string} is set to {}")
+                public checkMultiOption(name: string, value: string) {
+                    assert.deepStrictEqual(this.scenario.getMultiOptionTag(name), JSON.parse(value));
+                }
+
                 @then("the attribute tag {string} is set to {}")
                 @then("the attribute tag {string} is set to:")
                 public checkAttributes(name: string, values: string) {
@@ -141,6 +146,50 @@ Feature: Tag parameters
             Feature: Feature
               Scenario: example
                 Then the attribute tag "foo" is unset
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for multi options on the feature
+        Given a file named "features/a.feature" with:
+            """feature
+            @foo(bar)
+            @foo(baz)
+            Feature: Feature
+              Scenario: One
+                Then the multi option tag "foo" is set to ["bar", "baz"]
+              Scenario: Two
+                Then the multi option tag "foo" is set to ["bar", "baz"]
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for multi options on the scenario
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+              @foo(bar)
+              @foo(baz)
+              Scenario: One
+                Then the multi option tag "foo" is set to ["bar", "baz"]
+              @foo(qux)
+              @foo(zzz)
+              Scenario: Two
+                Then the multi option tag "foo" is set to ["qux", "zzz"]
+            """
+        When I run cucumber-js
+        Then it passes
+
+    Scenario: Checking for multi options on the scenario combining with multi options on the feature
+        Given a file named "features/a.feature" with:
+            """feature
+            @foo(bar)
+            Feature: Feature
+              Scenario: One
+                Then the multi option tag "foo" is set to ["bar"]
+              @foo(baz)
+              Scenario: Two
+                Then the multi option tag "foo" is set to ["bar", "baz"]
             """
         When I run cucumber-js
         Then it passes
