@@ -316,6 +316,49 @@ Feature: Support for Cucumber hooks
         And the output does not contain "hook has not executed"
         And the output contains "hook has executed"
 
+    Scenario: Binding a before step hook with multiple steps
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+                Scenario: example
+                    Given a step
+                    And another step
+            """
+        And a file named "step_definitions/steps.ts" with:
+            """ts
+            import {binding, given, beforeStep, when} from 'cucumber-tsflow';
+
+            @binding()
+            class Steps {
+                private state = 'hook has not executed';
+
+                @beforeStep()
+                public hook() {
+                    this.state = 'hook has executed';
+                }
+
+                @given("a step")
+                public given() {
+                    console.log(this.state);
+                }
+
+                @when("another step")
+                public when() {
+                    console.log(this.state);
+                }
+            }
+
+            export = Steps;
+            """
+        When I run cucumber-js
+        Then it passes
+        And the output does not contain "hook has not executed"
+        And the output contains text:
+            """
+            .hook has executed
+            .hook has executed
+            """
+
     Scenario: Binding multiple before step hooks
         Given a file named "features/a.feature" with:
             """feature
@@ -394,6 +437,54 @@ Feature: Support for Cucumber hooks
         Then it passes
         And the output does not contain "step has not executed"
         And the output contains "step has executed"
+
+    Scenario: Binding an after step hook with multiple steps
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+                Scenario: example
+                    Given a step
+                    And another step
+            """
+        And a file named "step_definitions/steps.ts" with:
+            """ts
+            import {binding, given, afterStep, when} from 'cucumber-tsflow';
+
+            @binding()
+            class Steps {
+                private state = 'step has not executed';
+
+                @afterStep()
+                public hook() {
+                    this.state = 'hook has executed';
+                    console.log(this.state)
+                }
+
+                @given("a step")
+                public given() {
+                    this.state = 'given has executed';
+                    console.log(this.state)
+                }
+
+                @when("another step")
+                public when() {
+                    this.state = 'when has executed';
+                    console.log(this.state)
+                }
+            }
+
+            export = Steps;
+            """
+        When I run cucumber-js
+        Then it passes
+        And the output does not contain "step has not executed"
+        And the output contains text:
+        """
+        .given has executed
+        hook has executed
+        .when has executed
+        hook has executed
+        """
 
     Scenario: Binding multiple after step hooks
         Given a file named "features/a.feature" with:
