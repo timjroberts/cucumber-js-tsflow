@@ -330,21 +330,21 @@ Feature: Support for Cucumber hooks
 
             @binding()
             class Steps {
-                private state = 'hook has not executed';
+                private counter = 0;
 
                 @beforeStep()
                 public hook() {
-                    this.state = 'hook has executed';
+                    console.log(`${this.counter++} execution: beforeStep`);
                 }
 
                 @given("a step")
                 public given() {
-                    console.log(this.state);
+                    console.log(`${this.counter++} execution: given`);
                 }
 
                 @when("another step")
                 public when() {
-                    console.log(this.state);
+                    console.log(`${this.counter++} execution: when`);
                 }
             }
 
@@ -355,8 +355,10 @@ Feature: Support for Cucumber hooks
         And the output does not contain "hook has not executed"
         And the output contains text:
             """
-            .hook has executed
-            .hook has executed
+            .0 execution: beforeStep
+            1 execution: given
+            .2 execution: beforeStep
+            3 execution: when
             """
 
     Scenario: Binding multiple before step hooks
@@ -452,24 +454,21 @@ Feature: Support for Cucumber hooks
 
             @binding()
             class Steps {
-                private state = 'step has not executed';
+                private counter = 0;
 
                 @afterStep()
                 public hook() {
-                    this.state = 'hook has executed';
-                    console.log(this.state)
+                    console.log(`${this.counter++} execution: afterStep`);
                 }
 
                 @given("a step")
                 public given() {
-                    this.state = 'given has executed';
-                    console.log(this.state)
+                    console.log(`${this.counter++} execution: given`);
                 }
 
                 @when("another step")
                 public when() {
-                    this.state = 'when has executed';
-                    console.log(this.state)
+                    console.log(`${this.counter++} execution: when`);
                 }
             }
 
@@ -480,10 +479,10 @@ Feature: Support for Cucumber hooks
         And the output does not contain "step has not executed"
         And the output contains text:
         """
-        .given has executed
-        hook has executed
-        .when has executed
-        hook has executed
+        .0 execution: given
+        1 execution: afterStep
+        .2 execution: when
+        3 execution: afterStep
         """
 
     Scenario: Binding multiple after step hooks
