@@ -1,8 +1,10 @@
 import {
   After,
   AfterAll,
+  AfterStep,
   Before,
   BeforeAll,
+  BeforeStep,
   Given,
   Then,
   When,
@@ -341,6 +343,12 @@ function bindHook(stepBinding: StepBinding): void {
       break;
     case StepBindingFlags.beforeAll:
       BeforeAll(globalBindFunc);
+      break;
+    case StepBindingFlags.beforeStep:
+      BeforeStep(bindingFunc);
+      break;
+    case StepBindingFlags.afterStep:
+      AfterStep(bindingFunc);
       break;
     case StepBindingFlags.afterAll:
       AfterAll(globalBindFunc);

@@ -1,4 +1,8 @@
-import type {IDefineTestCaseHookOptions, IDefineTestRunHookOptions} from '@cucumber/cucumber/lib/support_code_library_builder/types';
+import {
+  IDefineTestCaseHookOptions,
+  IDefineTestRunHookOptions,
+  IDefineTestStepHookOptions
+} from "@cucumber/cucumber/lib/support_code_library_builder/types";
 import { BindingRegistry } from "./binding-registry";
 import { Callsite } from "./our-callsite";
 import { StepBinding, StepBindingFlags } from "./step-binding";
@@ -86,4 +90,24 @@ export function beforeAll(options?: IDefineTestRunHookOptions): MethodDecorator 
  */
 export function afterAll(options?: IDefineTestRunHookOptions): MethodDecorator {
   return createHookDecorator(StepBindingFlags.afterAll, options);
+}
+
+/**
+ * A method decorator that marks the associated function as a 'Before Step' step. The function is
+ * executed before each step.
+ *
+ * @param options Optional hook options object.
+ */
+export function beforeStep(options?: IDefineTestStepHookOptions): MethodDecorator {
+  return createHookDecorator(StepBindingFlags.beforeStep, options);
+}
+
+/**
+ * A method decorator that marks the associated function as an 'After Step' step. The function is
+ * executed after each step.
+ *
+ * @param options Optional hook options object.
+ */
+export function afterStep(options?: IDefineTestStepHookOptions): MethodDecorator {
+  return createHookDecorator(StepBindingFlags.afterStep, options);
 }
