@@ -33,7 +33,7 @@ function overloadedOptions(
  * A method decorator that marks the associated function as a 'Given' step.
  *
  * @param stepPattern The regular expression that will be used to match steps.
- * @param tag An optional tag or an options object.
+ * @param tagOrOption An optional tag or an options object.
  * @param timeout An optional timeout.
  */
 export function given(
@@ -74,7 +74,7 @@ export function given(
  * A method decorator that marks the associated function as a 'When' step.
  *
  * @param stepPattern The regular expression that will be used to match steps.
- * @param tag An optional tag.
+ * @param tagOrOption An optional tag.
  * @param timeout An optional timeout.
  */
 export function when(
@@ -113,7 +113,7 @@ export function when(
  * A method decorator that marks the associated function as a 'Then' step.
  *
  * @param stepPattern The regular expression that will be used to match steps.
- * @param tag An optional tag.
+ * @param tagOrOption An optional tag.
  * @param timeout An optional timeout.
  */
 export function then(
