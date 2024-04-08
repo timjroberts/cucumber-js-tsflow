@@ -77,22 +77,36 @@ class Prepare {
 
   private writeDefaultFiles(tags: string[]) {
     if (!tags.includes("custom-tsconfig")) {
+      const tsconfig = {
+        compilerOptions: {
+          experimentalDecorators: true,
+          esModuleInterop: true,
+        },
+      } as any
+
+      if (process.env.CUCUMBER_PACKAGE_MODE === "esm") {
+        tsconfig.compilerOptions = {
+          ...tsconfig.compilerOptions,
+          module: "ES2022",
+          moduleResolution: "Node",
+        }
+      }
+
       this.runner.dir.writeFile(
         "tsconfig.json",
-        JSON.stringify({
-          compilerOptions: {
-            experimentalDecorators: true,
-          },
-        })
+        JSON.stringify(tsconfig)
       );
     }
 
     if (!tags.includes("no-logging")) {
+      let loggerFileName = "a-logging.ts"
+      if (process.env.CUCUMBER_PACKAGE_MODE === "esm") {
+        loggerFileName = "a-logging.mts";
+      }
       this.runner.dir.writeFile(
-        "a-logging.ts",
+        loggerFileName,
         `
-import * as log4js from 'log4js';
-
+import log4js from 'log4js';
 log4js.configure({
   appenders: {
     logfile: {

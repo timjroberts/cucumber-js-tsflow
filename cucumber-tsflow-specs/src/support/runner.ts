@@ -70,19 +70,31 @@ export class TestRunner {
     const env = { ...process.env, ...this.sharedEnv, ...envOverride };
 
     const result = await new Promise<IRunResult>((resolve) => {
+      let cucumberOpts = [
+        "--require-module",
+        "ts-node/register",
+        "--require",
+        "a-logging.ts",
+        "--require",
+        "step_definitions/**/*.ts",
+      ]
+
+      if (env.CUCUMBER_PACKAGE_MODE === 'esm') {
+        cucumberOpts = [
+          "--import",
+          "a-logging.mts",
+          "--import",
+          "step_definitions/**/*.mts",
+        ]
+      }
+
       execFile(
         "node",
         [
           cucumberBinPath,
           "--format",
           `message:${messageFilename}`,
-          "--require-module",
-          "ts-node/register",
-          "--require",
-          "a-logging.ts",
-          "--require",
-          "step_definitions/**/*.ts",
-          "--publish-quiet",
+          ...cucumberOpts,
         ],
         { cwd: this.dir.path, env },
         (error, stdout, stderr) => {

@@ -18,7 +18,9 @@
     "precommit": "lint-staged && npm test",
     "set-packageversion": "node .build/setPackageVersion.js",
     "pretest": "npm run build",
-    "test": "cucumber-js -p default cucumber-tsflow-specs/features/**/*.feature"
+    "test": "npm run test:cjs && npm run test:esm",
+    "test:cjs": "CUCUMBER_PACKAGE_MODE=cjs cucumber-js -p default cucumber-tsflow-specs/features/**/*.feature",
+    "test:esm": "NODE_OPTIONS=\"--experimental-specifier-resolution=node --loader ts-node/esm --no-warnings\" CUCUMBER_PACKAGE_MODE=esm cucumber-js -p esm cucumber-tsflow-specs/features/**/*.feature"
   },
   "lint-staged": {
     "*.ts": [

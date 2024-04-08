@@ -293,7 +293,6 @@ function bindStepDefinition(stepBinding: StepBinding): boolean {
 /**
  * Binds a hook to Cucumber.
  *
- * @param cucumber The cucumber object.
  * @param stepBinding The [[StepBinding]] that represents a 'before', or 'after', step definition.
  */
 function bindHook(stepBinding: StepBinding): void {
