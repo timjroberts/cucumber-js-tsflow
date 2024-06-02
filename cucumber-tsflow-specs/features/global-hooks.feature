@@ -166,6 +166,43 @@ Feature: Support for Cucumber hooks
             ..
             """
 
+    Scenario: Binding multiple global hooks on the same line
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+                Scenario: example one
+                    Given a step
+
+                Scenario: example two
+                    Given a step
+            """
+        And a file named "step_definitions/steps.ts" with:
+            """ts
+            import {binding, given, beforeAll} from 'cucumber-tsflow';
+
+            @binding()
+            class Steps {
+                @beforeAll()public static one() { console.log('one') }@beforeAll()public static two() { console.log('two') }
+
+                @given("a step")
+                public given() {
+                    console.log('step');
+                }
+            }
+
+            export = Steps;
+            """
+        When I run cucumber-js
+        Then it passes
+        And the output contains text once:
+            """
+            one
+            two
+            .step
+            ...step
+            ..
+            """
+
     Scenario: Binding multiple afterAll hooks
         Given a file named "features/a.feature" with:
             """feature
