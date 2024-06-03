@@ -2,7 +2,7 @@
 import {
   ICreateAttachment,
   ICreateLog,
-} from "@cucumber/cucumber/lib/runtime/attachment_manager";
+} from "@cucumber/cucumber/lib/runtime/attachment_manager/index";
 import { Readable } from "stream";
 
 export class WorldParameters<T = any> {

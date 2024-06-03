@@ -10,7 +10,9 @@
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf tmp tsconfig.tsbuildinfo cucumber-tsflow/tsconfig.tsbuildinfo cucumber-tsflow/dist cucumber-tsflow-specs/tsconfig.tsbuildinfo",
-    "build": "tsc -p cucumber-tsflow",
+    "build": "npm run build:cjs && npm run build:esm && bin/create-node-module-types.sh",
+    "build:cjs": "tsc -p cucumber-tsflow",
+    "build:esm": "tsc -p cucumber-tsflow/tsconfig.esm.json",
     "build:watch": "tsc --build --watch",
     "preinstall": "cd cucumber-tsflow && npm install && cd ../cucumber-tsflow-specs && npm install",
     "postinstall": "lerna bootstrap && npm run fix-peer-cucumber",

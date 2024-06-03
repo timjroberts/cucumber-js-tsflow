@@ -1,7 +1,7 @@
 {
   "name": "cucumber-tsflow",
   "description": "Provides 'specflow' like bindings for CucumberJS 7.0.0+ in TypeScript 1.7+.",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "author": "Tim Roberts <tim@timjroberts.com>",
   "maintainers": [
     {
@@ -11,7 +11,14 @@
     }
   ],
   "license": "MIT",
-  "main": "./dist",
+  "main": "./dist/cjs/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js"
+    }
+  },
+  "types": "./dist/esm/index.d.ts",
   "keywords": [
     "testing",
     "bdd",

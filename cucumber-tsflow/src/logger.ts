@@ -1,5 +1,8 @@
-import * as log4js from "log4js";
+import * as log4jsModule from "log4js";
+// @ts-expect-error
+import log4js from "log4js";
 
-const logger = log4js.getLogger("cucumber-js.tsflow");
+const getLogger = log4js?.getLogger || log4jsModule.getLogger;
+const logger = getLogger("cucumber-js.tsflow");
 
 export default logger;
