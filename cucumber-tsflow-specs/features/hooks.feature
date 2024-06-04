@@ -155,6 +155,43 @@ Feature: Support for Cucumber hooks
             .hook two has executed
             """
 
+
+    Scenario: Binding multiple hooks same line
+        Given a file named "features/a.feature" with:
+            """feature
+            Feature: Feature
+                Scenario: example
+                    Given a step
+            """
+        And a file named "step_definitions/steps.ts" with:
+            """ts
+            import {binding, given, before} from 'cucumber-tsflow';
+
+            @binding()
+            class Steps {
+                private state = 'no hook executed';
+
+                @before()public hookOne() {console.log(this.state);this.state = 'hook one has executed';}@before()public hookTwo() {console.log(this.state);this.state = 'hook two has executed';}
+
+                @given("a step")
+                public given() {
+                    console.log(this.state);
+                    this.state = 'step has executed';
+                }
+            }
+
+            export = Steps;
+            """
+        When I run cucumber-js
+        Then it passes
+        And the output does not contain "step has not executed"
+        And the output contains text:
+            """
+            .no hook executed
+            .hook one has executed
+            .hook two has executed
+            """
+
     Scenario: Binding multiple after hooks
         Given a file named "features/a.feature" with:
             """feature

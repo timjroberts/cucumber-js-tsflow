@@ -162,7 +162,8 @@ export class BindingRegistry {
       return (
         a.callsite.filename === b.callsite.filename &&
         a.callsite.lineNumber === b.callsite.lineNumber &&
-        String(a.stepPattern) === String(b.stepPattern)
+        String(a.stepPattern) === String(b.stepPattern) &&
+        a.targetPropertyKey === b.targetPropertyKey
       );
     }
   }
