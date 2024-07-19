@@ -1,4 +1,4 @@
-import * as callsites from "callsites";
+import callsites from "callsites";
 // @ts-ignore
 import * as sourceMapSupport from "source-map-support";
 
