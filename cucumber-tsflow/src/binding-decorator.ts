@@ -177,9 +177,9 @@ const ensureSystemBindings = _.once(() => {
 
     scenarioContext.addExternalObject(scenarioInfo);
     scenarioContext.addExternalObject(new WorldParameters(this.parameters));
-    scenarioContext.addExternalObject(new CucumberLog(this.log.bind(this)));
+    scenarioContext.addExternalObject(new CucumberLog(this.log?.bind(this)));
     scenarioContext.addExternalObject(
-      new CucumberAttachments(this.attach.bind(this))
+      new CucumberAttachments(this.attach?.bind(this))
     );
   });
 
