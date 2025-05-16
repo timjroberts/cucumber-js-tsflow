@@ -32,7 +32,7 @@
     ]
   },
   "devDependencies": {
-    "@cucumber/cucumber": "^10",
+    "@cucumber/cucumber": "^11",
     "@types/node": "^18",
     "@types/underscore": "1.11.4",
     "jest": "^29.2.2",
