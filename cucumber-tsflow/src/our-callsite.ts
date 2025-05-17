@@ -12,7 +12,10 @@ export class Callsite {
    * @param filename The filename of the callsite.
    * @param lineNumber The line number of the callsite.
    */
-  constructor(public filename: string, public lineNumber: number) {}
+  constructor(
+    public filename: string,
+    public lineNumber: number,
+  ) {}
 
   /**
    * Captures the current [[Callsite]] object.
@@ -22,7 +25,7 @@ export class Callsite {
     const tsStack = sourceMapSupport.wrapCallSite(stack);
     return new Callsite(
       tsStack.getFileName() || "",
-      tsStack.getLineNumber() || -1
+      tsStack.getLineNumber() || -1,
     );
   }
 

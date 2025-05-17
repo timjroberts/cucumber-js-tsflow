@@ -131,7 +131,7 @@ export = MySteps;
 Through this reference, classes decorated with the `binding` decorator are
 referred "binding classes".
 
-*Note*: You must use the `export = <class>;` due to how Cucumber interprets
+_Note_: You must use the `export = <class>;` due to how Cucumber interprets
 the exported items of a Support File.
 
 ### Step Definitions
@@ -170,7 +170,7 @@ Additionally, a step definition may receive additional options in the format:
 @binding()
 class MySteps {
   @given("pattern", {
-    tag: 'not @expensive',
+    tag: "not @expensive",
     timeout: 1000,
     wrapperOptions: {},
   })
@@ -186,7 +186,7 @@ as direct arguments:
 ```ts
 @binding()
 class MySteps {
-  @given("pattern", 'not @expensive', 1000)
+  @given("pattern", "not @expensive", 1000)
   public givenAValueBasedSearch(searchValue: string): void {
     // ...
   }
@@ -358,7 +358,7 @@ import { Workspace } from "./Workspace";
 
 @binding([Workspace])
 class MySteps {
-  public constructor(protected workspace: Workspace) { }
+  public constructor(protected workspace: Workspace) {}
 
   @before("requireTempDir")
   public async beforeAllScenariosRequiringTempDirectory(): Promise<void> {

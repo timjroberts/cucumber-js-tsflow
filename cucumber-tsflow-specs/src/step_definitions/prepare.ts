@@ -25,7 +25,7 @@ class Prepare {
     const tmpDir = path.join(
       projectPath,
       "tmp",
-      `${path.basename(pickle.uri)}_${line.toString()}`
+      `${path.basename(pickle.uri)}_${line.toString()}`,
     );
 
     fsExtra.removeSync(tmpDir);
@@ -49,7 +49,7 @@ class Prepare {
     if (lastRun?.error != null && !this.runner.verifiedLastRunError) {
       throw new Error(
         `Last run errored unexpectedly. Output:\n\n${lastRun.output}\n\n` +
-          `Error Output:\n\n${lastRun.errorOutput}`
+          `Error Output:\n\n${lastRun.errorOutput}`,
       );
     }
   }
@@ -59,19 +59,19 @@ class Prepare {
 
     fsExtra.ensureSymlinkSync(
       cucumberPath,
-      path.join(tmpDirNodeModulesPath, "@cucumber", "cucumber")
+      path.join(tmpDirNodeModulesPath, "@cucumber", "cucumber"),
     );
     fsExtra.ensureSymlinkSync(
       tsNodePath,
-      path.join(tmpDirNodeModulesPath, "ts-node")
+      path.join(tmpDirNodeModulesPath, "ts-node"),
     );
     fsExtra.ensureSymlinkSync(
       projectLibPath,
-      path.join(tmpDirNodeModulesPath, "cucumber-tsflow")
+      path.join(tmpDirNodeModulesPath, "cucumber-tsflow"),
     );
     fsExtra.ensureSymlinkSync(
       log4jsPath,
-      path.join(tmpDirNodeModulesPath, "log4js")
+      path.join(tmpDirNodeModulesPath, "log4js"),
     );
   }
 
@@ -83,7 +83,7 @@ class Prepare {
           compilerOptions: {
             experimentalDecorators: true,
           },
-        })
+        }),
       );
     }
 
@@ -104,7 +104,7 @@ log4js.configure({
     default: { appenders: ["logfile"], level: "trace" },
   }
 });
-`
+`,
       );
     }
   }

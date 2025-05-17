@@ -67,7 +67,7 @@ export class TestDir {
       this.path,
       ...(pathParts.length === 1 && Array.isArray(pathParts[0])
         ? pathParts[0]
-        : (pathParts as string[]))
+        : (pathParts as string[])),
     );
   }
 }

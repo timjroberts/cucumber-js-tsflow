@@ -14,7 +14,7 @@ interface StepOptions {
 
 function overloadedOptions(
   tag?: string | StepOptions,
-  timeout?: number
+  timeout?: number,
 ): StepOptions {
   if (tag === undefined || typeof tag === "string") {
     return { tag, timeout };
@@ -22,7 +22,7 @@ function overloadedOptions(
 
   if (timeout !== undefined) {
     throw new Error(
-      "Cannot specify a separate timeout argument when an options object is given."
+      "Cannot specify a separate timeout argument when an options object is given.",
     );
   }
 
@@ -39,7 +39,7 @@ function overloadedOptions(
 export function given(
   stepPattern: RegExp | string,
   tagOrOption?: string | StepOptions,
-  timeout?: number
+  timeout?: number,
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -48,7 +48,7 @@ export function given(
   return <T>(
     target: any,
     propertyKey: string | symbol,
-    descriptor: TypedPropertyDescriptor<T>
+    descriptor: TypedPropertyDescriptor<T>,
   ) => {
     const stepBinding: StepBinding = {
       stepPattern: stepPattern,
@@ -80,7 +80,7 @@ export function given(
 export function when(
   stepPattern: RegExp | string,
   tagOrOption?: string | StepOptions,
-  timeout?: number
+  timeout?: number,
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -89,7 +89,7 @@ export function when(
   return <T>(
     target: any,
     propertyKey: string | symbol,
-    descriptor: TypedPropertyDescriptor<T>
+    descriptor: TypedPropertyDescriptor<T>,
   ) => {
     const stepBinding: StepBinding = {
       stepPattern: stepPattern,
@@ -119,7 +119,7 @@ export function when(
 export function then(
   stepPattern: RegExp | string,
   tagOrOption?: string | StepOptions,
-  timeout?: number
+  timeout?: number,
 ): MethodDecorator {
   const callsite = Callsite.capture();
 
@@ -128,7 +128,7 @@ export function then(
   return <T>(
     target: any,
     propertyKey: string | symbol,
-    descriptor: TypedPropertyDescriptor<T>
+    descriptor: TypedPropertyDescriptor<T>,
   ) => {
     const stepBinding: StepBinding = {
       stepPattern: stepPattern,

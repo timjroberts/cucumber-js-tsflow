@@ -18,7 +18,7 @@ const cucumberBinPath = path.join(
   projectPath,
   "node_modules",
   ".bin",
-  "cucumber-js"
+  "cucumber-js",
 );
 
 interface IRunResult {
@@ -64,7 +64,7 @@ export class TestRunner {
   }
 
   public async run(
-    envOverride: NodeJS.ProcessEnv | null = null
+    envOverride: NodeJS.ProcessEnv | null = null,
   ): Promise<void> {
     const messageFilename = "message.ndjson";
     const env = { ...process.env, ...this.sharedEnv, ...envOverride };
@@ -87,7 +87,7 @@ export class TestRunner {
         { cwd: this.dir.path, env },
         (error, stdout, stderr) => {
           resolve({ error, stdout, stderr });
-        }
+        },
       );
     });
 
@@ -105,7 +105,7 @@ export class TestRunner {
             envelopes.push(envelope);
             callback();
           },
-        })
+        }),
       );
 
     if (messageOutputStream !== undefined) {

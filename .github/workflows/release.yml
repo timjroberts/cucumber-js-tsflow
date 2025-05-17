@@ -54,7 +54,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 22
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
       - uses: actions/download-artifact@v2
         name: Download npm package
         with:
