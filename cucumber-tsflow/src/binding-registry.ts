@@ -64,7 +64,7 @@ export class BindingRegistry {
    */
   public registerContextTypesForTarget(
     targetPrototype: any,
-    contextTypes?: ContextType[]
+    contextTypes?: ContextType[],
   ): void {
     if (!contextTypes) {
       return;
@@ -154,8 +154,8 @@ export class BindingRegistry {
     logger.trace(
       "All target step bindings",
       targetBinding.stepBindings.map(
-        (binding) => `${binding.stepPattern} ${binding.tag}`
-      )
+        (binding) => `${binding.stepPattern} ${binding.tag}`,
+      ),
     );
 
     function isSameStepBinding(a: StepBinding, b: StepBinding) {

@@ -22,7 +22,7 @@ export class ManagedScenarioContext implements ScenarioContext {
 
   public getOrActivateBindingClass(
     targetPrototype: any,
-    contextTypes: ContextType[]
+    contextTypes: ContextType[],
   ): any {
     return this.getOrActivateObject(targetPrototype, () => {
       return this.activateBindingClass(targetPrototype, contextTypes);
@@ -44,7 +44,7 @@ export class ManagedScenarioContext implements ScenarioContext {
     return this.getOrActivateObject(contextType.prototype, () => {
       if (isProvidedContextType(contextType)) {
         throw new Error(
-          `The requested type "${contextType.name}" should be provided by cucumber-tsflow, but was not registered. Please report a bug.`
+          `The requested type "${contextType.name}" should be provided by cucumber-tsflow, but was not registered. Please report a bug.`,
         );
       }
 
@@ -66,7 +66,7 @@ export class ManagedScenarioContext implements ScenarioContext {
 
     if (existingObject !== undefined) {
       throw new Error(
-        `Conflicting objects of type "${proto.name}" registered.`
+        `Conflicting objects of type "${proto.name}" registered.`,
       );
     }
 
@@ -75,7 +75,7 @@ export class ManagedScenarioContext implements ScenarioContext {
 
   private activateBindingClass(
     targetPrototype: any,
-    contextTypes: ContextType[]
+    contextTypes: ContextType[],
   ): any {
     const invokeBindingConstructor = (args: any[]): any => {
       return new (targetPrototype.constructor as any)(...args);
@@ -84,7 +84,9 @@ export class ManagedScenarioContext implements ScenarioContext {
     const contextObjects = _.map(contextTypes, (contextType) => {
       return this.getOrActivateBindingClass(
         contextType.prototype,
-        BindingRegistry.instance.getContextTypesForTarget(contextType.prototype)
+        BindingRegistry.instance.getContextTypesForTarget(
+          contextType.prototype,
+        ),
       );
     });
 
@@ -93,7 +95,7 @@ export class ManagedScenarioContext implements ScenarioContext {
 
   private getOrActivateObject(
     targetPrototype: any,
-    activatorFunc: () => any
+    activatorFunc: () => any,
   ): any {
     let activeObject = this._activeObjects.get(targetPrototype);
 

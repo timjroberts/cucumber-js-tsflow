@@ -18,7 +18,10 @@ export class ScenarioInfo {
    * @param tags An array of [[TagName]] representing the tags that are in scope for the currently
    * running Cucumber scenario.
    */
-  constructor(public scenarioTitle: string, public tags: TagName[]) {}
+  constructor(
+    public scenarioTitle: string,
+    public tags: TagName[],
+  ) {}
 
   private static parseAttributeTags(tags: TagName[]): Map<string, unknown> {
     const RGX = /^@?(?<attributeName>[\w-]+)\((?<value>.+?)\)$/s;
@@ -50,7 +53,7 @@ export class ScenarioInfo {
       if (match !== undefined) {
         const { option, value } = match;
 
-        const list = result.get(option)
+        const list = result.get(option);
         if (list === undefined) {
           result.set(option, [value]);
         } else {

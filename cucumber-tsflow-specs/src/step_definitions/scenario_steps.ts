@@ -1,6 +1,6 @@
 import { DataTable } from "@cucumber/cucumber";
 import * as messages from "@cucumber/messages";
-import assert from 'assert';
+import assert from "assert";
 import { binding, then } from "cucumber-tsflow";
 import expect from "expect";
 import { Extractor } from "../support/helpers";
@@ -19,7 +19,7 @@ class ScenarioSteps {
   public checkScenarioCount(expectedCount: number) {
     const startedTestCases = this.runner.lastRun.envelopes.reduce(
       (acc, e) => (e.testCaseStarted == null ? acc : acc + 1),
-      0
+      0,
     );
 
     expect(startedTestCases).toBe(expectedCount);
@@ -51,7 +51,7 @@ class ScenarioSteps {
   public checkStepAttachment(
     pickleName: string,
     stepText: string,
-    table: DataTable
+    table: DataTable,
   ) {
     const expectedAttachments = table.hashes().map((x) => {
       return {
@@ -72,7 +72,7 @@ class ScenarioSteps {
   public checkHookAttachment(
     pickleName: string,
     hookKeyword: string,
-    table: DataTable
+    table: DataTable,
   ) {
     const expectedAttachments: messages.Attachment[] = table
       .hashes()
@@ -95,7 +95,7 @@ class ScenarioSteps {
   public checkStepLogs(pickleName: string, stepName: string, logs: DataTable) {
     const expectedLogs = logs.raw().map((row) => row[0]);
     const actualLogs = Extractor.logsFromAttachments(
-      this.runner.extractor.getAttachmentsForStep(pickleName, stepName)
+      this.runner.extractor.getAttachmentsForStep(pickleName, stepName),
     );
 
     expect(actualLogs).toStrictEqual(expectedLogs);
@@ -105,7 +105,7 @@ class ScenarioSteps {
   public checkNoStepLogs(pickleName: string, stepName: string) {
     const attachments = this.runner.extractor.getAttachmentsForStep(
       pickleName,
-      stepName
+      stepName,
     );
 
     expect(attachments).toStrictEqual([]);
@@ -114,9 +114,15 @@ class ScenarioSteps {
   @then("the hook {string} was executed on scenario {string}")
   public checkNamedHookExecution(hookName: string, scenarioName: string) {
     const hook = this.runner.extractor.getHookByName(hookName);
-    const executions = this.runner.extractor.getHookExecutions(scenarioName, hook.id);
+    const executions = this.runner.extractor.getHookExecutions(
+      scenarioName,
+      hook.id,
+    );
 
-    assert(executions.length === 1, `Hook ${hookName} executed ${executions.length} times on scenario "${scenarioName}"`);
+    assert(
+      executions.length === 1,
+      `Hook ${hookName} executed ${executions.length} times on scenario "${scenarioName}"`,
+    );
   }
 }
 

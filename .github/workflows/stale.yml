@@ -1,9 +1,9 @@
-name: 'Stale issue handler'
+name: "Stale issue handler"
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 permissions:
   contents: write # only for delete-branch option
@@ -20,17 +20,17 @@ jobs:
           days-before-stale: 60
           days-before-close: 7
 
-          stale-issue-message: 'This issue is stale because it has been open 60 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
+          stale-issue-message: "This issue is stale because it has been open 60 days with no activity. Remove stale label or comment or this will be closed in 7 days."
           close-issue-message: "There hasn't been any activity on this issue for 67 days. Closing it as Spoiled."
           stale-issue-label: stale
           close-issue-label: spoiled
-          exempt-issue-labels: 'blocked,discussion,good first issue'
+          exempt-issue-labels: "blocked,discussion,good first issue"
 
-          stale-pr-message: 'This PR is stale because it has been 60 days with no activity. Remove stale lable or comment or this will be closed in 7 days.'
+          stale-pr-message: "This PR is stale because it has been 60 days with no activity. Remove stale lable or comment or this will be closed in 7 days."
           close-pr-message: "There hasn't been any activity on this PR for 67 days. Closing it as Spoiled."
           stale-pr-label: stale
           close-pr-label: spoiled
-          exempt-pr-labels: 'blocked,discussion'
+          exempt-pr-labels: "blocked,discussion"
 
       - name: Print outputs
         run: echo ${{ join(steps.stale.outputs.*, ',') }}

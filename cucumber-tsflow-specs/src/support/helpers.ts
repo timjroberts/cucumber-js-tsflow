@@ -45,19 +45,19 @@ export class Extractor {
   public constructor(private readonly envelopes: messages.Envelope[]) {}
 
   public static logsFromAttachments(
-    attachments: messages.Attachment[]
+    attachments: messages.Attachment[],
   ): string[] {
     return attachments
       .filter(
         (att) =>
           att.contentEncoding === messages.AttachmentContentEncoding.IDENTITY &&
-          att.mediaType === "text/x.cucumber.log+plain"
+          att.mediaType === "text/x.cucumber.log+plain",
       )
       .map((att) => att.body);
   }
 
   public static simplifyAttachment(
-    attachment: messages.Attachment
+    attachment: messages.Attachment,
   ): SimpleAttachment {
     return {
       body: attachment.body,
@@ -85,28 +85,31 @@ export class Extractor {
 
   public getPickleStep(
     pickleName: string,
-    stepText: string
+    stepText: string,
   ): messages.PickleStep {
     const pickle = this.getPickle(pickleName);
     const gherkinDocument = this.getGherkinDocument(pickle.uri);
     return this.getPickleStepByStepText(pickle, gherkinDocument, stepText);
   }
 
-  public getHookByName(hookName: string,): messages.Hook {
-    const hookEnvelope = this.envelopes.find(({hook}) => (
-        hook?.name === hookName
-    ))
+  public getHookByName(hookName: string): messages.Hook {
+    const hookEnvelope = this.envelopes.find(
+      ({ hook }) => hook?.name === hookName,
+    );
 
     assert.ok(hookEnvelope, `Unknown hook ${hookName}`);
 
     return hookEnvelope.hook!;
   }
 
-  public getHookExecutions(pickleName: string, hookId: string): messages.TestStep[] {
+  public getHookExecutions(
+    pickleName: string,
+    hookId: string,
+  ): messages.TestStep[] {
     const pickle = this.getPickle(pickleName);
     const testCase = this.getTestCase(pickle.id);
 
-    return testCase.testSteps.filter(step => step.hookId === hookId)
+    return testCase.testSteps.filter((step) => step.hookId === hookId);
   }
 
   public getTestCaseResult(pickleName: string): messages.TestStepResult {
@@ -114,13 +117,13 @@ export class Extractor {
     this.envelopes.forEach((envelope) => query.update(envelope));
     const pickle = this.getPickle(pickleName);
     return messages.getWorstTestStepResult(
-      query.getPickleTestStepResults([pickle.id])
+      query.getPickleTestStepResults([pickle.id]),
     );
   }
 
   public getTestStepResults(
     pickleName: string,
-    attempt = 0
+    attempt = 0,
   ): IStepTextAndResult[] {
     const pickle = this.getPickle(pickleName);
     const gherkinDocument = this.getGherkinDocument(pickle.uri);
@@ -155,7 +158,7 @@ export class Extractor {
 
   public getAttachmentsForStep(
     pickleName: string,
-    stepText: string
+    stepText: string,
   ): messages.Attachment[] {
     const pickle = this.getPickle(pickleName);
     const gherkinDocument = this.getGherkinDocument(pickle.uri);
@@ -163,15 +166,15 @@ export class Extractor {
     const pickleStep = this.getPickleStepByStepText(
       pickle,
       gherkinDocument,
-      stepText
+      stepText,
     );
     assert.ok(
       pickleStep,
-      `Step "${stepText}" not found in pickle ${dump(pickle)}`
+      `Step "${stepText}" not found in pickle ${dump(pickle)}`,
     );
 
     const testStep = testCase.testSteps.find(
-      (s) => s.pickleStepId === pickleStep.id
+      (s) => s.pickleStepId === pickleStep.id,
     )!;
     const testCaseStarted = this.getTestCaseStarted(testCase.id);
     return this.getTestStepAttachments(testCaseStarted.id, testStep.id);
@@ -179,7 +182,7 @@ export class Extractor {
 
   public getAttachmentsForHook(
     pickleName: string,
-    isBeforeHook: boolean
+    isBeforeHook: boolean,
   ): messages.Attachment[] {
     const pickle = this.getPickle(pickleName);
     const testCase = this.getTestCase(pickle.id);
@@ -193,13 +196,13 @@ export class Extractor {
 
   private getPickle(pickleName: string): messages.Pickle {
     const pickleEnvelope = this.envelopes.find(
-      (e) => e.pickle != null && e.pickle.name === pickleName
+      (e) => e.pickle != null && e.pickle.name === pickleName,
     );
     if (pickleEnvelope == null) {
       throw new Error(
         `No pickle with name "${pickleName}" in this.envelopes:\n ${util.inspect(
-          this.envelopes
-        )}`
+          this.envelopes,
+        )}`,
       );
     }
     return pickleEnvelope.pickle!;
@@ -207,13 +210,13 @@ export class Extractor {
 
   private getGherkinDocument(uri: string): messages.GherkinDocument {
     const gherkinDocumentEnvelope = this.envelopes.find(
-      (e) => e.gherkinDocument != null && e.gherkinDocument.uri === uri
+      (e) => e.gherkinDocument != null && e.gherkinDocument.uri === uri,
     );
     if (gherkinDocumentEnvelope == null) {
       throw new Error(
         `No gherkinDocument with uri "${uri}" in this.envelopes:\n ${util.inspect(
-          this.envelopes
-        )}`
+          this.envelopes,
+        )}`,
       );
     }
     return gherkinDocumentEnvelope.gherkinDocument!;
@@ -221,13 +224,13 @@ export class Extractor {
 
   private getTestCase(pickleId: string): messages.TestCase {
     const testCaseEnvelope = this.envelopes.find(
-      (e) => e.testCase != null && e.testCase.pickleId === pickleId
+      (e) => e.testCase != null && e.testCase.pickleId === pickleId,
     );
     if (testCaseEnvelope == null) {
       throw new Error(
         `No testCase with pickleId "${pickleId}" in this.envelopes:\n ${util.inspect(
-          this.envelopes
-        )}`
+          this.envelopes,
+        )}`,
       );
     }
     return testCaseEnvelope.testCase!;
@@ -235,19 +238,19 @@ export class Extractor {
 
   private getTestCaseStarted(
     testCaseId: string,
-    attempt = 0
+    attempt = 0,
   ): messages.TestCaseStarted {
     const testCaseStartedEnvelope = this.envelopes.find(
       (e) =>
         e.testCaseStarted != null &&
         e.testCaseStarted.testCaseId === testCaseId &&
-        e.testCaseStarted.attempt === attempt
+        e.testCaseStarted.attempt === attempt,
     );
     if (testCaseStartedEnvelope == null) {
       throw new Error(
         `No testCaseStarted with testCaseId "${testCaseId}" in this.envelopes:\n ${util.inspect(
-          this.envelopes
-        )}`
+          this.envelopes,
+        )}`,
       );
     }
     return testCaseStartedEnvelope.testCaseStarted!;
@@ -256,7 +259,7 @@ export class Extractor {
   private getPickleStepByStepText(
     pickle: messages.Pickle,
     gherkinDocument: messages.GherkinDocument,
-    stepText: string
+    stepText: string,
   ): messages.PickleStep {
     const gherkinStepMap = getGherkinStepMap(gherkinDocument);
     return pickle.steps.find((s) => {
@@ -267,14 +270,14 @@ export class Extractor {
 
   private getTestStepAttachments(
     testCaseStartedId: string,
-    testStepId: string
+    testStepId: string,
   ): messages.Attachment[] {
     return this.envelopes
       .filter(
         (e) =>
           e.attachment != null &&
           e.attachment.testCaseStartedId === testCaseStartedId &&
-          e.attachment.testStepId === testStepId
+          e.attachment.testStepId === testStepId,
       )
       .map((e) => e.attachment!);
   }

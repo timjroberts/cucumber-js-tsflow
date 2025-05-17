@@ -1,7 +1,7 @@
 import {
   IDefineTestCaseHookOptions,
   IDefineTestRunHookOptions,
-  IDefineTestStepHookOptions
+  IDefineTestStepHookOptions,
 } from "@cucumber/cucumber/lib/support_code_library_builder/types";
 import { BindingRegistry } from "./binding-registry";
 import { Callsite } from "./our-callsite";
@@ -9,8 +9,8 @@ import { StepBinding, StepBindingFlags } from "./step-binding";
 import { normalizeTag } from "./tag-normalization";
 
 // Replace `tags` with `tag` for backwards compatibility
-type HookOptions = Omit<IDefineTestCaseHookOptions, 'tags'> & {
-  tag?: string,
+type HookOptions = Omit<IDefineTestCaseHookOptions, "tags"> & {
+  tag?: string;
 };
 
 function overloadedOption(tag?: string | HookOptions): HookOptions {
@@ -18,12 +18,12 @@ function overloadedOption(tag?: string | HookOptions): HookOptions {
     return { tag };
   }
 
-  return tag
+  return tag;
 }
 
 function createHookDecorator(
   flag: StepBindingFlags,
-  tagOrOption?: string | HookOptions
+  tagOrOption?: string | HookOptions,
 ): MethodDecorator {
   const callsite = Callsite.capture(2);
 
@@ -32,7 +32,7 @@ function createHookDecorator(
   return <T>(
     target: any,
     propertyKey: string | symbol,
-    descriptor: TypedPropertyDescriptor<T>
+    descriptor: TypedPropertyDescriptor<T>,
   ) => {
     const stepBinding: StepBinding = {
       stepPattern: "",
@@ -78,7 +78,9 @@ export function after(tagOrOption?: string | HookOptions): MethodDecorator {
  *
  * @param options Optional hook options object.
  */
-export function beforeAll(options?: IDefineTestRunHookOptions): MethodDecorator {
+export function beforeAll(
+  options?: IDefineTestRunHookOptions,
+): MethodDecorator {
   return createHookDecorator(StepBindingFlags.beforeAll, options);
 }
 
@@ -98,7 +100,9 @@ export function afterAll(options?: IDefineTestRunHookOptions): MethodDecorator {
  *
  * @param options Optional hook options object.
  */
-export function beforeStep(options?: IDefineTestStepHookOptions): MethodDecorator {
+export function beforeStep(
+  options?: IDefineTestStepHookOptions,
+): MethodDecorator {
   return createHookDecorator(StepBindingFlags.beforeStep, options);
 }
 
@@ -108,6 +112,8 @@ export function beforeStep(options?: IDefineTestStepHookOptions): MethodDecorato
  *
  * @param options Optional hook options object.
  */
-export function afterStep(options?: IDefineTestStepHookOptions): MethodDecorator {
+export function afterStep(
+  options?: IDefineTestStepHookOptions,
+): MethodDecorator {
   return createHookDecorator(StepBindingFlags.afterStep, options);
 }

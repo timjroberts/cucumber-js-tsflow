@@ -1,4 +1,4 @@
-import type {IDefineTestStepHookOptions} from '@cucumber/cucumber/lib/support_code_library_builder/types';
+import type { IDefineTestStepHookOptions } from "@cucumber/cucumber/lib/support_code_library_builder/types";
 import { Callsite } from "./our-callsite";
 import { StepBindingFlags } from "./step-binding-flags";
 
@@ -46,7 +46,7 @@ export interface StepBinding {
    */
   wrapperOption?: any;
 
-  hookOptions?: Omit<IDefineTestStepHookOptions, 'tags'|'timeout'>;
+  hookOptions?: Omit<IDefineTestStepHookOptions, "tags" | "timeout">;
 
   /**
    * The callsite of the step binding.

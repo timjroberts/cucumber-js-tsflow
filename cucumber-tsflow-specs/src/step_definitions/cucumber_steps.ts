@@ -29,7 +29,7 @@ class CucumberSteps {
     if (lastRun?.error != null) {
       throw new Error(
         `Last run errored unexpectedly. Output:\n\n${lastRun.output}\n\n` +
-          `Error Output:\n\n${lastRun.errorOutput}`
+          `Error Output:\n\n${lastRun.errorOutput}`,
       );
     }
   }

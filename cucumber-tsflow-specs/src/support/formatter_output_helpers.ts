@@ -21,7 +21,7 @@ function normalizeMessage(obj: any, cwd: string): void {
   if (obj.sourceReference?.uri != null) {
     obj.sourceReference.uri = normalizeExceptionAndUri(
       obj.sourceReference.uri,
-      cwd
+      cwd,
     );
   }
   if (obj.testStepResult != null) {
@@ -31,7 +31,7 @@ function normalizeMessage(obj: any, cwd: string): void {
     if (obj.testStepResult.message != null) {
       obj.testStepResult.message = normalizeExceptionAndUri(
         obj.testStepResult.message,
-        cwd
+        cwd,
       );
     }
   }
@@ -39,7 +39,7 @@ function normalizeMessage(obj: any, cwd: string): void {
 
 export function normalizeMessageOutput(
   envelopeObjects: messages.Envelope[],
-  cwd: string
+  cwd: string,
 ): messages.Envelope[] {
   envelopeObjects.forEach((e: any) => {
     for (const key of Object.keys(e)) {
@@ -50,7 +50,7 @@ export function normalizeMessageOutput(
 }
 
 export function stripMetaMessages(
-  envelopeObjects: messages.Envelope[]
+  envelopeObjects: messages.Envelope[],
 ): messages.Envelope[] {
   return envelopeObjects.filter((e: any) => {
     // filter off meta objects, almost none of it predictable/useful for testing
@@ -69,7 +69,7 @@ export function normalizeJsonOutput(str: string, cwd: string): IJsonFeature[] {
         if (step.match != null && step.match.location != null) {
           step.match.location = normalizeExceptionAndUri(
             step.match.location,
-            cwd
+            cwd,
           );
         }
         if (step.result != null) {
@@ -79,7 +79,7 @@ export function normalizeJsonOutput(str: string, cwd: string): IJsonFeature[] {
           if (step.result.error_message != null) {
             step.result.error_message = normalizeExceptionAndUri(
               step.result.error_message,
-              cwd
+              cwd,
             );
           }
         }

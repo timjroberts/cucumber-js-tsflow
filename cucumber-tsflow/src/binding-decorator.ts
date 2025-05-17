@@ -54,7 +54,9 @@ const stepPatternRegistrations = new Map<StepPattern, StepBindingFlags>();
 // tslint:disable:no-bitwise
 
 function ensureNoCyclicDependencies(target: any, currentPath: any[] = []) {
-  const dependencies = BindingRegistry.instance.getContextTypesForTarget(target.prototype);
+  const dependencies = BindingRegistry.instance.getContextTypesForTarget(
+    target.prototype,
+  );
 
   if (dependencies.length === 0) {
     return;
@@ -63,13 +65,15 @@ function ensureNoCyclicDependencies(target: any, currentPath: any[] = []) {
   for (const dependency of dependencies) {
     if (dependency === undefined) {
       throw new Error(
-          `Undefined dependency detected in ${target.name}. You possibly have an import cycle.\n`
-          + 'See https://nodejs.org/api/modules.html#modules_cycles'
+        `Undefined dependency detected in ${target.name}. You possibly have an import cycle.\n` +
+          "See https://nodejs.org/api/modules.html#modules_cycles",
       );
     }
 
     if (currentPath.includes(dependency)) {
-      throw new Error(`Cyclic dependency detected: ${dependency.name} -> ${target.name} -> ${currentPath.map((t) => t.name).join(' -> ')}`);
+      throw new Error(
+        `Cyclic dependency detected: ${dependency.name} -> ${target.name} -> ${currentPath.map((t) => t.name).join(" -> ")}`,
+      );
     }
 
     ensureNoCyclicDependencies(dependency, [...currentPath, target]);
@@ -90,7 +94,7 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
     const bindingRegistry = BindingRegistry.instance;
     bindingRegistry.registerContextTypesForTarget(
       target.prototype,
-      requiredContextTypes
+      requiredContextTypes,
     );
 
     ensureNoCyclicDependencies(target);
@@ -103,7 +107,7 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
     for (const stepBinding of allBindings) {
       if (stepBinding.bindingType & StepBindingFlags.StepDefinitions) {
         let stepBindingFlags = stepPatternRegistrations.get(
-          stepBinding.stepPattern.toString()
+          stepBinding.stepPattern.toString(),
         );
 
         if (stepBindingFlags === undefined) {
@@ -119,7 +123,7 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
         if (bound) {
           stepPatternRegistrations.set(
             stepBinding.stepPattern.toString(),
-            stepBindingFlags | stepBinding.bindingType
+            stepBindingFlags | stepBinding.bindingType,
           );
         }
       } else if (stepBinding.bindingType & StepBindingFlags.Hooks) {
@@ -132,16 +136,23 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
 }
 
 function getContextFromWorld(world: World): ScenarioContext {
-    const context: unknown = (world as Record<string, any>)[SCENARIO_CONTEXT_SLOTNAME];
+  const context: unknown = (world as Record<string, any>)[
+    SCENARIO_CONTEXT_SLOTNAME
+  ];
 
-    if (context instanceof ManagedScenarioContext) {
-      return context;
-    }
+  if (context instanceof ManagedScenarioContext) {
+    return context;
+  }
 
-    throw new Error('Scenario context have not been initialized in the provided World object.');
+  throw new Error(
+    "Scenario context have not been initialized in the provided World object.",
+  );
 }
 
-export function getBindingFromWorld<T extends ContextType>( world: World, contextType: T): InstanceType<T> {
+export function getBindingFromWorld<T extends ContextType>(
+  world: World,
+  contextType: T,
+): InstanceType<T> {
   const context = getContextFromWorld(world);
 
   return context.getContextInstance(contextType);
@@ -163,12 +174,12 @@ const ensureSystemBindings = _.once(() => {
   Before(function (this: WritableWorld, scenario) {
     logger.trace(
       "Setting up scenario context for scenario:",
-      JSON.stringify(scenario)
+      JSON.stringify(scenario),
     );
 
     const scenarioInfo = new ScenarioInfo(
       scenario.pickle.name!,
-      _.map(scenario.pickle.tags!, (tag: PickleTag) => tag.name!)
+      _.map(scenario.pickle.tags!, (tag: PickleTag) => tag.name!),
     );
 
     const scenarioContext = new ManagedScenarioContext(scenarioInfo);
@@ -179,7 +190,7 @@ const ensureSystemBindings = _.once(() => {
     scenarioContext.addExternalObject(new WorldParameters(this.parameters));
     scenarioContext.addExternalObject(new CucumberLog(this.log.bind(this)));
     scenarioContext.addExternalObject(
-      new CucumberAttachments(this.attach.bind(this))
+      new CucumberAttachments(this.attach.bind(this)),
     );
   });
 
@@ -249,15 +260,15 @@ function bindStepDefinition(stepBinding: StepBinding): boolean {
     ] as ManagedScenarioContext;
 
     const matchingStepBindings = bindingRegistry.getStepBindings(
-      stepBinding.stepPattern.toString()
+      stepBinding.stepPattern.toString(),
     );
 
     const contextTypes = bindingRegistry.getContextTypesForTarget(
-      matchingStepBindings[0].targetPrototype
+      matchingStepBindings[0].targetPrototype,
     );
     const bindingObject = scenarioContext.getOrActivateBindingClass(
       matchingStepBindings[0].targetPrototype,
-      contextTypes
+      contextTypes,
     );
 
     return (
@@ -302,16 +313,16 @@ function bindHook(stepBinding: StepBinding): void {
       SCENARIO_CONTEXT_SLOTNAME
     ] as ManagedScenarioContext;
     const contextTypes = BindingRegistry.instance.getContextTypesForTarget(
-      stepBinding.targetPrototype
+      stepBinding.targetPrototype,
     );
     const bindingObject = scenarioContext.getOrActivateBindingClass(
       stepBinding.targetPrototype,
-      contextTypes
+      contextTypes,
     );
 
     return (bindingObject[stepBinding.targetPropertyKey] as () => void).apply(
       bindingObject,
-      arguments as any
+      arguments as any,
     );
   };
 
@@ -329,7 +340,7 @@ function bindHook(stepBinding: StepBinding): void {
   const bindingOptions: IDefineTestStepHookOptions = {
     timeout: stepBinding.timeout,
     tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
-    ...stepBinding.hookOptions ?? {},
+    ...(stepBinding.hookOptions ?? {}),
   };
 
   logger.trace("Binding hook:", stepBinding);
