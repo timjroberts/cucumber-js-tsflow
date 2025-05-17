@@ -18,7 +18,8 @@
     "precommit": "lint-staged && npm test",
     "set-packageversion": "node .build/setPackageVersion.js",
     "pretest": "npm run build",
-    "test": "cucumber-js -p default cucumber-tsflow-specs/features/**/*.feature"
+    "test": "cucumber-js -p default cucumber-tsflow-specs/features/**/*.feature",
+    "upgrade": "npm-check -u; cd cucumber-tsflow && npm-check -u; cd ../cucumber-tsflow-specs && npm-check -u; cd .. && npm install"
   },
   "lint-staged": {
     "*.ts": [
@@ -33,11 +34,12 @@
   },
   "devDependencies": {
     "@cucumber/cucumber": "^11",
-    "@types/node": "^18",
+    "@types/node": "^22.15.18",
     "@types/underscore": "^1.13.0",
     "lerna": "^6.0.1",
     "lint-staged": "^13.0.3",
     "nerdbank-gitversioning": "^3.7.115",
+    "npm-check": "^6.0.1",
     "prettier": "^2.7.1",
     "ts-node": "^10.9.1",
     "tslint": "^5.20.1",
