@@ -1,5 +1,5 @@
 {
   "$schema": "https://raw.githubusercontent.com/dotnet/Nerdbank.GitVersioning/master/src/NerdBank.GitVersioning/version.schema.json",
-  "version": "4.4",
+  "version": "4.5",
   "publicReleaseRefSpec": ["^refs/heads/master$", "^refs/heads/release/"]
 }
