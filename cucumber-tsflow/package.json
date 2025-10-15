@@ -26,7 +26,6 @@
     "url": "https://github.com/timjroberts/cucumber-js-tsflow.git"
   },
   "dependencies": {
-    "callsites": "^4.2.0",
     "log4js": "^6.3.0",
     "source-map-support": "^0.5.19",
     "underscore": "^1.8.3"
