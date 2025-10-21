@@ -82,7 +82,6 @@ export class TestRunner {
           "a-logging.ts",
           "--require",
           "step_definitions/**/*.ts",
-          "--publish-quiet",
         ],
         { cwd: this.dir.path, env },
         (error, stdout, stderr) => {

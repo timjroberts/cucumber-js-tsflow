@@ -33,7 +33,7 @@
     ]
   },
   "devDependencies": {
-    "@cucumber/cucumber": "^11",
+    "@cucumber/cucumber": "^12",
     "@types/node": "^22.15.18",
     "@types/underscore": "^1.13.0",
     "lerna": "^6.0.1",
