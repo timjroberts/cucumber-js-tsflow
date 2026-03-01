@@ -14,7 +14,7 @@
     "build:watch": "tsc --build --watch",
     "preinstall": "cd cucumber-tsflow && npm install && cd ../cucumber-tsflow-specs && npm install",
     "postinstall": "npm run fix-peer-cucumber",
-    "fix-peer-cucumber": "rm -rf cucumber-tsflow/node_modules/@cucumber/cucumber && ln -s ../../node_modules/@cucumber cucumber-tsflow/node_modules/@cucumber/cucumber && rm -rf cucumber-tsflow-specs/node_modules/@cucumber/cucumber && ln -s ../../node_modules/@cucumber/cucumber cucumber-tsflow-specs/node_modules/@cucumber/cucumber",
+    "fix-peer-cucumber": "rm -rf cucumber-tsflow/node_modules/@cucumber/cucumber && ln -s ../../node_modules/@cucumber cucumber-tsflow/node_modules/@cucumber/cucumber && mkdir -p cucumber-tsflow-specs/node_modules/@cucumber && rm -rf cucumber-tsflow-specs/node_modules/@cucumber/cucumber && ln -s ../../node_modules/@cucumber/cucumber cucumber-tsflow-specs/node_modules/@cucumber/cucumber",
     "precommit": "lint-staged && npm test",
     "set-packageversion": "node .build/setPackageVersion.js",
     "pretest": "npm run build",
