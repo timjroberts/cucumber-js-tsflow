@@ -8,7 +8,7 @@
   "main": "./index.js",
   "typings": "./dist/index.d.ts",
   "dependencies": {
-    "cucumber-tsflow": "^5",
+    "cucumber-tsflow": "file:../cucumber-tsflow",
     "expect": "^30.2.0",
     "fs-extra": "^11.3.3",
     "verror": "^1.10.1"
