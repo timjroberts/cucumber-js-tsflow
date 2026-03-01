@@ -7,7 +7,6 @@ import {
 } from "@cucumber/cucumber/lib/formatter/helpers/pickle_parser";
 import { doesHaveValue } from "@cucumber/cucumber/lib/value_checker";
 import * as messages from "@cucumber/messages";
-import { Query } from "@cucumber/query";
 import * as assert from "node:assert";
 import util, { inspect } from "util";
 
@@ -113,12 +112,19 @@ export class Extractor {
   }
 
   public getTestCaseResult(pickleName: string): messages.TestStepResult {
-    const query = new Query();
-    this.envelopes.forEach((envelope) => query.update(envelope));
     const pickle = this.getPickle(pickleName);
-    return messages.getWorstTestStepResult(
-      query.getPickleTestStepResults([pickle.id]),
-    );
+    const testCase = this.getTestCase(pickle.id);
+    const testCaseStarted = this.getTestCaseStarted(testCase.id);
+    const testStepResults: messages.TestStepResult[] = [];
+    this.envelopes.forEach((e) => {
+      if (
+        e.testStepFinished != null &&
+        e.testStepFinished.testCaseStartedId === testCaseStarted.id
+      ) {
+        testStepResults.push(e.testStepFinished.testStepResult);
+      }
+    });
+    return messages.getWorstTestStepResult(testStepResults);
   }
 
   public getTestStepResults(

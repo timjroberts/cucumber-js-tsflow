@@ -3,7 +3,7 @@
     "composite": true,
     "module": "umd",
     "moduleResolution": "node",
-    "target": "es2018",
+    "target": "es2022",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
