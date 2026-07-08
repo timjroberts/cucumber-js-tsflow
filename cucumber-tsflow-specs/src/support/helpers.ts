@@ -1,14 +1,16 @@
 // Adapted from:
 // https://github.com/cucumber/cucumber-js/blob/6505e61abce385787767f270b6ce2077eb3d7c1c/features/support/message_helpers.ts
-import { getGherkinStepMap } from "@cucumber/cucumber/lib/formatter/helpers/gherkin_document_parser";
-import {
-  getPickleStepMap,
-  getStepKeyword,
-} from "@cucumber/cucumber/lib/formatter/helpers/pickle_parser";
-import { doesHaveValue } from "@cucumber/cucumber/lib/value_checker";
+import { formatterHelpers } from "@cucumber/cucumber";
 import * as messages from "@cucumber/messages";
 import * as assert from "node:assert";
 import util, { inspect } from "util";
+
+const { getGherkinStepMap } = formatterHelpers.GherkinDocumentParser;
+const { getPickleStepMap, getStepKeyword } = formatterHelpers.PickleParser;
+
+function doesHaveValue<T>(value: T | null | undefined): value is T {
+  return value !== null && value !== undefined;
+}
 
 export function parseEnvString(str: string): NodeJS.ProcessEnv {
   const result: NodeJS.ProcessEnv = {};
@@ -96,7 +98,9 @@ export class Extractor {
       ({ hook }) => hook?.name === hookName,
     );
 
-    assert.ok(hookEnvelope, `Unknown hook ${hookName}`);
+    if (hookEnvelope == null) {
+      throw new Error(`Unknown hook ${hookName}`);
+    }
 
     return hookEnvelope.hook!;
   }

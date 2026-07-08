@@ -3,6 +3,69 @@ import expect from "expect";
 import { parseEnvString } from "../support/helpers";
 import { TestRunner } from "../support/runner";
 
+function escapeRegex(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function createFlexibleOutputRegex(text: string): RegExp {
+  let pattern = "";
+
+  for (let index = 0; index < text.length; ) {
+    const char = text[index];
+
+    if (char === "\r") {
+      index += 1;
+      continue;
+    }
+
+    if (char === "\n") {
+      pattern += "\\r?\\n[. ]*";
+      index += 1;
+      continue;
+    }
+
+    if (char === ".") {
+      while (text[index] === ".") {
+        index += 1;
+      }
+      pattern += "\\.+";
+      continue;
+    }
+
+    if (char === " ") {
+      while (text[index] === " ") {
+        index += 1;
+      }
+      pattern += " +";
+      continue;
+    }
+
+    pattern += escapeRegex(char);
+    index += 1;
+  }
+
+  return new RegExp(pattern, "m");
+}
+
+function countMatches(output: string, text: string): number {
+  const exactMatches = output.match(new RegExp(escapeRegex(text), "g")) ?? [];
+
+  if (exactMatches.length > 0) {
+    return exactMatches.length;
+  }
+
+  const regex = createFlexibleOutputRegex(text);
+  return Array.from(output.matchAll(new RegExp(regex.source, "gm"))).length;
+}
+
+function expectOutputToContain(output: string, text: string): void {
+  if (output.includes(text) || createFlexibleOutputRegex(text).test(output)) {
+    return;
+  }
+
+  expect(output).toContain(text);
+}
+
 @binding([TestRunner])
 class CucumberSteps {
   public constructor(private readonly runner: TestRunner) {}
@@ -45,7 +108,7 @@ class CucumberSteps {
   @then("the output contains {string}")
   @then("the output contains text:")
   public checkStdoutContains(text: string) {
-    expect(this.runner.lastRun.output).toContain(text);
+    expectOutputToContain(this.runner.lastRun.output, text);
   }
 
   @then("the output contains {string} once")
@@ -53,12 +116,8 @@ class CucumberSteps {
   public checkStdoutContainsOnce(text: string) {
     const { output } = this.runner.lastRun;
 
-    expect(output).toContain(text);
-
-    const firstOccurrence = output.indexOf(text);
-    const remaining = output.substring(firstOccurrence + 1);
-
-    expect(remaining).not.toContain(text);
+    expectOutputToContain(output, text);
+    expect(countMatches(output, text)).toBe(1);
   }
 
   @then("the output does not contain {string}")

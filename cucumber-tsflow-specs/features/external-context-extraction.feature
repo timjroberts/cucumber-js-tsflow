@@ -155,7 +155,7 @@ Feature: Extracing context objects from World externally
               regexp: /[+-]?\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z/,
               preferForRegexpMatch: true,
               useForSnippets: true,
-              transformer: function (datetime): Date {
+              transformer: function (this: any, datetime): Date {
                 const state = getBindingFromWorld(this, State);
 
                 const date = new Date(datetime);

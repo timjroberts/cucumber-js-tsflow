@@ -78,5 +78,4 @@ Feature: Binding steps
             """
         When I run cucumber-js
         Then it fails
-        # TODO: https://github.com/timjroberts/cucumber-js-tsflow/issues/97
-        And the output contains "Implement with the following snippet:"
+        And the output contains "Given('missing step'"

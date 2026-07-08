@@ -82,6 +82,7 @@ class Prepare {
         JSON.stringify({
           compilerOptions: {
             experimentalDecorators: true,
+            types: ["node"],
           },
         }),
       );

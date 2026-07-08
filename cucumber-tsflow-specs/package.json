@@ -9,8 +9,8 @@
   "typings": "./dist/index.d.ts",
   "dependencies": {
     "cucumber-tsflow": "file:../cucumber-tsflow",
-    "expect": "^30.2.0",
-    "fs-extra": "^11.3.3",
+    "expect": "^30.4.1",
+    "fs-extra": "^11.3.6",
     "verror": "^1.10.1"
   },
   "devDependencies": {
