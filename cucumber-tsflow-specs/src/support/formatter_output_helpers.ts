@@ -1,10 +1,27 @@
-import {
-  IJsonFeature,
-  IJsonScenario,
-  IJsonStep,
-} from "@cucumber/cucumber/lib/formatter/json_formatter";
-import { valueOrDefault } from "@cucumber/cucumber/lib/value_checker";
 import * as messages from "@cucumber/messages";
+
+interface IJsonFeature {
+  elements: IJsonScenario[];
+  uri: string;
+}
+
+interface IJsonScenario {
+  steps: IJsonStep[];
+}
+
+interface IJsonStep {
+  match?: {
+    location?: string;
+  };
+  result?: {
+    duration?: number;
+    error_message?: string;
+  };
+}
+
+function valueOrDefault<T>(value: T | null | undefined, defaultValue: T): T {
+  return value === null || value === undefined ? defaultValue : value;
+}
 
 function normalizeExceptionAndUri(exception: string, cwd: string): string {
   return exception

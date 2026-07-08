@@ -1,9 +1,9 @@
 /* tslint:disable:max-classes-per-file */
-import {
-  ICreateAttachment,
-  ICreateLog,
-} from "@cucumber/cucumber/lib/runtime/attachment_manager";
+import type { World } from "@cucumber/cucumber";
 import { Readable } from "stream";
+
+type ICreateAttachment = World["attach"];
+type ICreateLog = World["log"];
 
 export class WorldParameters<T = any> {
   public constructor(public readonly value: T) {}
