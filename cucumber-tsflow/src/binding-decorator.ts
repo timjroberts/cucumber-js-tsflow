@@ -129,7 +129,7 @@ function registerStepBindingsFromMetadata(
 export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
   return <T extends new (...args: any[]) => any>(
     target: T,
-    _context: ClassDecoratorContext<T>,
+    _context?: ClassDecoratorContext<T>,
   ) => {
     ensureSystemBindings();
     const bindingRegistry = BindingRegistry.instance;

@@ -44,7 +44,7 @@ export function isProvidedContextType(
 
 export type TypeDecorator = <T extends new (...args: any[]) => any>(
   target: T,
-  context: ClassDecoratorContext<T>,
+  context?: ClassDecoratorContext<T>,
 ) => void;
 
 export type StepDecorator = (
