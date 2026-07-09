@@ -24,8 +24,12 @@ import {
   CucumberLog,
   WorldParameters,
 } from "./provided-context";
-import { StepBinding, StepBindingFlags } from "./step-binding";
-import { ContextType, StepPattern, TypeDecorator } from "./types";
+import {
+  getStepBindingMetadata,
+  type StepBinding,
+  StepBindingFlags,
+} from "./step-binding";
+import type { ContextType, StepPattern, TypeDecorator } from "./types";
 
 interface CucumberStepOptions {
   timeout?: number;
@@ -87,6 +91,33 @@ function ensureNoCyclicDependencies(target: any, currentPath: any[] = []) {
   }
 }
 
+function registerStepBindingsFromMetadata(
+  bindingRegistry: BindingRegistry,
+  targetPrototype: any,
+  bindingSource: any,
+): void {
+  for (const propertyKey of [
+    ...Object.getOwnPropertyNames(bindingSource),
+    ...Object.getOwnPropertySymbols(bindingSource),
+  ]) {
+    const value = Object.getOwnPropertyDescriptor(
+      bindingSource,
+      propertyKey,
+    )?.value;
+
+    if (typeof value !== "function") {
+      continue;
+    }
+
+    for (const stepBinding of getStepBindingMetadata(value)) {
+      bindingRegistry.registerStepBinding({
+        ...stepBinding,
+        targetPrototype: targetPrototype,
+      });
+    }
+  }
+}
+
 /**
  * A class decorator that marks the associated class as a CucumberJS binding.
  *
@@ -96,7 +127,10 @@ function ensureNoCyclicDependencies(target: any, currentPath: any[] = []) {
  * An instance of the decorated class will be created for each scenario.
  */
 export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
-  return <T>(target: new (...args: any[]) => T) => {
+  return <T extends new (...args: any[]) => any>(
+    target: T,
+    _context?: ClassDecoratorContext<T>,
+  ) => {
     ensureSystemBindings();
     const bindingRegistry = BindingRegistry.instance;
     bindingRegistry.registerContextTypesForTarget(
@@ -105,6 +139,13 @@ export function binding(requiredContextTypes?: ContextType[]): TypeDecorator {
     );
 
     ensureNoCyclicDependencies(target);
+
+    registerStepBindingsFromMetadata(bindingRegistry, target, target);
+    registerStepBindingsFromMetadata(
+      bindingRegistry,
+      target.prototype,
+      target.prototype,
+    );
 
     const allBindings: StepBinding[] = [
       ...bindingRegistry.getStepBindingsForTarget(target),
