@@ -10,10 +10,6 @@ import {
   When,
   World,
 } from "@cucumber/cucumber";
-import {
-  IDefineStepOptions,
-  IDefineTestStepHookOptions,
-} from "@cucumber/cucumber/lib/support_code_library_builder/types";
 import { PickleTag } from "@cucumber/messages";
 import * as _ from "underscore";
 import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
@@ -34,6 +30,17 @@ import {
   StepBindingFlags,
 } from "./step-binding";
 import type { ContextType, StepPattern, TypeDecorator } from "./types";
+
+interface CucumberStepOptions {
+  timeout?: number;
+  wrapperOptions?: any;
+}
+
+interface CucumberHookOptions {
+  name?: string;
+  tags?: string;
+  timeout?: number;
+}
 
 interface WritableWorld extends World {
   [key: string]: any;
@@ -323,7 +330,7 @@ function bindStepDefinition(stepBinding: StepBinding): boolean {
 
   logger.trace("Binding step:", stepBinding);
 
-  const bindingOptions: IDefineStepOptions & IDefineTestStepHookOptions = {
+  const bindingOptions: CucumberStepOptions & CucumberHookOptions = {
     timeout: stepBinding.timeout,
     wrapperOptions: stepBinding.wrapperOption,
     tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
@@ -378,7 +385,7 @@ function bindHook(stepBinding: StepBinding): void {
     value: stepBinding.argsLength,
   });
 
-  const bindingOptions: IDefineTestStepHookOptions = {
+  const bindingOptions: CucumberHookOptions = {
     timeout: stepBinding.timeout,
     tags: stepBinding.tag === DEFAULT_TAG ? undefined : stepBinding.tag,
     ...(stepBinding.hookOptions ?? {}),

@@ -77,7 +77,14 @@ class Prepare {
 
   private writeDefaultFiles(tags: string[]) {
     if (!tags.includes("custom-tsconfig")) {
-      this.runner.dir.writeFile("tsconfig.json", JSON.stringify({}));
+      this.runner.dir.writeFile(
+        "tsconfig.json",
+        JSON.stringify({
+          compilerOptions: {
+            types: ["node"],
+          },
+        }),
+      );
     }
 
     if (!tags.includes("no-logging")) {

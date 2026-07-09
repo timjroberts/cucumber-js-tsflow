@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "composite": true,
-    "moduleResolution": "node",
-    "module": "umd",
+    "moduleResolution": "node16",
+    "module": "Node16",
+    "types": ["node"],
     "target": "es2018",
     "declaration": true,
     "declarationMap": true,

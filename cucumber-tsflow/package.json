@@ -31,6 +31,6 @@
     "underscore": "^1.13.8"
   },
   "peerDependencies": {
-    "@cucumber/cucumber": "^10 || ^11 || ^12"
+    "@cucumber/cucumber": "^10 || ^11 || ^12 || ^13"
   }
 }

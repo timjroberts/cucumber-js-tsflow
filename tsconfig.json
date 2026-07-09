@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node"]
   },
   "files": [],
   "include": [],

@@ -1,8 +1,3 @@
-import {
-  IDefineTestCaseHookOptions,
-  IDefineTestRunHookOptions,
-  IDefineTestStepHookOptions,
-} from "@cucumber/cucumber/lib/support_code_library_builder/types";
 import { Callsite } from "./our-callsite";
 import {
   appendStepBindingMetadata,
@@ -11,6 +6,22 @@ import {
 } from "./step-binding";
 import { normalizeTag } from "./tag-normalization";
 import type { StepDecorator } from "./types";
+
+interface IDefineTestCaseHookOptions {
+  name?: string;
+  tags?: string;
+  timeout?: number;
+}
+
+interface IDefineTestRunHookOptions {
+  name?: string;
+  timeout?: number;
+}
+
+interface IDefineTestStepHookOptions {
+  tags?: string;
+  timeout?: number;
+}
 
 // Replace `tags` with `tag` for backwards compatibility
 type HookOptions = Omit<IDefineTestCaseHookOptions, "tags"> & {
