@@ -54,4 +54,28 @@ export interface StepBinding {
   callsite: Callsite;
 }
 
+export type StepBindingMetadata = Omit<StepBinding, "targetPrototype">;
+
+const STEP_BINDINGS = Symbol("cucumber-tsflow.stepBindings");
+
+interface StepBindingMetadataTarget extends Function {
+  [STEP_BINDINGS]?: StepBindingMetadata[];
+}
+
+export function appendStepBindingMetadata(
+  value: Function,
+  stepBinding: StepBindingMetadata,
+): void {
+  const target = value as StepBindingMetadataTarget;
+  const stepBindings = target[STEP_BINDINGS] ?? [];
+  stepBindings.push(stepBinding);
+  target[STEP_BINDINGS] = stepBindings;
+}
+
+export function getStepBindingMetadata(
+  value: Function,
+): readonly StepBindingMetadata[] {
+  return (value as StepBindingMetadataTarget)[STEP_BINDINGS] ?? [];
+}
+
 export * from "./step-binding-flags";

@@ -42,4 +42,12 @@ export function isProvidedContextType(
   return providedPrototypes.some((proto) => Object.is(typ, proto));
 }
 
-export type TypeDecorator = <T>(target: new (...args: any[]) => T) => void;
+export type TypeDecorator = <T extends new (...args: any[]) => any>(
+  target: T,
+  context: ClassDecoratorContext<T>,
+) => void;
+
+export type StepDecorator = (
+  value: Function,
+  context: ClassMethodDecoratorContext,
+) => void;

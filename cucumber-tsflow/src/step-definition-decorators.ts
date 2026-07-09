@@ -1,8 +1,11 @@
-import { BindingRegistry } from "./binding-registry";
-import logger from "./logger";
 import { Callsite } from "./our-callsite";
-import { StepBinding, StepBindingFlags } from "./step-binding";
+import {
+  appendStepBindingMetadata,
+  StepBindingFlags,
+  type StepBindingMetadata,
+} from "./step-binding";
 import { normalizeTag } from "./tag-normalization";
+import type { StepDecorator } from "./types";
 
 interface StepOptions {
   tag?: string;
@@ -29,6 +32,37 @@ function overloadedOptions(
   return tag;
 }
 
+function createStepDefinitionDecorator(
+  stepPattern: RegExp | string,
+  bindingType: StepBindingFlags,
+  tagOrOption?: string | StepOptions,
+  timeout?: number,
+): StepDecorator {
+  const callsite = Callsite.capture();
+  const options = overloadedOptions(tagOrOption, timeout);
+
+  return (value: Function, context: ClassMethodDecoratorContext) => {
+    if (context.private) {
+      throw new Error(
+        `Cannot register private method ${String(context.name)} as a Cucumber step definition.`,
+      );
+    }
+
+    const stepBinding: StepBindingMetadata = {
+      stepPattern: stepPattern,
+      bindingType: bindingType,
+      targetPropertyKey: context.name,
+      argsLength: value.length,
+      callsite: callsite,
+      tag: normalizeTag(options.tag),
+      timeout: options.timeout,
+      wrapperOption: options.wrapperOption,
+    };
+
+    appendStepBindingMetadata(value, stepBinding);
+  };
+}
+
 /**
  * A method decorator that marks the associated function as a 'Given' step.
  *
@@ -40,34 +74,13 @@ export function given(
   stepPattern: RegExp | string,
   tagOrOption?: string | StepOptions,
   timeout?: number,
-): MethodDecorator {
-  const callsite = Callsite.capture();
-
-  const options = overloadedOptions(tagOrOption, timeout);
-
-  return <T>(
-    target: any,
-    propertyKey: string | symbol,
-    descriptor: TypedPropertyDescriptor<T>,
-  ) => {
-    const stepBinding: StepBinding = {
-      stepPattern: stepPattern,
-      bindingType: StepBindingFlags.given,
-      targetPrototype: target,
-      targetPropertyKey: propertyKey,
-      argsLength: target[propertyKey].length,
-      callsite: callsite,
-      tag: normalizeTag(options.tag),
-      timeout: options.timeout,
-      wrapperOption: options.wrapperOption,
-    };
-
-    logger.trace("Registering step definition:", stepBinding);
-
-    BindingRegistry.instance.registerStepBinding(stepBinding);
-
-    return descriptor;
-  };
+): StepDecorator {
+  return createStepDefinitionDecorator(
+    stepPattern,
+    StepBindingFlags.given,
+    tagOrOption,
+    timeout,
+  );
 }
 
 /**
@@ -81,32 +94,13 @@ export function when(
   stepPattern: RegExp | string,
   tagOrOption?: string | StepOptions,
   timeout?: number,
-): MethodDecorator {
-  const callsite = Callsite.capture();
-
-  const options = overloadedOptions(tagOrOption, timeout);
-
-  return <T>(
-    target: any,
-    propertyKey: string | symbol,
-    descriptor: TypedPropertyDescriptor<T>,
-  ) => {
-    const stepBinding: StepBinding = {
-      stepPattern: stepPattern,
-      bindingType: StepBindingFlags.when,
-      targetPrototype: target,
-      targetPropertyKey: propertyKey,
-      argsLength: target[propertyKey].length,
-      callsite: callsite,
-      tag: normalizeTag(options.tag),
-      timeout: options.timeout,
-      wrapperOption: options.wrapperOption,
-    };
-
-    BindingRegistry.instance.registerStepBinding(stepBinding);
-
-    return descriptor;
-  };
+): StepDecorator {
+  return createStepDefinitionDecorator(
+    stepPattern,
+    StepBindingFlags.when,
+    tagOrOption,
+    timeout,
+  );
 }
 
 /**
@@ -120,30 +114,11 @@ export function then(
   stepPattern: RegExp | string,
   tagOrOption?: string | StepOptions,
   timeout?: number,
-): MethodDecorator {
-  const callsite = Callsite.capture();
-
-  const options = overloadedOptions(tagOrOption, timeout);
-
-  return <T>(
-    target: any,
-    propertyKey: string | symbol,
-    descriptor: TypedPropertyDescriptor<T>,
-  ) => {
-    const stepBinding: StepBinding = {
-      stepPattern: stepPattern,
-      bindingType: StepBindingFlags.then,
-      targetPrototype: target,
-      targetPropertyKey: propertyKey,
-      argsLength: target[propertyKey].length,
-      callsite: callsite,
-      tag: normalizeTag(options.tag),
-      timeout: options.timeout,
-      wrapperOption: options.wrapperOption,
-    };
-
-    BindingRegistry.instance.registerStepBinding(stepBinding);
-
-    return descriptor;
-  };
+): StepDecorator {
+  return createStepDefinitionDecorator(
+    stepPattern,
+    StepBindingFlags.then,
+    tagOrOption,
+    timeout,
+  );
 }
