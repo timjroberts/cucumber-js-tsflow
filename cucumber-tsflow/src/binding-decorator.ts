@@ -10,7 +10,9 @@ import {
   When,
   World,
 } from "@cucumber/cucumber";
-import { PickleTag } from "@cucumber/messages";
+import type { PickleTag } from "@cucumber/messages" with {
+  "resolution-mode": "import",
+};
 import * as _ from "underscore";
 import { BindingRegistry, DEFAULT_TAG } from "./binding-registry";
 import logger from "./logger";

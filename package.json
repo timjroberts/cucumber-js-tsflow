@@ -2,6 +2,10 @@
   "name": "cucumber-tsflow-workspace",
   "version": "2.0.0",
   "private": true,
+  "workspaces": [
+    "cucumber-tsflow",
+    "cucumber-tsflow-specs"
+  ],
   "description": "Workspace for cucumber-tsflow",
   "repository": {
     "type": "git",
@@ -12,14 +16,11 @@
     "clean": "rm -rf tmp tsconfig.tsbuildinfo cucumber-tsflow/tsconfig.tsbuildinfo cucumber-tsflow/dist cucumber-tsflow-specs/tsconfig.tsbuildinfo",
     "build": "tsc -p cucumber-tsflow",
     "build:watch": "tsc --build --watch",
-    "preinstall": "cd cucumber-tsflow && npm install && cd ../cucumber-tsflow-specs && npm install",
-    "postinstall": "npm run fix-peer-cucumber",
-    "fix-peer-cucumber": "rm -rf cucumber-tsflow/node_modules/@cucumber/cucumber && ln -s ../../node_modules/@cucumber cucumber-tsflow/node_modules/@cucumber/cucumber && mkdir -p cucumber-tsflow-specs/node_modules/@cucumber && rm -rf cucumber-tsflow-specs/node_modules/@cucumber/cucumber && ln -s ../../node_modules/@cucumber/cucumber cucumber-tsflow-specs/node_modules/@cucumber/cucumber",
     "precommit": "lint-staged && npm test",
     "set-packageversion": "node .build/setPackageVersion.js",
     "pretest": "npm run build",
     "test": "cucumber-js -p default cucumber-tsflow-specs/features/**/*.feature",
-    "upgrade": "npm-check -u; cd cucumber-tsflow && npm-check -u; cd ../cucumber-tsflow-specs && npm-check -u; cd .. && npm install"
+    "upgrade": "npm-check -u && npm-check cucumber-tsflow -u && npm-check cucumber-tsflow-specs -u && npm install"
   },
   "lint-staged": {
     "*.ts": [
@@ -36,7 +37,6 @@
     "@cucumber/cucumber": "^13.0.0",
     "@types/node": "^26.1.1",
     "@types/underscore": "^1.13.0",
-    "lerna": "^9.0.7",
     "lint-staged": "^17.0.8",
     "nerdbank-gitversioning": "^3.10.85",
     "npm-check": "^6.0.1",

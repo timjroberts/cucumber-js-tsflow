@@ -1,13 +1,15 @@
-The project should set-up all of its inner links and bindings when you first install it.
+The repository uses npm workspaces. Run installation commands from the repository root; npm links both packages and installs their dependencies using the root `package-lock.json`.
 
 Run the tests locally to ensure everything is properly configured.
 
 ```terminal
 > git clone https://github.com/timjroberts/cucumber-js-tsflow.git
 > cd cucumber-js-tsflow
-> npm install
+> npm ci
 > npm test
 ```
+
+When updating an existing checkout from the previous nested-install layout, remove `cucumber-tsflow/node_modules` and `cucumber-tsflow-specs/node_modules` once before running `npm ci`. Do not maintain separate lockfiles or manually link Cucumber in either package.
 
 ## Setting up Run/Debug in IDE
 

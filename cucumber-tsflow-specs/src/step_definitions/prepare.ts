@@ -9,7 +9,7 @@ const projectNodeModulePath = path.join(projectPath, "node_modules");
 const cucumberPath = path.join(projectNodeModulePath, "@cucumber", "cucumber");
 const tsNodePath = path.join(projectNodeModulePath, "ts-node");
 const projectLibPath = path.join(projectPath, "cucumber-tsflow");
-const log4jsPath = path.join(projectLibPath, "node_modules", "log4js");
+const log4jsPath = path.dirname(require.resolve("log4js/package.json"));
 
 @binding([TestRunner])
 class Prepare {
