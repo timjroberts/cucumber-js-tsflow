@@ -36,7 +36,7 @@
     "@cucumber/cucumber": "^13.0.0",
     "@types/node": "^26.1.1",
     "@types/underscore": "^1.13.0",
-    "lerna": "^9.0.7",
+    "lerna": "^10.0.1",
     "lint-staged": "^17.0.8",
     "nerdbank-gitversioning": "^3.10.85",
     "npm-check": "^6.0.1",
