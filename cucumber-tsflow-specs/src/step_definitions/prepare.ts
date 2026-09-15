@@ -81,7 +81,6 @@ class Prepare {
         "tsconfig.json",
         JSON.stringify({
           compilerOptions: {
-            experimentalDecorators: true,
             types: ["node"],
           },
         }),

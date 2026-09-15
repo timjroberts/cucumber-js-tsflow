@@ -1,6 +1,6 @@
 {
   "name": "cucumber-tsflow",
-  "description": "Provides 'specflow' like bindings for CucumberJS 7.0.0+ in TypeScript 1.7+.",
+  "description": "Provides 'specflow' like bindings for CucumberJS 7.0.0+ in TypeScript 5.0+.",
   "version": "5.0.0",
   "author": "Tim Roberts <tim@timjroberts.com>",
   "maintainers": [

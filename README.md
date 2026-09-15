@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/timjroberts/cucumber-js-tsflow/workflows/CI/badge.svg)
 
-Provides 'SpecFlow' like bindings for CucumberJS in TypeScript 1.7+.
+Provides 'SpecFlow' like bindings for CucumberJS in TypeScript 5.0+.
 
 ## Table of content
 
@@ -90,14 +90,15 @@ running step definitions (see below).
 
 ### Compiling your TypeScript Support Code
 
-To use `cucumber-tsflow` with TypeScript, you'll also need a `tsconfig.json` file
-with these options:
+`cucumber-tsflow` uses standardized TypeScript decorators. Do not enable the
+legacy TypeScript decorator compiler option (the one that starts with
+`experimental` and ends with `Decorators`). A minimal `tsconfig.json` for your
+code can be:
 
 ```json
 {
   "compilerOptions": {
-    "moduleResolution": "node",
-    "experimentalDecorators": true
+    "moduleResolution": "node"
   }
 }
 ```
