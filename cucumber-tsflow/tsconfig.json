@@ -13,7 +13,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "removeComments": false,
-    "experimentalDecorators": true,
     "outDir": "./dist",
     "rootDir": "./src"
   },

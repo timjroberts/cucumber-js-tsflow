@@ -303,7 +303,7 @@ Feature: Custom context objects
                 constructor(public stateOne: StateOne) { }
             }
 
-            exports.StateOne = binding([StateTwo])(StateOne);
+            binding([StateTwo])(StateOne);
             """
         And a file named "step_definitions/one.ts" with:
             """ts
@@ -372,7 +372,7 @@ Feature: Custom context objects
             constructor(public stateOne: StateOne) { }
         }
 
-        exports.StateOne = binding([StateTwo])(StateOne);
+        binding([StateTwo])(StateOne);
         """
         And a file named "step_definitions/one.ts" with:
         """ts
